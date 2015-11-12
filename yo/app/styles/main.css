@@ -59,6 +59,22 @@ body {
   margin-top: 28px;
 }
 
+#vmconfig {
+  margin-top: 30px;
+}
+
+.row {
+  margin: 0 20px;
+}
+
+.predefinedVMForm label {
+  margin: 10px;
+}
+
+.separator{
+  border-left: solid 1px black;
+}
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
   .container {

@@ -26,7 +26,7 @@ angular
       })
       .when('/session/new', {
         templateUrl: 'views/create_session.html',
-        controller: 'CreateSessionCtrl',
+        controller: 'CreatesessionCtrl',
         controllerAs: 'createsession'
       })
       .when('/about', {

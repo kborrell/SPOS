@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class VirtualMachine {
@@ -16,14 +17,14 @@ public class VirtualMachine {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long Id;
 
-    @NotBlank(message = "You must introduce the number of emulated CPU's")
+    @NotNull(message = "You must introduce the number of emulated CPU's")
     private int cpuCount;
 
-    @NotBlank(message = "You must introduce the amount of memory that will have the VM created")
+    @NotNull(message = "You must introduce the amount of memory that will have the VM created")
     @DecimalMin(message = "Amount of memory has to be greater than zero", value = "0")
     private int ram;
 
-    @NotBlank(message = "You must enter the real percentage of real cpu's used by the VM")
+    @NotNull(message = "You must enter the real percentage of real cpu's used by the VM")
     @DecimalMin(message = "This value must be greater than zero", value = "0")
     private float realPercentage;
 
