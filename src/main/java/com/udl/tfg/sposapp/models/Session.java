@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Session {
@@ -17,7 +18,8 @@ public class Session {
     @Email
     private String email;
 
-    @NotBlank(message = "You must choose a solution type")
+    @NotNull(message = "You must choose a solution type")
+    @Enumerated(EnumType.STRING)
     private SolutionType type;
 
     @ManyToOne
