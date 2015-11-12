@@ -24,6 +24,11 @@ angular
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
+      .when('/session/new', {
+        templateUrl: 'views/create_session.html',
+        controller: 'CreateSessionCtrl',
+        controllerAs: 'createsession'
+      })
       .when('/about', {
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl',
