@@ -42,7 +42,7 @@
         </form>
       </div>
     </div>
-    <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
+
   </div>
   <div class="row" id="models">
     <h3>
@@ -65,4 +65,46 @@
       </form>
     </div>
   </div>
+  <div class="row" id="methods">
+    <h3>
+      3. Choose the method
+      <br>
+      <small>Almost there... Now choose the method used to solve the problem. Some options are disabled, depending
+      on your model decision.</small>
+    </h3>
+    <form name="methodForm" class="methodForm">
+      <div class="col-xs-4 col-md-4">
+        <label>
+          <input type="radio" ng-model="parameters.method" value="CPLEX"> CPLEX
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.method" value="BD"> BD
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.method" value="pBD"> pBD
+        </label>
+      </div>
+      <div class="col-xs-4 col-md-4">
+        <label>
+          <input type="radio" ng-model="parameters.method" value="pBDc"> pBDc
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.method" value="CBD"> CBD
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.method" value="pCBD"> pCBD
+        </label>
+      </div>
+      <div class="col-xs-4 col-md-4">
+        <label>
+          <input type="radio" ng-model="parameters.method" value="LD"> LD
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.method" value="pLD"> pLD
+        </label>
+      </div>
+    </form>
+  </div>
+  <br>
+  <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
 </div>

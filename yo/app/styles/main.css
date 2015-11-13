@@ -75,8 +75,12 @@ body {
   border-left: solid 1px black;
 }
 
-.modelForm {
+form {
   margin-top: 20px;
+}
+
+.methodForm label {
+  display: block;
 }
 
 /* Responsive: Portrait tablets and up */
