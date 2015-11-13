@@ -10,6 +10,7 @@
 angular.module('yoApp')
   .controller('CreatesessionCtrl', function ($scope, VirtualMachine) {
     $scope.vmConfig = {};
+    $scope.parameters = {};
     $scope.predefinedVM = "";
 
     $scope.clearPredefinedVM = function(){
@@ -29,9 +30,7 @@ angular.module('yoApp')
     $scope.createSession = function() {
       if ($scope.predefinedVM == ""){
         $scope.vmConfig.realPercentage = $scope.vmConfig.realPercentage / 100;
-        VirtualMachine.save($scope.vmConfig).$promise.then(function (vm) {
-          alert(vm);
-        });
+        VirtualMachine.save($scope.vmConfig);
         $scope.clearVMConfig();
       }
     };

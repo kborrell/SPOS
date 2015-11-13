@@ -44,4 +44,25 @@
     </div>
     <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
   </div>
+  <div class="row" id="models">
+    <h3>
+      2. Choose the model
+      <br>
+      <small>Time to choose the model of data which fits better with your requirements. Depending on what model you choose,
+      you will have different methods of resolution to choose in the next step.</small>
+    </h3>
+    <div class="row">
+      <form name="modelForm" class="modelForm">
+        <label>
+          <input type="radio" ng-model="parameters.model" value="GDS2SP"> General Discrete Stochastic Two Stage Problem
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.model" value="SFLP"> Stochastic Facility Location Problem
+        </label>
+        <label>
+          <input type="radio" ng-model="parameters.model" value="GM01S2SP"> General Mixed 0-1 Stochastic Two Stage Problem
+        </label>
+      </form>
+    </div>
+  </div>
 </div>
