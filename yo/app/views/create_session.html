@@ -7,104 +7,12 @@
     </h2>
   </div>
 
-  <div class="row" id="vmconfig">
-    <h3>
-      1. Virtual Machine configuration
-      <br>
-      <small>Choose the parameters of the virtual machine where the execution will run.</small>
-    </h3>
-    <div class="row">
-      <div class="col-xs-6">
-        <h4>You can choose a predefined VM configuration:</h4>
-        <form name="predefinedVMForm" class="predefinedVMForm">
-          <label><input type="radio" ng-model="predefinedVM" value="High" ng-change="clearVMConfig()"> High</label>
-          <label><input type="radio" ng-model="predefinedVM" value="Medium" ng-change="clearVMConfig()"> Medium</label>
-          <label><input type="radio" ng-model="predefinedVM" value="Low" ng-change="clearVMConfig()"> Low</label>
-        </form>
-      </div>
-      <div class="col-xs-6 separator">
-        <h4>Or choose your own configuration:</h4>
-        <form name="vmConfigForm" class="vmConfig" novalidate>
-          <label>
-            Num. CPUs:
-            <input type="number" ng-model="vmConfig.cpuCount" min="1" max="64" required ng-change="clearPredefinedVM()">
-          </label>
-          <label>
-            Memory:
-            <input type="number" ng-model="vmConfig.ram" min="64" max="32768" required ng-change="clearPredefinedVM()">
-            Mb
-          </label>
-          <label>
-            Real Power:
-            <input type="number" ng-model="vmConfig.realPercentage" min="1" max="100" required ng-change="clearPredefinedVM()">
-            %
-          </label>
-        </form>
-      </div>
-    </div>
+  <vm-config-form></vm-config-form>
 
-  </div>
-  <div class="row" id="models">
-    <h3>
-      2. Choose the model
-      <br>
-      <small>Time to choose the model of data which fits better with your requirements. Depending on what model you choose,
-      you will have different methods of resolution to choose in the next step.</small>
-    </h3>
-    <div class="row">
-      <form name="modelForm" class="modelForm">
-        <label>
-          <input type="radio" ng-model="parameters.model" value="GDS2SP"> General Discrete Stochastic Two Stage Problem
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.model" value="SFLP"> Stochastic Facility Location Problem
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.model" value="GM01S2SP"> General Mixed 0-1 Stochastic Two Stage Problem
-        </label>
-      </form>
-    </div>
-  </div>
-  <div class="row" id="methods">
-    <h3>
-      3. Choose the method
-      <br>
-      <small>Almost there... Now choose the method used to solve the problem. Some options are disabled, depending
-      on your model decision.</small>
-    </h3>
-    <form name="methodForm" class="methodForm">
-      <div class="col-xs-4 col-md-4">
-        <label>
-          <input type="radio" ng-model="parameters.method" value="CPLEX"> CPLEX
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.method" value="BD"> BD
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.method" value="pBD"> pBD
-        </label>
-      </div>
-      <div class="col-xs-4 col-md-4">
-        <label>
-          <input type="radio" ng-model="parameters.method" value="pBDc"> pBDc
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.method" value="CBD"> CBD
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.method" value="pCBD"> pCBD
-        </label>
-      </div>
-      <div class="col-xs-4 col-md-4">
-        <label>
-          <input type="radio" ng-model="parameters.method" value="LD"> LD
-        </label>
-        <label>
-          <input type="radio" ng-model="parameters.method" value="pLD"> pLD
-        </label>
-      </div>
-    </form>
-  </div>
+  <model-form></model-form>
+
+  <method-form></method-form>
+
   <br>
   <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
 </div>

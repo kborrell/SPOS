@@ -1,0 +1,36 @@
+<div class="row" id="vmconfig">
+  <h3>
+    1. Virtual Machine configuration
+    <br>
+    <small>Choose the parameters of the virtual machine where the execution will run.</small>
+  </h3>
+  <div class="row">
+    <div class="col-xs-6">
+      <h4>You can choose a predefined VM configuration:</h4>
+      <form name="predefinedVMForm" class="predefinedVMForm">
+        <label><input type="radio" ng-model="predefinedVM" value="High" ng-change="clearVMConfig()"> High</label>
+        <label><input type="radio" ng-model="predefinedVM" value="Medium" ng-change="clearVMConfig()"> Medium</label>
+        <label><input type="radio" ng-model="predefinedVM" value="Low" ng-change="clearVMConfig()"> Low</label>
+      </form>
+    </div>
+    <div class="col-xs-6 separator">
+      <h4>Or choose your own configuration:</h4>
+      <form name="vmConfigForm" class="vmConfig" novalidate>
+        <label>
+          Num. CPUs:
+          <input type="number" ng-model="vmConfig.cpuCount" min="1" max="64" required ng-change="clearPredefinedVM()">
+        </label>
+        <label>
+          Memory:
+          <input type="number" ng-model="vmConfig.ram" min="64" max="32768" required ng-change="clearPredefinedVM()">
+          Mb
+        </label>
+        <label>
+          Real Power:
+          <input type="number" ng-model="vmConfig.realPercentage" min="1" max="100" required ng-change="clearPredefinedVM()">
+          %
+        </label>
+      </form>
+    </div>
+  </div>
+</div>
