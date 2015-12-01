@@ -13,14 +13,14 @@ angular.module('yoApp')
     $scope.parameters = {};
     $scope.predefinedVM = "";
 
-    var clearPredefinedVM = function(){
+    $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
         $scope.predefinedVMForm.$setValidity();
         $scope.predefinedVMForm.$setUntouched();
         $scope.predefinedVM = "";
     };
 
-    var clearVMConfig = function(){
+    $scope.clearVMConfig = function(){
       $scope.vmConfig = {};
       $scope.vmConfigForm.$setPristine();
       $scope.vmConfigForm.$setValidity();
@@ -40,9 +40,7 @@ angular.module('yoApp')
           id = 1;
           break;
       }
-      $scope.vmConfig = VirtualMachine.query({id:id}).$promise.then(function(vm) {
-        alert(vm.cpuCount);
-      });
+      $scope.vmConfig = VirtualMachine.query({id:id});
     };
 
     var createVMConfig = function () {
@@ -56,6 +54,7 @@ angular.module('yoApp')
     };
 
     $scope.createSession = function() {
+      alert($scope.parameters.model);
       createVMConfig();
     };
   });
