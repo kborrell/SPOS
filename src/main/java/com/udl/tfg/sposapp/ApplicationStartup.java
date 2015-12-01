@@ -19,6 +19,8 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         CreateLowVMConfig();
         CreateMediumVMConfig();
         CreateHighVMConfig();
+
+
     }
 
     private void CreateLowVMConfig() {
