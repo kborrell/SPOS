@@ -1,13 +1,14 @@
 <div id="create_main">
 
-  <div id="first-step">
-    <div class="row">
-      <h2>
-        Launch a new execution
-        <br>
-        <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.</small>
-      </h2>
-    </div>
+  <div class="row">
+    <h2>
+      Launch a new execution
+      <br>
+      <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.</small>
+    </h2>
+  </div>
+
+  <div id="first-step" ng-show="firstStepActive">
 
     <vm-config-form></vm-config-form>
 
@@ -17,10 +18,24 @@
 
     <br>
     <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
-  </div>
+  </div ng>
 
-  <div id="second-step">
-
+  <div id="second-step" ng-hide="firstStepActive">
+    <div class="col-xs-4 text-center" style="border: solid black 1px; margin: 15px;">
+      <h3>Summary</h3>
+      <div id="vm-resume" class="text-center">
+        <h4>Virtual Machine</h4>
+        <p><b>Number of CPU's:</b> {{vmConfig.cpuCount}}</p>
+        <p><b>Total memory (MB):</b> {{vmConfig.ram}}</p>
+        <p><b>Real power:</b> {{vmConfig.realPercentage}}</p>
+      </div>
+      <div id="params-resume" class="text-center">
+        <h4>Virtual Machine</h4>
+        <p><b>Number of CPU's:</b> {{vmConfig.cpuCount}}</p>
+        <p><b>Total memory (MB):</b> {{vmConfig.ram}}</p>
+        <p><b>Real power:</b> {{vmConfig.realPercentage}}</p>
+      </div>
+    </div>
   </div>
 
 </div>

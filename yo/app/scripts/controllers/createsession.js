@@ -12,8 +12,11 @@ angular.module('sposApp')
   .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine) {
     $scope.vmConfig = {};
     $scope.parameters = {};
+
+
     $scope.predefinedVM = "";
     $scope.compatibleMethods = {};
+    $scope.firstStepActive = false;
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
