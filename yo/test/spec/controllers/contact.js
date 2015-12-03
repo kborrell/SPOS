@@ -3,7 +3,7 @@
 describe('Controller: ContactCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('yoApp'));
+  beforeEach(module('sposApp'));
 
   var ContactCtrl,
     scope;

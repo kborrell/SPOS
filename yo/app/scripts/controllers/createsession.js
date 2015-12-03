@@ -2,12 +2,13 @@
 
 /**
  * @ngdoc function
- * @name yoApp.controller:CreatesessionCtrl
+ * @name sposApp.controller:CreatesessionCtrl
  * @description
  * # CreatesessionCtrl
- * Controller of the yoApp
+ * Controller of the sposApp
  */
-angular.module('yoApp')
+
+angular.module('sposApp')
   .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine) {
     $scope.vmConfig = {};
     $scope.parameters = {};

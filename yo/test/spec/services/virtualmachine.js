@@ -3,7 +3,7 @@
 describe('Service: virtualmachine', function () {
 
   // load the service's module
-  beforeEach(module('yoApp'));
+  beforeEach(module('sposApp'));
 
   // instantiate service
   var virtualmachine;

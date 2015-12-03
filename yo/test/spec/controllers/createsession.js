@@ -3,7 +3,7 @@
 describe('Controller: CreatesessionCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('yoApp'));
+  beforeEach(module('sposApp'));
 
   var CreatesessionCtrl,
     scope;

@@ -11,35 +11,8 @@
         <input type="radio" ng-model="parameters.method" value="{{method}}"> {{method}}
       </label>
     </div>
-    <!--<div class="col-xs-4 col-md-4">
-      <label>
-        <input type="radio" ng-model="parameters.method" value="CPLEX"> CPLEX
-      </label>
-      <label>
-        <input type="radio" ng-model="parameters.method" value="BD"> BD
-      </label>
-      <label>
-        <input type="radio" ng-model="parameters.method" value="pBD"> pBD
-      </label>
+    <div ng-hide="parameters.model">
+      <h5>You must select an execution model first.</h5>
     </div>
-    <div class="col-xs-4 col-md-4">
-      <label>
-        <input type="radio" ng-model="parameters.method" value="pBDc"> pBDc
-      </label>
-      <label>
-        <input type="radio" ng-model="parameters.method" value="CBD"> CBD
-      </label>
-      <label>
-        <input type="radio" ng-model="parameters.method" value="pCBD"> pCBD
-      </label>
-    </div>
-    <div class="col-xs-4 col-md-4">
-      <label>
-        <input type="radio" ng-model="parameters.method" value="LD"> LD
-      </label>
-      <label>
-        <input type="radio" ng-model="parameters.method" value="pLD"> pLD
-      </label>
-    </div>-->
   </form>
 </div>

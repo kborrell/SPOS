@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc overview
- * @name yoApp
+ * @name sposApp
  * @description
- * # yoApp
+ * # sposApp
  *
  * Main module of the application.
  */
 angular
-  .module('yoApp', [
+  .module('sposApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',

@@ -2,11 +2,11 @@
 
 /**
  * @ngdoc directive
- * @name yoApp.directive:modelForm
+ * @name sposApp.directive:modelForm
  * @description
  * # Directive which includes all the form fields to choose the desired model for the execution.
  */
-angular.module('yoApp')
+angular.module('sposApp')
   .directive('modelForm', function () {
     return {
       templateUrl: 'views/directives_views/model-form.html',

@@ -1,18 +1,26 @@
 <div id="create_main">
-  <div class="row">
-    <h2>
-      Launch a new execution
-      <br>
-      <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.</small>
-    </h2>
+
+  <div id="first-step">
+    <div class="row">
+      <h2>
+        Launch a new execution
+        <br>
+        <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.</small>
+      </h2>
+    </div>
+
+    <vm-config-form></vm-config-form>
+
+    <model-form></model-form>
+
+    <method-form></method-form>
+
+    <br>
+    <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
   </div>
 
-  <vm-config-form></vm-config-form>
+  <div id="second-step">
 
-  <model-form></model-form>
+  </div>
 
-  <method-form></method-form>
-
-  <br>
-  <button type="button" class="btn btn-md btn-success" ng-click="createSession()">Submit!</button>
 </div>

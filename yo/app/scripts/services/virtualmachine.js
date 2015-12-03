@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc service
- * @name yoApp.virtualmachine
+ * @name sposApp.virtualmachine
  * @description
  * # virtualmachine
- * Service in the yoApp.
+ * Service in the sposApp.
  */
-angular.module('yoApp')
+angular.module('sposApp')
   .factory('VirtualMachine', ['$resource', function($resource) {
     return $resource('http://127.0.0.1:8080/virtualmachine/:id', null,
       {

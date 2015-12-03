@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name yoApp.controller:ContactCtrl
+ * @name sposApp.controller:ContactCtrl
  * @description
  * # ContactCtrl
- * Controller of the yoApp
+ * Controller of the sposApp
  */
-angular.module('yoApp')
+angular.module('sposApp')
   .controller('ContactCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',
