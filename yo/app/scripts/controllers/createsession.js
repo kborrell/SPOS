@@ -8,10 +8,11 @@
  * Controller of the yoApp
  */
 angular.module('yoApp')
-  .controller('CreatesessionCtrl', function ($scope, VirtualMachine) {
+  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine) {
     $scope.vmConfig = {};
     $scope.parameters = {};
     $scope.predefinedVM = "";
+    $scope.compatibleMethods = {};
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
@@ -25,6 +26,21 @@ angular.module('yoApp')
       $scope.vmConfigForm.$setPristine();
       $scope.vmConfigForm.$setValidity();
       $scope.vmConfigForm.$setUntouched();
+    };
+
+    $scope.getCompatibleMethods = function() {
+        $http({
+          method: 'GET',
+          url: 'http://127.0.0.1:8080/models/search/findByModel?modelName=' + $scope.parameters.model
+        }).then(function successCallback(response) {
+            var model = angular.fromJson(response.data);
+            $scope.compatibleMethods = model._embedded.models[0].compatibleMethods;
+        });
+    };
+
+    $scope.createSession = function() {
+      alert($scope.parameters.model);
+      createVMConfig();
     };
 
     var getPredefinedVM = function () {
@@ -53,8 +69,5 @@ angular.module('yoApp')
       }
     };
 
-    $scope.createSession = function() {
-      alert($scope.parameters.model);
-      createVMConfig();
-    };
+
   });

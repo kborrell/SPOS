@@ -6,7 +6,12 @@
       on your model decision.</small>
   </h3>
   <form name="methodForm" class="methodForm">
-    <div class="col-xs-4 col-md-4">
+    <div ng-repeat="method in compatibleMethods">
+      <label>
+        <input type="radio" ng-model="parameters.method" value="{{method}}"> {{method}}
+      </label>
+    </div>
+    <!--<div class="col-xs-4 col-md-4">
       <label>
         <input type="radio" ng-model="parameters.method" value="CPLEX"> CPLEX
       </label>
@@ -35,6 +40,6 @@
       <label>
         <input type="radio" ng-model="parameters.method" value="pLD"> pLD
       </label>
-    </div>
+    </div>-->
   </form>
 </div>
