@@ -12,7 +12,7 @@ public class MethodInfo {
 
     @NotNull(message = "You must specify method type")
     @Enumerated(EnumType.STRING)
-    private MethodType method;
+    private MethodCodes method;
 
     private String name;
 
@@ -31,11 +31,11 @@ public class MethodInfo {
     @NotNull(message = "This field cannot be empty")
     private boolean clusterSupport;
 
-    public MethodType getMethod() {
+    public MethodCodes getMethod() {
         return method;
     }
 
-    public void setMethod(MethodType method) {
+    public void setMethod(MethodCodes method) {
         this.method = method;
     }
 

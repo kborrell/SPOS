@@ -1,10 +1,8 @@
 package com.udl.tfg.sposapp.models;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.persistence.*;
-import javax.swing.text.StringContent;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class ModelInfo {
@@ -15,19 +13,19 @@ public class ModelInfo {
 
     @NotNull(message = "You must specify model type")
     @Enumerated(EnumType.STRING)
-    private ModelType model;
+    private ModelCodes model;
 
     private String name;
 
     @NotNull(message = "You must specify compatible methods")
-    @Enumerated(EnumType.STRING)
-    private MethodType[] compatibleMethods;
+    @ElementCollection
+    private List<MethodCodes> compatibleMethods;
 
-    public ModelType getModel() {
+    public ModelCodes getModel() {
         return model;
     }
 
-    public void setModel(ModelType model) {
+    public void setModel(ModelCodes model) {
         this.model = model;
     }
 
@@ -39,11 +37,11 @@ public class ModelInfo {
         this.name = name;
     }
 
-    public MethodType[] getCompatibleMethods() {
+    public List<MethodCodes> getCompatibleMethods() {
         return compatibleMethods;
     }
 
-    public void setCompatibleMethods(MethodType[] compatibleMethods) {
+    public void setCompatibleMethods(List<MethodCodes> compatibleMethods) {
         this.compatibleMethods = compatibleMethods;
     }
 }

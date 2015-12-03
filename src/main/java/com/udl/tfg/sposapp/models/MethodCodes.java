@@ -1,7 +1,7 @@
 package com.udl.tfg.sposapp.models;
 
 
-public enum MethodType {
+public enum MethodCodes {
     CPLEX,
     BD,
     pBD,
