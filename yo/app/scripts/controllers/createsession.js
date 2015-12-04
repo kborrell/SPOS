@@ -43,7 +43,11 @@ angular.module('sposApp')
     };
 
     $scope.createSession = function() {
-      alert($scope.parameters.model);
+
+    };
+
+    $scope.completeFirstStep = function() {
+      $scope.firstStepActive = false;
       createVMConfig();
     };
 
