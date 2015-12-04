@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine) {
+  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine, Parameters, Session) {
     $scope.vmConfig = {};
     $scope.parameters = {};
     $scope.session = {};
@@ -44,7 +44,8 @@ angular.module('sposApp')
     };
 
     $scope.createSession = function() {
-
+      createParameters();
+      createSession();
     };
 
     $scope.completeFirstStep = function() {
@@ -78,5 +79,11 @@ angular.module('sposApp')
       }
     };
 
+    var createParameters = function () {
 
+    };
+
+    var createSession = function () {
+
+    };
   });
