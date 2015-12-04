@@ -12,6 +12,7 @@ angular.module('sposApp')
   .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine) {
     $scope.vmConfig = {};
     $scope.parameters = {};
+    $scope.session = {};
 
 
     $scope.predefinedVM = "";

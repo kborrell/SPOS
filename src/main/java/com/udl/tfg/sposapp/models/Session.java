@@ -22,6 +22,9 @@ public class Session {
     @Enumerated(EnumType.STRING)
     private SolutionType type;
 
+    @NotNull(message = "A maximum duration is required. -1 for optimal execution.")
+    private int maximumDuration;
+
     @ManyToOne
     private VirtualMachine vmConfig;
 
@@ -69,5 +72,13 @@ public class Session {
 
     public void setSessionResults(Result sessionResults) {
         this.sessionResults = sessionResults;
+    }
+
+    public int getMaximumDuration() {
+        return maximumDuration;
+    }
+
+    public void setMaximumDuration(int maximumDuration) {
+        this.maximumDuration = maximumDuration;
     }
 }
