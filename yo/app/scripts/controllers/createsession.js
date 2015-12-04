@@ -17,7 +17,7 @@ angular.module('sposApp')
 
     $scope.predefinedVM = "";
     $scope.compatibleMethods = {};
-    $scope.firstStepActive = false;
+    $scope.firstStepActive = true;
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
@@ -80,10 +80,17 @@ angular.module('sposApp')
     };
 
     var createParameters = function () {
-
+      $scope.parameters.isParallel = false;
+      $scope.parameters.groupSize = 10;
+      Parameters.save($scope.parameters);
     };
 
     var createSession = function () {
-
+      $scope.session.vmConfig = $scope.vmConfig;
+      $scope.session.info = $scope.parameters;
+      if ($scope.session.type == 'Optimal'){
+        $scope.session.maximumDuration = -1;
+      }
+      Session.save($scope.session);
     };
   });
