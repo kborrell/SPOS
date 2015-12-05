@@ -1,6 +1,7 @@
 package com.udl.tfg.sposapp.models;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public class Parameters {
     private ModelCodes model;
 
     @NotBlank(message = "You must upload at least one info file")
-    private byte[] infoFile;
+    private String infoFile;
 
     private boolean isParallel;
 
@@ -44,11 +45,11 @@ public class Parameters {
         this.model = model;
     }
 
-    public byte[] getInfoFile() {
+    public String getInfoFile() {
         return infoFile;
     }
 
-    public void setInfoFile(byte[] infoFile) {
+    public void setInfoFile(String infoFile) {
         this.infoFile = infoFile;
     }
 

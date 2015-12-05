@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine, Parameters, Session) {
+  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine, Parameters, Session, fileReader) {
     $scope.vmConfig = {};
     $scope.parameters = {};
     $scope.session = {};
@@ -18,6 +18,7 @@ angular.module('sposApp')
     $scope.predefinedVM = "";
     $scope.compatibleMethods = {};
     $scope.firstStepActive = true;
+    $scope.uploadMessage = "";
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
@@ -51,6 +52,13 @@ angular.module('sposApp')
     $scope.completeFirstStep = function() {
       $scope.firstStepActive = false;
       createVMConfig();
+    };
+
+    $scope.getFile = function () {
+      fileReader.readAsText($scope.file, $scope)
+        .then(function(result) {
+          $scope.parameters.infoFile = result;
+        });
     };
 
     var getPredefinedVM = function () {
