@@ -45,7 +45,6 @@ angular.module('sposApp')
     };
 
     $scope.createSession = function() {
-      createParameters();
       createSession();
     };
 

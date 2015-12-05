@@ -2,6 +2,7 @@ package com.udl.tfg.sposapp.models;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -25,13 +26,16 @@ public class Session {
     @NotNull(message = "A maximum duration is required. -1 for optimal execution.")
     private int maximumDuration;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @RestResource(exported = false)
     private VirtualMachine vmConfig;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @RestResource(exported = false)
     private Parameters info;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
+    @RestResource(exported = false)
     private Result sessionResults;
 
     public String getEmail() {
