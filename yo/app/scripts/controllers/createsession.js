@@ -19,6 +19,7 @@ angular.module('sposApp')
     $scope.compatibleMethods = {};
     $scope.firstStepActive = true;
     $scope.uploadMessage = "";
+    $scope.sessionCreated = false;
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
@@ -46,6 +47,7 @@ angular.module('sposApp')
 
     $scope.createSession = function() {
       createSession();
+      $scope.sessionCreated = true;
     };
 
     $scope.completeFirstStep = function() {
