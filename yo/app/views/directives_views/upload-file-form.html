@@ -1,0 +1,13 @@
+<h3>
+  4. Upload input file
+  <br>
+  <small>If you have chosen CPLEX method, only one type of input is necessary</small>
+</h3>
+<div id="upload">
+  <form name="inputUpload" class="inputUpload">
+    <!--<label>.MPS file: <input type="file" ng-model="parameters.infoFile"></label>-->
+    <!--<label>.LP file: <input type="file" ng-model="parameters.infoFile"></label>-->
+    <label>.DAT file: <input type="file" ng-file-select="onFileSelect($files)" required></label>
+  </form>
+</div>
+<br>

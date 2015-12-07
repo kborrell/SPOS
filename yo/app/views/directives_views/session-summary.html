@@ -1,0 +1,18 @@
+<div id="summary" class="col-xs-5" style="border: solid black 1px; margin: 15px;">
+  <h3 class="text-center"><b>Summary</b></h3>
+  <div id="vm-resume" style="border-top: solid black 1px">
+    <h4 class="text-center"><b>Virtual Machine</b></h4>
+    <ul>
+      <li><b>Number of CPU's:</b> {{vmConfig.cpuCount}}</li>
+      <li><b>Total memory (MB):</b> {{vmConfig.ram}}</li>
+      <li><b>Real power:</b> {{vmConfig.realPercentage}}</li>
+    </ul>
+  </div>
+  <div id="param-resume" style="border-top: solid black 1px">
+    <h4 class="text-center"><b>Execution</b></h4>
+    <ul>
+      <li><b>Model:</b> {{parameters.model}}</li>
+      <li><b>Method:</b> {{parameters.method}}</li>
+    </ul>
+  </div>
+</div>

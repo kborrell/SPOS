@@ -22,65 +22,17 @@
 
   <div id="second-step" class="row" ng-hide="firstStepActive">
     <div class="row" style="margin-bottom: 50px;">
-      <div id="summary" class="col-xs-5" style="border: solid black 1px; margin: 15px;">
-        <h3 class="text-center"><b>Summary</b></h3>
-        <div id="vm-resume" style="border-top: solid black 1px">
-          <h4 class="text-center"><b>Virtual Machine</b></h4>
-          <ul>
-            <li><b>Number of CPU's:</b> {{vmConfig.cpuCount}}</li>
-            <li><b>Total memory (MB):</b> {{vmConfig.ram}}</li>
-            <li><b>Real power:</b> {{vmConfig.realPercentage}}</li>
-          </ul>
-        </div>
-        <div id="param-resume" style="border-top: solid black 1px">
-          <h4 class="text-center"><b>Execution</b></h4>
-          <ul>
-            <li><b>Model:</b> {{parameters.model}}</li>
-            <li><b>Method:</b> {{parameters.method}}</li>
-          </ul>
-        </div>
-      </div>
+
+      <session-summary></session-summary>
+
       <div id="secondStep" class="col-xs-6">
-        <h3>
-          4. Upload input file
-          <br>
-          <small>If you have chosen CPLEX method, only one type of input is necessary</small>
-        </h3>
-        <div id="upload">
-          <form name="inputUpload" class="inputUpload">
-            <!--<label>.MPS file: <input type="file" ng-model="parameters.infoFile"></label>-->
-            <!--<label>.LP file: <input type="file" ng-model="parameters.infoFile"></label>-->
-            <label>.DAT file: <input type="file" ng-file-select="onFileSelect($files)" required></label>
-          </form>
-        </div>
-        <br>
 
-        <h3>
-          5. Choose solution type
-          <br>
-          <small>Optimal will give you best results, but Feasible let you choose the execution duration.</small>
-        </h3>
-        <div id="solutionType">
-          <form name="inputUpload" class="inputUpload text-center">
-            <label><input type="radio" ng-model="session.type" value="Optimal"> Optimal</label>
-            <label><input type="radio" ng-model="session.type" value="Feasible"> Feasible</label>
-            <label ng-show="session.type == 'Feasible'" >
-              Maximum duration (minutes):
-              <input type="number" ng-model="session.maximumDuration" min="1" value="1">
-            </label>
-          </form>
-        </div>
+        <upload-file-form></upload-file-form>
 
-        <h3>
-          6. Contact information
-          <br>
-          <small>That's all! Give us your email address to alert you when execution is finished.</small>
-        </h3>
-        <div id="contactInfo">
-          <form name="emailInput" class="emailInput text-center">
-            <label>Contact email: <input type="email" ng-model="session.email" required></label>
-          </form>
-        </div>
+        <solution-type-form></solution-type-form>
+
+        <contact-form></contact-form>
+
       </div>
     </div>
     <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()">Submit!</button>
