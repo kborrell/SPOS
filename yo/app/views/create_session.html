@@ -42,12 +42,16 @@
     <h3 style="color: #A1D490;">Congratulations!</h3>
     <h4>Your session has been succesfully created. You will be notified on your email when the execution finishes.</h4>
     <h5>You can access to execution results using this direct link:</h5>
-    <h6><a href="#/">link</a></h6>
+    <h6>
+      <a href="http://{{location.host()}}:{{location.port()}}/#/session/{{sessionId}}?key={{sessionKey}}">
+        http://{{location.host()}}:{{location.port()}}/#/session/{{sessionId}}/view?key={{sessionKey}}
+      </a></b>
+    </h6>
     <h5>Or by going to <a href="#/">Check results</a> section and introducing the information of you execution:</h5>
     <h6>
       <ul>
-        <li>ID: 84983894934</li>
-        <li>Acces key: 8475843778gfjkdb487</li>
+        <li>ID: {{sessionId}}</li>
+        <li>Acces key: {{sessionKey}}</li>
       </ul>
     </h6>
   </div>

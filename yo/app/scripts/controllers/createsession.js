@@ -9,17 +9,20 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, VirtualMachine, Parameters, Session, fileReader) {
+  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader) {
     $scope.vmConfig = {};
     $scope.parameters = {};
     $scope.session = {};
 
-
+    $scope.location = $location;
     $scope.predefinedVM = "";
     $scope.compatibleMethods = {};
     $scope.firstStepActive = true;
     $scope.uploadMessage = "";
     $scope.sessionCreated = false;
+
+    $scope.sessionKey = "";
+    $scope.sessionId = "";
 
     $scope.clearPredefinedVM = function(){
         $scope.predefinedVMForm.$setPristine();
@@ -100,6 +103,11 @@ angular.module('sposApp')
       if ($scope.session.type == 'Optimal'){
         $scope.session.maximumDuration = -1;
       }
-      Session.save($scope.session);
+      Session.save($scope.session).$promise.then(function (session) {
+        $scope.sessionId = session.id;
+        $scope.sessionKey = session.key;
+      }).catch(function(error) {
+        //TODO: Show error page
+      });
     };
   });
