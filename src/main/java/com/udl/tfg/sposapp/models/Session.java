@@ -1,5 +1,6 @@
 package com.udl.tfg.sposapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -7,6 +8,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.security.SecureRandom;
 
 @Entity
 public class Session {
@@ -37,6 +39,13 @@ public class Session {
     @OneToOne(cascade = {CascadeType.ALL})
     @RestResource(exported = false)
     private Result sessionResults;
+
+    @JsonIgnore
+    private String key = "";
+
+    public long getId() {
+        return Id;
+    }
 
     public String getEmail() {
         return email;
@@ -84,5 +93,19 @@ public class Session {
 
     public void setMaximumDuration(int maximumDuration) {
         this.maximumDuration = maximumDuration;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void generateKey(){
+        String AB = "123456789ABCDEFGHIJKLMNOPKRSTUVWYZabcdefghijklmnopkrstuvwyz";
+        SecureRandom rnd = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; i++){
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        }
+        this.key = sb.toString();
     }
 }
