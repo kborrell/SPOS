@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RepositoryRestController
 public class SessionController {
@@ -81,5 +83,24 @@ public class SessionController {
         } else {
             throw new NullPointerException();
         }
+    }
+
+    @RequestMapping(value = "/session", method = RequestMethod.GET)
+    public @ResponseBody HttpEntity<List<Session>> getSessions(HttpServletRequest request, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Iterable<Session> sessions = repository.findAll();
+        if (sessions == null)
+            throw new NullPointerException();
+
+        List<Session> sessionsList = new ArrayList<>();
+        for (Session actualSession : sessions) {
+            if (actualSession.getKey().equals(key))
+                sessionsList.add(actualSession);
+        }
+
+        if (sessionsList.size() == 0){
+            throw new InvalidKeyException();
+        }
+
+        return ResponseEntity.ok().body(sessionsList);
     }
 }
