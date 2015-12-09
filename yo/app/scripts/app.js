@@ -29,6 +29,11 @@ angular
         controller: 'CreatesessionCtrl',
         controllerAs: 'createsession'
       })
+      .when('/session', {
+        templateUrl: 'views/session-access.html',
+        controller: 'ShowSessionCtrl',
+        controllerAs: 'showsession'
+      })
       .when('/session/:id?key', {
         templateUrl: 'views/show-session.html',
         controller: 'ShowSessionCtrl',
