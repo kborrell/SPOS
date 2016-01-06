@@ -1,6 +1,7 @@
 package com.udl.tfg.sposapp.models;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -15,12 +16,14 @@ public class Parameters {
     private long Id;
 
     @NotNull(message = "You must specify a method")
-    @Enumerated(EnumType.STRING)
-    private MethodCodes method;
+    @RestResource(exported = false)
+    @ManyToOne
+    private MethodInfo method;
 
     @NotNull(message = "You must specify a model")
-    @Enumerated(EnumType.STRING)
-    private ModelCodes model;
+    @RestResource(exported = false)
+    @ManyToOne
+    private ModelInfo model;
 
     @NotBlank(message = "You must upload at least one info file")
     private String infoFile;
@@ -29,19 +32,19 @@ public class Parameters {
 
     private int groupSize;
 
-    public MethodCodes getMethod() {
+    public MethodInfo getMethod() {
         return method;
     }
 
-    public void setMethod(MethodCodes method) {
+    public void setMethod(MethodInfo method) {
         this.method = method;
     }
 
-    public ModelCodes getModel() {
+    public ModelInfo getModel() {
         return model;
     }
 
-    public void setModel(ModelCodes model) {
+    public void setModel(ModelInfo model) {
         this.model = model;
     }
 

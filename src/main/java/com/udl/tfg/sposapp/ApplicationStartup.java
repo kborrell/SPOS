@@ -10,9 +10,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ApplicationStartup implements ApplicationListener<ContextRefreshedEvent> {
@@ -24,36 +22,13 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
     @Autowired
     private MethodInfoRepository methodInfoRepository;
 
+    Map<MethodCodes, MethodInfo> methods = new HashMap<>();
+
     @Override
-    public void onApplicationEvent(final ContextRefreshedEvent event){
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         CreateVmConfig(1, 64, 0.1f);
         CreateVmConfig(10, 512, 0.3f);
         CreateVmConfig(20, 1024, 0.6f);
-
-        CreateModels(ModelCodes.GDS2SP, "General Discrete S2SP", new ArrayList<>(
-            Arrays.asList(
-                MethodCodes.CPLEX,
-                MethodCodes.BD,
-                MethodCodes.pBD,
-                MethodCodes.CBD,
-                MethodCodes.pCBD
-            )
-        ));
-        CreateModels(ModelCodes.SFLP, "Stochastic Facility Location Problem", new ArrayList<>(
-            Arrays.asList(
-                MethodCodes.CPLEX,
-                MethodCodes.pBDc,
-                MethodCodes.LD,
-                MethodCodes.pLD
-            )
-        ));
-        CreateModels(ModelCodes.GM01S2SP, "General Mixed 0-1 S2SP", new ArrayList<> (
-                Arrays.asList(
-                MethodCodes.CPLEX,
-                MethodCodes.LD,
-                MethodCodes.pLD
-                )
-        ));
 
         CreateMethods(MethodCodes.CPLEX, "General Solver", true, true, true, false, false);
         CreateMethods(MethodCodes.BD, "Benders Decompositions", false, false, true, false, false);
@@ -63,9 +38,34 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         CreateMethods(MethodCodes.pBDc, "Parallel Benders Decomposition with Clusters", false, false, true, true, false);
         CreateMethods(MethodCodes.LD, "Lagrande Decomposition", false, false, true, false, false);
         CreateMethods(MethodCodes.pLD, "Parallel Lagrande Decomposition", false, false, true, true, false);
+
+        CreateModels(ModelCodes.GDS2SP, "General Discrete S2SP", new ArrayList<>(
+                Arrays.asList(
+                        methods.get(MethodCodes.CPLEX),
+                        methods.get(MethodCodes.BD),
+                        methods.get(MethodCodes.pBD),
+                        methods.get(MethodCodes.CBD),
+                        methods.get(MethodCodes.pCBD)
+                )
+        ));
+        CreateModels(ModelCodes.SFLP, "Stochastic Facility Location Problem", new ArrayList<>(
+                Arrays.asList(
+                        methods.get(MethodCodes.CPLEX),
+                        methods.get(MethodCodes.pBDc),
+                        methods.get(MethodCodes.LD),
+                        methods.get(MethodCodes.pLD)
+                )
+        ));
+        CreateModels(ModelCodes.GM01S2SP, "General Mixed 0-1 S2SP", new ArrayList<>(
+                Arrays.asList(
+                        methods.get(MethodCodes.CPLEX),
+                        methods.get(MethodCodes.LD),
+                        methods.get(MethodCodes.pLD)
+                )
+        ));
     }
 
-    private void CreateVmConfig(int cpuCount, int ram, float realPercentage){
+    private void CreateVmConfig(int cpuCount, int ram, float realPercentage) {
         VirtualMachine vm = new VirtualMachine();
         vm.setCpuCount(cpuCount);
         vm.setRam(ram);
@@ -73,7 +73,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         virtualMachineRepository.save(vm);
     }
 
-    private void CreateModels(ModelCodes type, String name, List<MethodCodes> compatibleMethods){
+    private void CreateModels(ModelCodes type, String name, List<MethodInfo> compatibleMethods) {
         ModelInfo mi = new ModelInfo();
         mi.setModel(type);
         mi.setName(name);
@@ -82,7 +82,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
     }
 
     private void CreateMethods(MethodCodes method, String name, boolean mpsSupport, boolean lpSupport,
-                               boolean datSupport, boolean parallelizationSupport, boolean clusterSupport){
+                               boolean datSupport, boolean parallelizationSupport, boolean clusterSupport) {
         MethodInfo mi = new MethodInfo();
         mi.setMethod(method);
         mi.setName(name);
@@ -92,5 +92,6 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         mi.setParallelizationSupport(parallelizationSupport);
         mi.setClusterSupport(clusterSupport);
         methodInfoRepository.save(mi);
+        methods.put(method, mi);
     }
 }

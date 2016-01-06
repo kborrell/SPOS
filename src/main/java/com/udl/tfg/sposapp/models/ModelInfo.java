@@ -1,5 +1,7 @@
 package com.udl.tfg.sposapp.models;
 
+import org.springframework.data.rest.core.annotation.RestResource;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -18,8 +20,9 @@ public class ModelInfo {
     private String name;
 
     @NotNull(message = "You must specify compatible methods")
-    @ElementCollection
-    private List<MethodCodes> compatibleMethods;
+    @RestResource(exported = true)
+    @ManyToMany
+    private List<MethodInfo> compatibleMethods;
 
     public ModelCodes getModel() {
         return model;
@@ -37,11 +40,11 @@ public class ModelInfo {
         this.name = name;
     }
 
-    public List<MethodCodes> getCompatibleMethods() {
+    public List<MethodInfo> getCompatibleMethods() {
         return compatibleMethods;
     }
 
-    public void setCompatibleMethods(List<MethodCodes> compatibleMethods) {
+    public void setCompatibleMethods(List<MethodInfo> compatibleMethods) {
         this.compatibleMethods = compatibleMethods;
     }
 }
