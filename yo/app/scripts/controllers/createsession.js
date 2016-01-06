@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader) {
+  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo) {
     $scope.vmConfig = {};
     $scope.parameters = {};
     $scope.session = {};
@@ -20,6 +20,7 @@ angular.module('sposApp')
     $scope.firstStepActive = true;
     $scope.uploadMessage = "";
     $scope.sessionCreated = false;
+      $scope.selectedModel = "";
 
     $scope.sessionKey = "";
     $scope.sessionId = "";
@@ -39,13 +40,10 @@ angular.module('sposApp')
     };
 
     $scope.getCompatibleMethods = function() {
-        $http({
-          method: 'GET',
-          url: 'http://127.0.0.1:8080/models/search/findByModel?modelName=' + $scope.parameters.model
-        }).then(function successCallback(response) {
-            var model = angular.fromJson(response.data);
-            $scope.compatibleMethods = model._embedded.models[0].compatibleMethods;
-        });
+       ModelInfo.query({action: 'search', search:'findByModel', modelName: $scope.selectedModel})
+            .$promise.then(function (modelResponse) {
+                $scope.parameters.model = modelResponse._embedded.models[0];
+            });
     };
 
     $scope.createSession = function() {
@@ -85,7 +83,7 @@ angular.module('sposApp')
       if ($scope.predefinedVM === ""){
         $scope.vmConfig.realPercentage = $scope.vmConfig.realPercentage / 100;
         VirtualMachine.save($scope.vmConfig);
-        clearVMConfig();
+        $scope.clearVMConfig();
       } else {
         getPredefinedVM();
       }

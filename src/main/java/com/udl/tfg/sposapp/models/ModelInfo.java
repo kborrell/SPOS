@@ -20,7 +20,7 @@ public class ModelInfo {
     private String name;
 
     @NotNull(message = "You must specify compatible methods")
-    @RestResource(exported = true)
+    @RestResource(exported = false)
     @ManyToMany
     private List<MethodInfo> compatibleMethods;
 

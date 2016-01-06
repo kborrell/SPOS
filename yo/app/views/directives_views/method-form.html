@@ -6,9 +6,9 @@
       on your model decision.</small>
   </h3>
   <form name="methodForm" class="methodForm">
-    <div ng-repeat="method in compatibleMethods">
+    <div ng-repeat="method in parameters.model.compatibleMethods">
       <label>
-        <input type="radio" ng-model="parameters.method" value="{{method}}"> {{method}}
+        <input type="radio" ng-model="parameters.method" value="{{method.method}}"> {{method.method}}
       </label>
     </div>
     <div ng-hide="parameters.model">
