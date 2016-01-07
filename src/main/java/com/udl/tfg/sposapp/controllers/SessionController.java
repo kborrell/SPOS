@@ -4,7 +4,6 @@ import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.data.rest.webmvc.convert.StringToDistanceConverter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

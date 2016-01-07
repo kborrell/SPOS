@@ -11,5 +11,5 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "methods", path = "methods")
 public interface MethodInfoRepository extends PagingAndSortingRepository<MethodInfo, Long> {
 
-    List<MethodCodes> findByMethod(@Param("modelName") MethodCodes model);
+    List<MethodCodes> findByMethod(@Param("methodName") MethodCodes method);
 }
