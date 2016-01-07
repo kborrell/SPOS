@@ -1,7 +1,9 @@
 package com.udl.tfg.sposapp.configuration;
 
+import com.udl.tfg.sposapp.handlers.SessionEventHandler;
 import com.udl.tfg.sposapp.models.VirtualMachine;
 import org.apache.catalina.startup.ClassLoaderFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
