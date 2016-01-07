@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
+    .controller('CreatesessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
         $scope.vmConfig = {};
         $scope.parameters = {};
         $scope.session = {};
@@ -40,14 +40,14 @@ angular.module('sposApp')
         };
 
         $scope.getCompatibleMethods = function () {
-       ModelInfo.query({action: 'search', search:'findByModel', modelName: $scope.selectedModel})
-            .$promise.then(function (modelResponse) {
+            ModelInfo.query({action: 'search', search: 'findByModel', modelName: $scope.selectedModel})
+                .$promise.then(function (modelResponse) {
                 $scope.parameters.model = modelResponse._embedded.models[0];
             });
         };
 
         $scope.loadMethod = function () {
-            MethodInfo.query({action: 'search', search:'findByMethod', methodName: $scope.selectedMethod})
+            MethodInfo.query({action: 'search', search: 'findByMethod', methodName: $scope.selectedMethod})
                 .$promise.then(function (methodResponse) {
                 $scope.parameters.method = methodResponse._embedded.methods[0];
             });
@@ -83,26 +83,31 @@ angular.module('sposApp')
                     id = 1;
                     break;
             }
-            $scope.vmConfig = VirtualMachine.query({id: id});
+            $scope.session.vmConfig = VirtualMachine.query({id: id});
         };
 
         var createVMConfig = function () {
             if ($scope.predefinedVM === "") {
                 $scope.vmConfig.realPercentage = $scope.vmConfig.realPercentage / 100;
-                VirtualMachine.save($scope.vmConfig);
-        $scope.clearVMConfig();
+                $http.post('http://127.0.0.1:8080/virtualmachine', $scope.vmConfig)
+                    .success(function (data, status, headers, config) {
+                        VirtualMachine.get({id: headers('Location').split('/').pop()}).
+                        $promise.then(function (vm) {
+                            $scope.session.vmConfig = vm;
+                        });
+
+                    });
+                $scope.clearVMConfig();
             } else {
                 getPredefinedVM();
             }
         };
 
         var createParameters = function () {
-
             Parameters.save($scope.parameters);
         };
 
         var createSession = function () {
-            $scope.session.vmConfig = $scope.vmConfig;
             $scope.session.info = $scope.parameters;
             if ($scope.session.type == 'Optimal') {
                 $scope.session.maximumDuration = -1;

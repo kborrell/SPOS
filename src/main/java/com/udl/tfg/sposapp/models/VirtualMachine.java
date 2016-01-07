@@ -31,6 +31,14 @@ public class VirtualMachine {
     @Nullable
     private String IP;
 
+    public long getId() {
+        return Id;
+    }
+
+    public void setId(long id) {
+        Id = id;
+    }
+
     public int getCpuCount() {
         return cpuCount;
     }

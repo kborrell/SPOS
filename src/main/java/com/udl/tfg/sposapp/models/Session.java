@@ -28,7 +28,7 @@ public class Session {
     @NotNull(message = "A maximum duration is required. -1 for optimal execution.")
     private int maximumDuration;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     @RestResource(exported = false)
     private VirtualMachine vmConfig;
 
