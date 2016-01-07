@@ -31,6 +31,14 @@ public class MethodInfo {
     @NotNull(message = "This field cannot be empty")
     private boolean clusterSupport;
 
+    public long getId() {
+        return Id;
+    }
+
+    public void setId(long id) {
+        Id = id;
+    }
+
     public MethodCodes getMethod() {
         return method;
     }

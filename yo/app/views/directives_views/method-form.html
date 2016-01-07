@@ -8,18 +8,18 @@
   <form name="methodForm" class="methodForm">
     <div ng-repeat="method in parameters.model.compatibleMethods">
       <label>
-        <input type="radio" ng-model="parameters.method" value="{{method.method}}"> {{method.method}}
+        <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()"> {{method.method}}
       </label>
-        <div class="options" ng-show="parameters.method == method.method" style="margin: 10px 0 10px 20px;">
+        <div class="options" ng-show="$parent.parameters.method.method == method.method" style="margin: 10px 0 10px 20px;">
             <form name="methodOptionsForm" class="methodOptionsForm">
                 <label ng-show="method.parallelizationSupport">
-                    <input type="checkbox" ng-model="parameters.isParallel"> Parallelized
+                    <input type="checkbox" ng-model="$parent.parameters.isParallel"> Parallelized
                 </label>
                 <label ng-show="method.clusterSupport">
-                    <input type="checkbox" ng-model="parameters.isClustered"> Clustered
+                    <input type="checkbox" ng-model="$parent.parameters.isClustered"> Clustered
                     <br>
-                    <span style="margin-left: 20px;" ng-show="parameters.isClustered">
-                        <input ng-model="parameters.groupSize" type="number" min="0" max="10"> clusters
+                    <span style="margin-left: 20px;" ng-show="$parent.parameters.isClustered">
+                        <input ng-model="$parent.parameters.groupSize" type="number" min="0" max="10"> clusters
                     </span>
                 </label>
             </form>

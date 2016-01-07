@@ -24,6 +24,14 @@ public class ModelInfo {
     @ManyToMany
     private List<MethodInfo> compatibleMethods;
 
+    public long getId() {
+        return Id;
+    }
+
+    public void setId(long id) {
+        Id = id;
+    }
+
     public ModelCodes getModel() {
         return model;
     }

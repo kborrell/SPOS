@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo) {
+  .controller('CreatesessionCtrl', function ($scope, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
         $scope.vmConfig = {};
         $scope.parameters = {};
         $scope.session = {};
@@ -19,7 +19,8 @@ angular.module('sposApp')
         $scope.firstStepActive = true;
         $scope.uploadMessage = "";
         $scope.sessionCreated = false;
-      $scope.selectedModel = "";
+        $scope.selectedModel = "";
+        $scope.selectedMethod = "";
 
         $scope.sessionKey = "";
         $scope.sessionId = "";
@@ -42,6 +43,13 @@ angular.module('sposApp')
        ModelInfo.query({action: 'search', search:'findByModel', modelName: $scope.selectedModel})
             .$promise.then(function (modelResponse) {
                 $scope.parameters.model = modelResponse._embedded.models[0];
+            });
+        };
+
+        $scope.loadMethod = function () {
+            MethodInfo.query({action: 'search', search:'findByMethod', methodName: $scope.selectedMethod})
+                .$promise.then(function (methodResponse) {
+                $scope.parameters.method = methodResponse._embedded.methods[0];
             });
         };
 
@@ -89,8 +97,7 @@ angular.module('sposApp')
         };
 
         var createParameters = function () {
-            $scope.parameters.isParallel = false;
-            $scope.parameters.groupSize = 10;
+
             Parameters.save($scope.parameters);
         };
 
