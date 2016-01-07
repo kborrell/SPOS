@@ -66,8 +66,9 @@ angular.module('sposApp')
         $scope.getFile = function () {
             fileReader.readAsText($scope.file, $scope)
                 .then(function (result) {
-                    $scope.parameters.infoFile = result;
+                    $scope.parameters.infoFileContent = result;
                 });
+            $scope.parameters.infoFileName = $scope.file.name;
         };
 
         var getPredefinedVM = function () {
