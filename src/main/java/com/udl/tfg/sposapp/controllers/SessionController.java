@@ -3,6 +3,7 @@ package com.udl.tfg.sposapp.controllers;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +29,9 @@ public class SessionController {
 
     @Autowired
     private SessionRepository repository;
+
+    @Value("${storageFolder}")
+    private String storageFolder;
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.GET)
     public @ResponseBody Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
@@ -41,13 +52,39 @@ public class SessionController {
         if (session != null){
             session.generateKey();
             repository.save(session);
-            HashMap<String, String> response = new HashMap<>();
-            response.put("id", String.valueOf(session.getId()));
-            response.put("key", session.getKey());
-            return ResponseEntity.created(URI.create(request.getRequestURL() + "/" + session.getId())).body(response);
+            saveInfoFile(session);
+            return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
         }
+    }
+
+    private void saveInfoFile(Session session) {
+        Path storagePath = Paths.get(storageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
+
+        try {
+            if (!Files.exists(storagePath.getParent())){
+                Files.createDirectories(storagePath.getParent());
+            }
+
+            File infoFile = storagePath.toFile();
+            if (!infoFile.exists()){
+                infoFile.createNewFile();
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
+            bw.write(session.getInfo().getInfoFileContent());
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private HttpEntity<HashMap<String, String>> GeneratePostResponse(HttpServletRequest request, @Valid @RequestBody Session session) {
+        HashMap<String, String> response = new HashMap<>();
+        response.put("id", String.valueOf(session.getId()));
+        response.put("key", session.getKey());
+        return ResponseEntity.created(URI.create(request.getRequestURL() + "/" + session.getId())).body(response);
     }
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.PUT)
