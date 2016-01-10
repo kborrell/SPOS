@@ -5,9 +5,14 @@
 </h3>
 <div id="upload">
   <form name="inputUpload" class="inputUpload">
-    <!--<label>.MPS file: <input type="file" ng-model="parameters.infoFile"></label>-->
-    <!--<label>.LP file: <input type="file" ng-model="parameters.infoFile"></label>-->
-    <label>.DAT file: <input type="file" accept=".dat" ng-file-select="onFileSelect($files)" required></label>
+    <div ng-hide="parameters.infoFileName">
+      <label ng-show="parameters.method.mpsSupport">.MPS file: <input type="file" accept=".mps" ng-file-select="onFileSelect($files)"></label>
+      <label ng-show="parameters.method.lpSupport">.LP file:  <input type="file" accept=".lp" ng-file-select="onFileSelect($files)"></label>
+      <label ng-show="parameters.method.datSupport">.DAT file: <input type="file" accept=".dat" ng-file-select="onFileSelect($files)"></label>
+    </div>
+    <div ng-show="parameters.infoFileName">
+      <label>Information file has been loaded correctly. Thanks!</label>
+    </div>
   </form>
 </div>
 <br>
