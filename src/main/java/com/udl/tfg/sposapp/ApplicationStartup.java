@@ -1,10 +1,12 @@
 package com.udl.tfg.sposapp;
 
 
+import com.jcraft.jsch.JSchException;
 import com.udl.tfg.sposapp.models.*;
 import com.udl.tfg.sposapp.repositories.MethodInfoRepository;
 import com.udl.tfg.sposapp.repositories.ModelInfoRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
+import com.udl.tfg.sposapp.utils.SSHManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -21,11 +23,23 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
     private ModelInfoRepository modelInfoRepository;
     @Autowired
     private MethodInfoRepository methodInfoRepository;
+    @Autowired
+    private SSHManager sshManager;
 
     Map<MethodCodes, MethodInfo> methods = new HashMap<>();
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
+        PopulateDB();
+
+        try {
+            sshManager.Initialize();
+        } catch (JSchException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void PopulateDB() {
         CreateVmConfig(1, 64, 0.1f);
         CreateVmConfig(10, 512, 0.3f);
         CreateVmConfig(20, 1024, 0.6f);

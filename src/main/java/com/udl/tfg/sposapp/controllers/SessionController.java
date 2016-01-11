@@ -1,7 +1,9 @@
 package com.udl.tfg.sposapp.controllers;
 
+import com.jcraft.jsch.JSchException;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
+import com.udl.tfg.sposapp.utils.SSHManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -30,8 +32,14 @@ public class SessionController {
     @Autowired
     private SessionRepository repository;
 
-    @Value("${storageFolder}")
-    private String storageFolder;
+    @Autowired
+    private SSHManager sshManager;
+
+    @Value("${localStorageFolder}")
+    private String localStorageFolder;
+
+    @Value("${sshStorageFolder}")
+    private String sshStorageFolder;
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.GET)
     public @ResponseBody Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
@@ -52,15 +60,30 @@ public class SessionController {
         if (session != null){
             session.generateKey();
             repository.save(session);
-            saveInfoFile(session);
+            File sourceFile = saveInfoFile(session);
+            sendInfoFile(session.getId(), sourceFile);
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
         }
     }
 
-    private void saveInfoFile(Session session) {
-        Path storagePath = Paths.get(storageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
+    private void sendInfoFile(long id, File sourceFile) {
+        if (sourceFile == null)
+            return;
+
+        //String destPath = Paths.get(sshStorageFolder, String.valueOf(id), sourceFile.getName()).toString();
+        String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
+        try {
+            sshManager.OpenSession("192.168.101.79", 22, "root", "113321");
+            sshManager.SendFile(sourceFile.getPath(), destPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File saveInfoFile(Session session) {
+        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
 
         try {
             if (!Files.exists(storagePath.getParent())){
@@ -75,8 +98,11 @@ public class SessionController {
             BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
             bw.write(session.getInfo().getInfoFileContent());
             bw.close();
+
+            return infoFile;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 

@@ -1,17 +1,14 @@
 package com.udl.tfg.sposapp.utils;
 
 import com.jcraft.jsch.*;
-import javassist.NotFoundException;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Properties;
 
 @Service
@@ -21,7 +18,7 @@ public class SSHManager {
 
     @Value("${sshIdentityFile}") private String sshIdentityFile;
     @Value("${sshIdentityPass}") private String sshIdentityPass;
-    @Value("${sshKnownHostsFile") private String sshKnownHostsFile;
+    @Value("${sshKnownHostsFile}") private String sshKnownHostsFile;
 
     private JSch jSch = null;
     private Session session = null;
@@ -31,13 +28,13 @@ public class SSHManager {
             throw new IllegalStateException("SSHUtils has been already initialized");
 
         jSch = new JSch();
-        jSch.addIdentity(sshIdentityFile);
+        jSch.addIdentity(sshIdentityFile, sshIdentityPass);
         jSch.setKnownHosts(sshKnownHostsFile);
-        logger.debug("JSCH Initialized");
+        System.out.println("JSCH Initialized");
     }
 
     public void OpenSession(String address, int port, String username, String password) throws JSchException {
-        OpenSession(address, port, username, password, new Hashtable<>());
+        OpenSession(address, port, username, password, null);
     }
 
     public void OpenSession(String address, int port, String username, String password, Hashtable<Object, Object> properties) throws JSchException {
@@ -50,51 +47,54 @@ public class SSHManager {
         session = jSch.getSession(username, address, port);
         session.setPassword(password);
         Properties config = new Properties();
-        config.putAll(properties);
+        if (properties != null)
+            config.putAll(properties);
         session.setConfig(config);
         session.connect();
-        logger.debug("Session opened in " + address + " as " + username);
+        System.out.println("Session opened in " + address + " as " + username);
     }
 
-    public void SendFile(String sourcePath, String destPath) throws JSchException, IOException, SftpException {
+    public void SendFile(String sourcePath, String destPath) throws JSchException, IOException, SftpException, InvalidArgumentException {
         ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
-        ChannelExec channelExec = (ChannelExec) getChannel("exec");
+        channelSftp.connect();
 
         File sourceFile = new File(sourcePath);
         File destFile = new File(destPath);
         if (!sourceFile.exists())
             throw new FileNotFoundException("Invalid source path.");
 
-        CreateDestPath(destFile.getParent(), channelExec);
-        logger.debug("Moving to dest path...");
-        channelSftp.cd(destFile.getParent());
-        logger.debug("Sending file...");
+        ExecuteCommand("mkdir -p " +  destFile.getParent().replace('\\', '/'));
+        System.out.println("Moving to dest path...");
+        channelSftp.cd(destFile.getParent().replace('\\', '/'));
+        System.out.println("Sending file...");
         channelSftp.put(new FileInputStream(sourceFile), sourceFile.getName(), ChannelSftp.OVERWRITE);
         channelSftp.disconnect();
-        logger.debug("Done!");
+        System.out.println("Done!");
     }
 
-    private void CreateDestPath(String destPath, ChannelExec channelExec) throws JSchException, IOException {
+    private void ExecuteCommand(String command) throws JSchException, IOException, InvalidArgumentException {
+        ChannelExec channelExec = (ChannelExec) getChannel("exec");
+        System.out.println("Running command: " + command);
         BufferedReader in = new BufferedReader(new InputStreamReader(channelExec.getInputStream()));
-        logger.debug("Creating path on remote...");
-        channelExec.setCommand("mkdir -p " + destPath);
+        channelExec.setCommand(command);
         channelExec.setErrStream(System.err);
         channelExec.connect();
 
         String msg = null;
         while((msg = in.readLine()) != null){
-            logger.debug(msg);
+            System.out.println(msg);
         }
 
-        logger.debug("Finished creating path. Return code " + channelExec.getExitStatus());
-
-        if (channelExec.isClosed())
-            channelExec.disconnect();
+        System.out.println("Finished running command. Return code " + channelExec.getExitStatus());
+        channelExec.disconnect();
     }
 
-    private Channel getChannel(String channelType) throws JSchException {
-        Channel channel = session.openChannel("channelType");
-        channel.connect();
+    private Channel getChannel(String channelType) throws JSchException, InvalidArgumentException {
+        if (session == null)
+            throw new NullPointerException("You must open a new session before open any channel");
+        Channel channel = session.openChannel(channelType);
+        if (channel == null)
+            throw new InvalidArgumentException(new String[]{"Channel type does not exist"});
         return channel;
     }
 
