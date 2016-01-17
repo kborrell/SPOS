@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="sposApp">
+  <body ng-app="sposApp" ng-controller="GeneralCtrl as generalcontroller">
     <!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -39,11 +39,11 @@
           <div class="collapse navbar-collapse" id="js-navbar-collapse">
 
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#/">Home</a></li>
-              <li><a ng-href="#/session/new">New session</a></li>
-              <li><a ng-href="#/session">View session</a></li>
-              <li><a ng-href="#/about">About</a></li>
-              <li><a ng-href="#/contact">Contact</a></li>
+              <li ng-class="{active: $route.current.activeTab == 'main'}"><a href="#/">Home</a></li>
+              <li ng-class="{active: $route.current.activeTab == 'createsession'}"><a ng-href="#/session/new">New session</a></li>
+              <li ng-class="{active: $route.current.activeTab == 'showsession'}"><a ng-href="#/session">View session</a></li>
+              <li ng-class="{active: $route.current.activeTab == 'about'}"><a ng-href="#/about">About</a></li>
+              <li ng-class="{active: $route.current.activeTab == 'contact'}"><a ng-href="#/contact">Contact</a></li>
             </ul>
           </div>
         </div>
@@ -103,6 +103,7 @@
         <script src="scripts/directives/upload-file-form.js"></script>
         <script src="scripts/controllers/showsession.js"></script>
         <script src="scripts/services/factories.js"></script>
+        <script src="scripts/controllers/general.js"></script>
         <!-- endbuild -->
 </body>
 </html>

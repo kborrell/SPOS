@@ -22,32 +22,38 @@ angular
       .when('/', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl',
-        controllerAs: 'main'
+        controllerAs: 'main',
+        activeTab: 'main'
       })
       .when('/session/new', {
         templateUrl: 'views/create_session.html',
         controller: 'CreatesessionCtrl',
-        controllerAs: 'createsession'
+        controllerAs: 'createsession',
+        activeTab: 'createsession'
       })
       .when('/session', {
         templateUrl: 'views/session-access.html',
         controller: 'ShowSessionCtrl',
-        controllerAs: 'showsession'
+        controllerAs: 'showsession',
+        activeTab: 'showsession'
       })
       .when('/session/:id?key', {
         templateUrl: 'views/show-session.html',
         controller: 'ShowSessionCtrl',
-        controllerAs: 'showsession'
+        controllerAs: 'showsession',
+        activeTab: 'showsession'
       })
       .when('/about', {
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl',
-        controllerAs: 'about'
+        controllerAs: 'about',
+        activeTab: 'about'
       })
       .when('/contact', {
         templateUrl: 'views/contact.html',
         controller: 'ContactCrl',
-        controllerAs: 'contact'
+        controllerAs: 'contact',
+        activeTab: 'contact'
       })
       .otherwise({
         redirectTo: '/'
