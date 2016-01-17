@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-    .controller('CreatesessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
+    .controller('CreateSessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
         $scope.vmConfig = {};
         $scope.parameters = {};
         $scope.session = {};

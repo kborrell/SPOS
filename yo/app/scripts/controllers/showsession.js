@@ -8,6 +8,7 @@
  * Controller of the sposApp
  */
 angular.module('sposApp')
-  .controller('ShowSessionCtrl', function ($scope, $http, Session) {
-
+  .controller('ShowSessionCtrl', function ($scope, $http, $stateParams, Session) {
+      $scope.key = $stateParams.key;
+      $scope.id = $stateParams.id;
   });

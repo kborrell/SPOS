@@ -15,47 +15,37 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'ui.router'
   ])
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
+  .config(function ($stateProvider) {
+    $stateProvider
+      .state('home', {
+        url: '/',
         templateUrl: 'views/main.html',
-        controller: 'MainCtrl',
-        controllerAs: 'main',
-        activeTab: 'main'
+        controller: 'MainCtrl'
       })
-      .when('/session/new', {
+      .state('createSession', {
+        url: '/session/new',
         templateUrl: 'views/create_session.html',
-        controller: 'CreatesessionCtrl',
-        controllerAs: 'createsession',
-        activeTab: 'createsession'
+        controller: 'CreateSessionCtrl'
       })
-      .when('/session', {
-        templateUrl: 'views/session-access.html',
-        controller: 'ShowSessionCtrl',
-        controllerAs: 'showsession',
-        activeTab: 'showsession'
-      })
-      .when('/session/:id?key', {
+      .state('viewSession', {
+        url: '/session/view/:id?key',
         templateUrl: 'views/show-session.html',
-        controller: 'ShowSessionCtrl',
-        controllerAs: 'showsession',
-        activeTab: 'showsession'
+        controller: 'ShowSessionCtrl'
       })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl',
-        controllerAs: 'about',
-        activeTab: 'about'
-      })
-      .when('/contact', {
+      .state('contact', {
+        url: '/contact',
         templateUrl: 'views/contact.html',
-        controller: 'ContactCrl',
-        controllerAs: 'contact',
-        activeTab: 'contact'
+        controller: 'ContactCtrl'
       })
-      .otherwise({
-        redirectTo: '/'
+      .state('about', {
+        url: '/about',
+        templateUrl: 'views/about.html',
+        controller: 'AboutCtrl'
+      })
+  })
+      .run(function ($state) {
+        $state.go('home');
       });
-  });
