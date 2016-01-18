@@ -9,6 +9,18 @@
  */
 angular.module('sposApp')
   .controller('ShowSessionCtrl', function ($scope, $http, $stateParams, Session) {
-      $scope.key = $stateParams.key;
-      $scope.id = $stateParams.id;
+      $scope.sessionKey = $stateParams.key;
+      $scope.sessionId = $stateParams.id;
+
+      $scope.logged = false;
+
+      $scope.init = function () {
+        $scope.logged = $scope.sessionKey && $scope.sessionId;
+      };
+
+      $scope.logInSession = function(){
+        $scope.logged = true;
+      };
+
+      $scope.init();
   });
