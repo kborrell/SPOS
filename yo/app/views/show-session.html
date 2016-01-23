@@ -3,6 +3,68 @@
     <session-login></session-login>
   </div>
   <div id="sessionInfo" ng-show="logged">
+    <h2>Session #{{session.id}}</h2>
+    <h3>Status: <div style="display: inline;" ng-bind-html="sessionStatus"></div></h3>
+
+    <div id="session-info-row" class="panel panel-default" style="margin-top: 50px;">
+      <div class="panel-heading">Information summary</div>
+      <div class="panel-body">
+        <div class="col-sm-4">
+          <div id="session-vm" class="text-center">
+            <h4>Virtual Machine</h4>
+            <h5>Nº of CPU: {{session.vmConfig.cpuCount}}</h5>
+            <h5>Memory: {{session.vmConfig.ram}} Mb</h5>
+            <h5>Real percentage: {{session.vmConfig.realPercentage}}</h5>
+            <h5>IP:
+              <span ng-show="session.vmConfig.IP">{{session.vmConfig.IP}}</span>
+              <span ng-hide="session.vmConfig.IP">Not assigned yet</span>
+            </h5>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div id="session-parameters" class="text-center">
+            <h4>Session</h4>
+            <h5>ID: {{session.id}}</h5>
+            <h5>Email: {{session.email}}</h5>
+            <h5>Solution Type: {{session.type}}</h5>
+            <h5 ng-show="session.type == 'Feasible'">Maximum duration: {{session.maximumDuration}}</h5>
+            <h5>Model: {{session.info.model.model}}</h5>
+            <h5>Method: {{session.info.method.method}}</h5>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div id="session-extra" class="text-center">
+            <h4>Extra information</h4>
+            <h5>Parallelized:
+              <span ng-show="session.info.parallelized"><span class="glyphicon glyphicon-ok"></span></span>
+              <span ng-hide="session.info.parallelized"><span class="glyphicon glyphicon-remove"></span></span>
+            </h5>
+            <h5>Clustered:
+              <span ng-show="session.info.groupSize > 0"><span class="glyphicon glyphicon-ok"></span></span>
+              <span ng-hide="session.info.groupSize > 0"><span class="glyphicon glyphicon-remove"></span></span>
+            </h5>
+            <h5 ng-show="session.info.groupSize > 0">Nº of clusters: {{session.info.groupSize}}</h5>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div id="session-input-row" class="panel panel-default" style="margin-top: 50px;">
+        <div class="panel-heading">Input file</div>
+        <div class="panel-body">
+          
+        </div>
+      </div>
+
+    <div id="session-output-row" class="panel panel-default" style="margin-top: 50px;">
+      <div class="panel-heading">Results</div>
+      <div class="panel-body">
+        <h4 ng-hide="session.results">Results will be shown when the execution ends.</h4>
+      </div>
+    </div>
+    </div>
 
   </div>
 </div>
