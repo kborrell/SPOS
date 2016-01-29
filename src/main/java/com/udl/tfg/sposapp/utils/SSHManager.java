@@ -54,39 +54,51 @@ public class SSHManager {
         System.out.println("Session opened in " + address + " as " + username);
     }
 
-    public void SendFile(String sourcePath, String destPath) throws JSchException, IOException, SftpException, InvalidArgumentException {
-        ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
-        channelSftp.connect();
+    public void SendFile(String sourcePath, String destPath) throws Exception {
+        try{
+            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            channelSftp.connect();
 
-        File sourceFile = new File(sourcePath);
-        File destFile = new File(destPath);
-        if (!sourceFile.exists())
-            throw new FileNotFoundException("Invalid source path.");
+            File sourceFile = new File(sourcePath);
+            File destFile = new File(destPath);
+            if (!sourceFile.exists())
+                throw new FileNotFoundException("Invalid source path.");
 
-        ExecuteCommand("mkdir -p " +  destFile.getParent().replace('\\', '/'));
-        System.out.println("Moving to dest path...");
-        channelSftp.cd(destFile.getParent().replace('\\', '/'));
-        System.out.println("Sending file...");
-        channelSftp.put(new FileInputStream(sourceFile), sourceFile.getName(), ChannelSftp.OVERWRITE);
-        channelSftp.disconnect();
-        System.out.println("Done!");
+            ExecuteCommand("mkdir -p " +  destFile.getParent().replace('\\', '/'));
+            System.out.println("Moving to dest path...");
+            channelSftp.cd(destFile.getParent().replace('\\', '/'));
+            System.out.println("Sending file...");
+            channelSftp.put(new FileInputStream(sourceFile), sourceFile.getName(), ChannelSftp.OVERWRITE);
+            channelSftp.disconnect();
+            System.out.println("Done!");
+        } catch (Exception e){
+            throw new Exception(e);
+        } finally {
+            session.disconnect();
+        }
     }
 
-    private void ExecuteCommand(String command) throws JSchException, IOException, InvalidArgumentException {
-        ChannelExec channelExec = (ChannelExec) getChannel("exec");
-        System.out.println("Running command: " + command);
-        BufferedReader in = new BufferedReader(new InputStreamReader(channelExec.getInputStream()));
-        channelExec.setCommand(command);
-        channelExec.setErrStream(System.err);
-        channelExec.connect();
+    private void ExecuteCommand(String command) throws Exception {
+        try {
+            ChannelExec channelExec = (ChannelExec) getChannel("exec");
+            System.out.println("Running command: " + command);
+            BufferedReader in = new BufferedReader(new InputStreamReader(channelExec.getInputStream()));
+            channelExec.setCommand(command);
+            channelExec.setErrStream(System.err);
+            channelExec.connect();
 
-        String msg = null;
-        while((msg = in.readLine()) != null){
-            System.out.println(msg);
+            String msg = null;
+            while((msg = in.readLine()) != null){
+                System.out.println(msg);
+            }
+
+            System.out.println("Finished running command. Return code " + channelExec.getExitStatus());
+            channelExec.disconnect();
+        } catch (Exception e){
+            throw new Exception(e);
+        } finally {
+            session.disconnect();
         }
-
-        System.out.println("Finished running command. Return code " + channelExec.getExitStatus());
-        channelExec.disconnect();
     }
 
     private Channel getChannel(String channelType) throws JSchException, InvalidArgumentException {
