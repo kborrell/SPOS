@@ -4,11 +4,12 @@
     <h2>
       Launch a new execution
       <br>
-      <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.</small>
+      <small>Here you can configure a VM and choose what model and method you want to use for solving the problem.
+      </small>
     </h2>
   </div>
 
-  <div id="first-step" ng-show="firstStepActive && !sessionCreated">
+  <div id="first-step" ng-show="state == CreateState.FIRSTSTEP">
 
     <vm-config-form></vm-config-form>
 
@@ -20,7 +21,7 @@
     <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()">Next step</button>
   </div>
 
-  <div id="second-step" class="row" ng-hide="firstStepActive || sessionCreated">
+  <div id="second-step" class="row" ng-show="state == CreateState.SECONDSTEP">
     <div class="row" style="margin-bottom: 50px;">
 
       <session-summary></session-summary>
@@ -38,7 +39,15 @@
     <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()">Submit!</button>
   </div>
 
-  <div id="success" class="row" ng-show="sessionCreated">
+  <div id="creating" class="row text-center" ng-show="state == CreateState.CREATING" style="margin-top: 60px">
+    <h3>
+      <img src="../images/loading_spinner.gif" width="75" style="margin-left: -25px">Creating session...
+      <br>
+      <small>Your session is being created. Please wait...</small>
+    </h3>
+  </div>
+
+  <div id="success" class="row" ng-show="state == CreateState.CREATED">
     <h3 style="color: #A1D490;">Congratulations!</h3>
     <h4>Your session has been successfully created. You will be notified on your email when the execution finishes.</h4>
     <h5>You can access to execution results using this direct link:</h5>
@@ -55,4 +64,23 @@
       </ul>
     </h6>
   </div>
+
+  <div id="create-error" class="row" ng-show="state == CreateState.ERROR" style="margin-top: 60px">
+    <div class="col-sm-2" style="margin: 5px -50px 0 100px; display: inline">
+      <img src="../images/error.png" width="50">
+    </div>
+    <div class="col-sm-8" style="display: inline; margin: 0">
+      <h3>
+        Ups!
+        <br>
+        <small>
+          We are sorry. An error has occurred when trying to create your session. Please try again later.
+        </small>
+      </h3>
+    </div>
+    <div class="text-center" style="margin-top: 150px">
+      <button class="btn btn-primary" onclick="window.location.reload()">Try again</button>
+    </div>
+  </div>
+</div>
 </div>

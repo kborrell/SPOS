@@ -74,7 +74,7 @@ public class SSHManager {
         } catch (Exception e){
             throw new Exception(e);
         } finally {
-            session.disconnect();
+            CloseSession();
         }
     }
 
@@ -97,7 +97,7 @@ public class SSHManager {
         } catch (Exception e){
             throw new Exception(e);
         } finally {
-            session.disconnect();
+            CloseSession();
         }
     }
 

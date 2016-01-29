@@ -78,7 +78,7 @@ public class SessionController {
         }
     }
 
-    private void sendInfoFile(long id, File sourceFile) throws SftpException, InvalidArgumentException, JSchException, IOException {
+    private void sendInfoFile(long id, File sourceFile) throws Exception {
         if (sourceFile == null)
             return;
 

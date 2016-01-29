@@ -14,11 +14,18 @@ angular.module('sposApp')
         $scope.parameters = {};
         $scope.session = {};
 
+        $scope.CreateState = {
+          FIRSTSTEP : 1,
+          SECONDSTEP : 2,
+          CREATING : 3,
+          CREATED : 4,
+          ERROR : 5
+        };
+
         $scope.location = $location;
         $scope.predefinedVM = "";
-        $scope.firstStepActive = true;
+        $scope.state = $scope.CreateState.FIRSTSTEP;
         $scope.uploadMessage = "";
-        $scope.sessionCreated = false;
         $scope.selectedModel = "";
         $scope.selectedMethod = "";
 
@@ -54,12 +61,12 @@ angular.module('sposApp')
         };
 
         $scope.createSession = function () {
+            $scope.state = $scope.CreateState.CREATING;
             createSession();
-            $scope.sessionCreated = true;
         };
 
         $scope.completeFirstStep = function () {
-            $scope.firstStepActive = false;
+            $scope.state = $scope.CreateState.SECONDSTEP;
             createVMConfig();
         };
 
@@ -113,11 +120,13 @@ angular.module('sposApp')
             if ($scope.session.type == 'Optimal') {
                 $scope.session.maximumDuration = -1;
             }
+
             Session.save($scope.session).$promise.then(function (session) {
                 $scope.sessionId = session.id;
                 $scope.sessionKey = session.key;
+                $scope.state = $scope.CreateState.CREATED;
             }).catch(function (error) {
-                //TODO: Show error page
+                $scope.state = $scope.CreateState.ERROR;
             });
         };
     });
