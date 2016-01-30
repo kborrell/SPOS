@@ -28,16 +28,16 @@ public class SSHManager {
             throw new IllegalStateException("SSHUtils has been already initialized");
 
         jSch = new JSch();
-        jSch.addIdentity(sshIdentityFile, sshIdentityPass);
+        jSch.addIdentity(sshIdentityFile);
         jSch.setKnownHosts(sshKnownHostsFile);
         System.out.println("JSCH Initialized");
     }
 
-    public void OpenSession(String address, int port, String username, String password) throws JSchException {
-        OpenSession(address, port, username, password, null);
+    public void OpenSession(String address, int port, String username) throws JSchException {
+        OpenSession(address, port, username, null);
     }
 
-    public void OpenSession(String address, int port, String username, String password, Hashtable<Object, Object> properties) throws JSchException {
+    public void OpenSession(String address, int port, String username, Hashtable<Object, Object> properties) throws JSchException {
         if (session != null)
             throw new IllegalStateException("A session is still active. You must close it before open another one");
 
@@ -45,7 +45,6 @@ public class SSHManager {
             throw new NullPointerException("SSHUtils has not been initialized.");
 
         session = jSch.getSession(username, address, port);
-        session.setPassword(password);
         Properties config = new Properties();
         if (properties != null)
             config.putAll(properties);
@@ -55,7 +54,7 @@ public class SSHManager {
     }
 
     public void SendFile(String sourcePath, String destPath) throws Exception {
-        try{
+        try {
             ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
             channelSftp.connect();
 
@@ -64,17 +63,16 @@ public class SSHManager {
             if (!sourceFile.exists())
                 throw new FileNotFoundException("Invalid source path.");
 
-            ExecuteCommand("mkdir -p " +  destFile.getParent().replace('\\', '/'));
+            ExecuteCommand("mkdir -p " + destFile.getParent().replace('\\', '/'));
             System.out.println("Moving to dest path...");
             channelSftp.cd(destFile.getParent().replace('\\', '/'));
             System.out.println("Sending file...");
             channelSftp.put(new FileInputStream(sourceFile), sourceFile.getName(), ChannelSftp.OVERWRITE);
             channelSftp.disconnect();
             System.out.println("Done!");
-        } catch (Exception e){
-            throw new Exception(e);
-        } finally {
+        } catch (Exception e) {
             CloseSession();
+            throw new Exception(e);
         }
     }
 
@@ -95,9 +93,8 @@ public class SSHManager {
             System.out.println("Finished running command. Return code " + channelExec.getExitStatus());
             channelExec.disconnect();
         } catch (Exception e){
-            throw new Exception(e);
-        } finally {
             CloseSession();
+            throw new Exception(e);
         }
     }
 
@@ -111,7 +108,9 @@ public class SSHManager {
     }
 
     public void CloseSession(){
-        session.disconnect();
-        session = null;
+        if (null != session){
+            session.disconnect();
+            session = null;
+        }
     }
 }

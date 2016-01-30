@@ -83,8 +83,9 @@ public class SessionController {
             return;
 
         String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        sshManager.OpenSession("192.168.101.79", 22, "root", "113321");
+        sshManager.OpenSession("192.168.56.101", 22, "root");
         sshManager.SendFile(sourceFile.getPath(), destPath);
+        sshManager.CloseSession();
     }
 
     private File saveInfoFile(Session session) throws IOException {
