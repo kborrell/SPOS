@@ -22,9 +22,17 @@ angular.module('sposApp')
           ERROR : 5
         };
 
+      $scope.MethodLoadState = {
+        NONLOADED : 1,
+        LOADING : 2,
+        LOADED : 3,
+        ERROR : 4
+      };
+
         $scope.location = $location;
         $scope.predefinedVM = "";
         $scope.state = $scope.CreateState.FIRSTSTEP;
+        $scope.methodLoadState = $scope.MethodLoadState.NONLOADED;
         $scope.uploadMessage = "";
         $scope.selectedModel = "";
         $scope.selectedMethod = "";
@@ -47,9 +55,13 @@ angular.module('sposApp')
         };
 
         $scope.getCompatibleMethods = function () {
+            $scope.methodLoadState = $scope.MethodLoadState.LOADING;
             ModelInfo.query({action: 'search', search: 'findByModel', modelName: $scope.selectedModel})
                 .$promise.then(function (modelResponse) {
                 $scope.parameters.model = modelResponse._embedded.models[0];
+                $scope.methodLoadState = $scope.MethodLoadState.LOADED;
+            }).catch (function (error) {
+              $scope.methodLoadState = $scope.MethodLoadState.ERROR;
             });
         };
 

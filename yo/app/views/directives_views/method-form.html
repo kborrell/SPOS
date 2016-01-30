@@ -5,28 +5,39 @@
     <small>Almost there... Now choose the method used to solve the problem. Some options are disabled, depending
       on your model decision.</small>
   </h3>
-  <form name="methodForm" class="methodForm">
-    <div ng-repeat="method in parameters.model.compatibleMethods">
-      <label>
-        <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()"> {{method.method}}
-      </label>
+  <div ng-show="methodLoadState == MethodLoadState.NONLOADED">
+    <h5>You must select an execution model first.</h5>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.LOADING">
+    <img src="../../images/loading_spinner.gif" width="45" style="display: inline;"><h5 style="display: inline;">Loading methods...</h5>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.LOADED">
+    <form name="methodForm" class="methodForm">
+      <div ng-repeat="method in parameters.model.compatibleMethods">
+        <label>
+          <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()"> {{method.method}}
+        </label>
         <div class="options" ng-show="$parent.parameters.method.method == method.method" style="margin: 10px 0 10px 20px;">
-            <form name="methodOptionsForm" class="methodOptionsForm">
-                <label ng-show="method.parallelizationSupport">
-                    <input type="checkbox" ng-model="$parent.parameters.isParallel"> Parallelized
-                </label>
-                <label ng-show="method.clusterSupport">
-                    <input type="checkbox" ng-model="$parent.parameters.isClustered"> Clustered
-                    <br>
+          <form name="methodOptionsForm" class="methodOptionsForm">
+            <label ng-show="method.parallelizationSupport">
+              <input type="checkbox" ng-model="$parent.parameters.isParallel"> Parallelized
+            </label>
+            <label ng-show="method.clusterSupport">
+              <input type="checkbox" ng-model="$parent.parameters.isClustered"> Clustered
+              <br>
                     <span style="margin-left: 20px;" ng-show="$parent.parameters.isClustered">
                         <input ng-model="$parent.parameters.groupSize" type="number" min="0" max="10"> clusters
                     </span>
-                </label>
-            </form>
+            </label>
+          </form>
         </div>
-    </div>
-    <div ng-hide="parameters.model">
-      <h5>You must select an execution model first.</h5>
-    </div>
-  </form>
+      </div>
+
+      <br>
+      <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()">Next step</button>
+    </form>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.ERROR">
+    <h5 style="color: red;">An error has occurred when trying to load methods. Please try again later.</h5>
+  </div>
 </div>
