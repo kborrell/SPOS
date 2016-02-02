@@ -76,6 +76,30 @@ public class SSHManager {
         }
     }
 
+    public File ReceiveFile(String filePath, String destPath) throws Exception {
+        try {
+            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            channelSftp.connect();
+
+            File outputFile = new File(destPath);
+            outputFile.mkdirs();
+
+            if (outputFile.exists())
+                outputFile.delete();
+            else
+                outputFile.createNewFile();
+
+            FileOutputStream output = new FileOutputStream(outputFile);
+            channelSftp.get(filePath, output);
+            output.close();
+
+            return outputFile;
+        }catch (Exception e) {
+            CloseSession();
+            throw new Exception(e);
+        }
+    }
+
     private void ExecuteCommand(String command) throws Exception {
         try {
             ChannelExec channelExec = (ChannelExec) getChannel("exec");

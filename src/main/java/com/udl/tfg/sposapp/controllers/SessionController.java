@@ -7,6 +7,8 @@ import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.utils.SSHManager;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -16,11 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,6 +59,34 @@ public class SessionController {
         }
     }
 
+    @RequestMapping(value = "/session/{id}/getFile", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Session session = repository.findOne(Long.parseLong(id));
+        if (session == null)
+            throw new NullPointerException();
+
+        if (session.getKey().equals(key)) {
+            String response = "{";
+            try {
+                File f = getInfoFile(session.getId(), session.getInfo().getInfoFileName());
+                response += "\"name\":\"" + f.getName() + "\",";
+                response += "\"content\":\"" + readFile(f) + "\"}";
+                return response;
+            } catch (Exception e){
+                return "";
+            }
+        } else {
+            throw new InvalidKeyException();
+        }
+    }
+
+    private String readFile(File f) throws IOException {
+        byte[] encoded = Files.readAllBytes(f.toPath());
+        return new String(encoded, Charset.defaultCharset());
+    }
+
     @RequestMapping(value = "/session", method = RequestMethod.POST)
     @ResponseBody
     public HttpEntity<HashMap<String, String>> returnKey(HttpServletRequest request, @Valid @RequestBody Session session) throws Exception {
@@ -86,6 +114,15 @@ public class SessionController {
         sshManager.OpenSession("192.168.56.101", 22, "root");
         sshManager.SendFile(sourceFile.getPath(), destPath);
         sshManager.CloseSession();
+    }
+
+    private File getInfoFile(long id, String fileName) throws Exception {
+
+        String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
+        sshManager.OpenSession("192.168.56.101", 22, "root");
+        File f = sshManager.ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
+        sshManager.CloseSession();
+        return f;
     }
 
     private File saveInfoFile(Session session) throws IOException {
