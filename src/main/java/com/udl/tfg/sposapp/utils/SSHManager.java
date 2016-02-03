@@ -33,11 +33,11 @@ public class SSHManager {
         System.out.println("JSCH Initialized");
     }
 
-    public void OpenSession(String address, int port, String username) throws JSchException {
+    public void OpenSession(String address, int port, String username) throws Exception {
         OpenSession(address, port, username, null);
     }
 
-    public void OpenSession(String address, int port, String username, Hashtable<Object, Object> properties) throws JSchException {
+    public void OpenSession(String address, int port, String username, Hashtable<Object, Object> properties) throws Exception {
         if (session != null)
             throw new IllegalStateException("A session is still active. You must close it before open another one");
 
@@ -45,12 +45,17 @@ public class SSHManager {
             throw new NullPointerException("SSHUtils has not been initialized.");
 
         session = jSch.getSession(username, address, port);
-        Properties config = new Properties();
-        if (properties != null)
-            config.putAll(properties);
-        session.setConfig(config);
-        session.connect();
-        System.out.println("Session opened in " + address + " as " + username);
+        try {
+            Properties config = new Properties();
+            if (properties != null)
+                config.putAll(properties);
+            session.setConfig(config);
+            session.connect();
+            System.out.println("Session opened in " + address + " as " + username);
+        } catch (Exception e){
+            session = null;
+            throw new Exception(e);
+        }
     }
 
     public void SendFile(String sourcePath, String destPath) throws Exception {
