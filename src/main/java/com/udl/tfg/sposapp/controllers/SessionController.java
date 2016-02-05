@@ -5,7 +5,9 @@ import com.jcraft.jsch.SftpException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import com.udl.tfg.sposapp.models.Session;
+import com.udl.tfg.sposapp.models.VirtualMachine;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
+import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -34,7 +36,10 @@ import java.util.List;
 public class SessionController {
 
     @Autowired
-    private SessionRepository repository;
+    private SessionRepository sessionRepository;
+
+    @Autowired
+    private VirtualMachineRepository vmRepository;
 
     @Autowired
     private SSHManager sshManager;
@@ -52,7 +57,7 @@ public class SessionController {
     public
     @ResponseBody
     Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session session = repository.findOne(Long.parseLong(id));
+        Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
 
@@ -67,7 +72,7 @@ public class SessionController {
     public
     @ResponseBody
     String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session session = repository.findOne(Long.parseLong(id));
+        Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
 
@@ -96,15 +101,17 @@ public class SessionController {
     public HttpEntity<HashMap<String, String>> returnKey(HttpServletRequest request, @Valid @RequestBody Session session) throws Exception {
         if (session != null) {
             session.generateKey();
-            repository.save(session);
+            sessionRepository.save(session);
             try {
                 File sourceFile = saveInfoFile(session);
                 sendInfoFile(session.getId(), sourceFile);
-                session.getVmConfig().setIP(GetVmIp());
-                repository.save(session);
+                VirtualMachine vmConfig = session.getVmConfig();
+                vmConfig.setIP(GetVmIp());
+                System.out.println(vmConfig.getIP());
+                vmRepository.save(vmConfig);
                 return GeneratePostResponse(request, session);
             } catch (Exception e) {
-                repository.delete(session);
+                sessionRepository.delete(session);
                 throw new Exception(e);
             }
         } else {
@@ -169,7 +176,7 @@ public class SessionController {
     @RequestMapping(value = "/session/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public HttpEntity<Session> updateSession(@PathVariable String id, @Valid @RequestBody Session session, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session oldSession = repository.findOne(Long.parseLong(id));
+        Session oldSession = sessionRepository.findOne(Long.parseLong(id));
         if (oldSession != null) {
             if (!oldSession.getKey().equals(key))
                 throw new InvalidKeyException();
@@ -179,7 +186,7 @@ public class SessionController {
             oldSession.setSessionResults(session.getSessionResults());
             oldSession.setType(session.getType());
             oldSession.setVmConfig(session.getVmConfig());
-            repository.save(oldSession);
+            sessionRepository.save(oldSession);
             return ResponseEntity.ok().body(oldSession);
         } else {
             throw new NullPointerException();
@@ -189,11 +196,11 @@ public class SessionController {
     @RequestMapping(value = "/session/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public HttpEntity<Void> deleteSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session session = repository.findOne(Long.parseLong(id));
+        Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session != null) {
             if (!session.getKey().equals(key))
                 throw new InvalidKeyException();
-            repository.delete(Long.parseLong(id));
+            sessionRepository.delete(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } else {
             throw new NullPointerException();
@@ -204,7 +211,7 @@ public class SessionController {
     public
     @ResponseBody
     HttpEntity<List<Session>> getSessions(HttpServletRequest request, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Iterable<Session> sessions = repository.findAll();
+        Iterable<Session> sessions = sessionRepository.findAll();
         if (sessions == null)
             throw new NullPointerException();
 

@@ -43,13 +43,13 @@ angular.module('sposApp')
       };
 
       var GetSessionStatus = function () {
-        if ($scope.session.vmConfig.IP == null && $scope.session.results == null)
+        if ($scope.session.vmConfig.ip == null && $scope.session.results == null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Not started </span>");
 
-        if ($scope.session.vmConfig.IP != null && $scope.session.results == null)
+        if ($scope.session.vmConfig.ip != null && $scope.session.results == null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
-        if ($scope.session.vmConfig.IP == null && $scope.session.results != null)
+        if ($scope.session.vmConfig.ip == null && $scope.session.results != null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
       };
 

@@ -16,8 +16,8 @@
             <h5>Memory: {{session.vmConfig.ram}} Mb</h5>
             <h5>Real percentage: {{session.vmConfig.realPercentage}}</h5>
             <h5>IP:
-              <span ng-show="session.vmConfig.IP">{{session.vmConfig.IP}}</span>
-              <span ng-hide="session.vmConfig.IP">Not assigned yet</span>
+              <span ng-show="session.vmConfig.ip">{{session.vmConfig.ip}}</span>
+              <span ng-hide="session.vmConfig.ip">Not assigned yet</span>
             </h5>
           </div>
         </div>
@@ -54,7 +54,8 @@
       <div id="session-input-row" class="panel panel-default" style="margin-top: 50px;">
         <div class="panel-heading">Input file</div>
         <div class="panel-body">
-          <h3>{{file.name}}</h3>
+          <span style="font-size: large; font-weight: 600">{{file.name}}</span>
+          <br>
           {{file.content}}
         </div>
       </div>
