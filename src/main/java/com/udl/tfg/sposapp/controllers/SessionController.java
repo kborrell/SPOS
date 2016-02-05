@@ -6,6 +6,7 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
+import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -37,6 +38,9 @@ public class SessionController {
 
     @Autowired
     private SSHManager sshManager;
+
+    @Autowired
+    private OCAManager ocaManager;
 
     @Value("${localStorageFolder}")
     private String localStorageFolder;

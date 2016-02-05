@@ -6,6 +6,7 @@ import com.udl.tfg.sposapp.models.*;
 import com.udl.tfg.sposapp.repositories.MethodInfoRepository;
 import com.udl.tfg.sposapp.repositories.ModelInfoRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
+import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -25,6 +26,8 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
     private MethodInfoRepository methodInfoRepository;
     @Autowired
     private SSHManager sshManager;
+    @Autowired
+    private OCAManager ocaManager;
 
     Map<MethodCodes, MethodInfo> methods = new HashMap<>();
 
@@ -37,6 +40,8 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         } catch (JSchException e) {
             e.printStackTrace();
         }
+
+        ocaManager.Initialize();
     }
 
     private void PopulateDB() {
