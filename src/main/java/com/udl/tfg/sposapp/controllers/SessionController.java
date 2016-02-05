@@ -100,6 +100,8 @@ public class SessionController {
             try {
                 File sourceFile = saveInfoFile(session);
                 sendInfoFile(session.getId(), sourceFile);
+                session.getVmConfig().setIP(GetVmIp());
+                repository.save(session);
                 return GeneratePostResponse(request, session);
             } catch (Exception e) {
                 repository.delete(session);
@@ -108,6 +110,14 @@ public class SessionController {
         } else {
             throw new NullPointerException();
         }
+    }
+
+    private String GetVmIp() {
+        List<Integer> vmIDs = ocaManager.GetAllVmIds();
+        if (vmIDs.size() > 0){
+            return ocaManager.GetIP(vmIDs.get(0));
+        }
+        return "";
     }
 
     private void sendInfoFile(long id, File sourceFile) throws Exception {

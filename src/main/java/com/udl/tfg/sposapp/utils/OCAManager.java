@@ -1,9 +1,9 @@
 package com.udl.tfg.sposapp.utils;
 
-import com.udl.tfg.sposapp.models.VirtualMachine;
 import org.opennebula.client.Client;
 import org.opennebula.client.ClientConfigurationException;
 import org.opennebula.client.OneResponse;
+import org.opennebula.client.vm.VirtualMachine;
 import org.opennebula.client.vm.VirtualMachinePool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,26 +19,29 @@ public class OCAManager {
     @Value("${openNebulaEntryPoint}") private String entryPoint;
 
     private Client client;
-    private VirtualMachine vm;
+    VirtualMachinePool vmPool;
 
     public void Initialize(){
         try {
             System.out.println("OCA Manager created");
             client = new Client(user + ":" + pass, entryPoint);
+            vmPool = new VirtualMachinePool(client);
         } catch (ClientConfigurationException e) {
             e.printStackTrace();
         }
     }
 
-    public List<String> GetAllVmIds(){
-        if (client != null){
-            List<String> ids = new ArrayList<>();
-            OneResponse response = VirtualMachinePool.infoAll(client);
+    public List<Integer> GetAllVmIds(){
+        if (vmPool != null){
+            List<Integer> ids = new ArrayList<>();
+            OneResponse response = vmPool.infoAll();
             if ( response.isError() ){
                 System.out.printf("GET ALL VM ERROR: " + response.getErrorMessage());
             } else {
                 String responseMsg = response.getMessage();
-                ids = findAllOccurrences("<ID>", "</ID", responseMsg);
+                for (String s : findAllOccurrences("<ID>", "</ID", responseMsg)){
+                    ids.add(Integer.parseInt(s));
+                }
             }
             return ids;
         } else {
@@ -65,5 +68,31 @@ public class OCAManager {
             index = end + sufix.length();
         }
         return occurrences;
+    }
+
+    private String findOneOccurrence(String prefix, String sufix, String str, int initialPos){
+        int start = str.indexOf(prefix, initialPos) + prefix.length();
+        int end = str.indexOf(sufix, start);
+
+        if (start >= 0 && end >= 0){
+            String content = str.substring(start, end);
+            if (!content.contains("<"))
+                return content;
+        }
+
+        return "";
+    }
+
+    public String GetIP(int vmID) {
+        if (vmPool != null){
+            VirtualMachine vm = vmPool.getById(vmID);
+            OneResponse response = vm.info();
+
+            if (response.isError())
+                System.out.println("GET IP ERROR - ID: " + vmID + " Message: " + response.getErrorMessage());
+            else
+                return findOneOccurrence("<ETH0_IP><![CDATA[", "]]></ETH0_IP>", response.getMessage(), 0);
+        }
+        return "";
     }
 }
