@@ -11,7 +11,7 @@
 angular.module('sposApp')
     .controller('CreateSessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
         $scope.vmConfig = {};
-        $scope.parameters = {};
+        $scope.parameters = {isClustered:false};
         $scope.session = {};
 
         $scope.CreateState = {
@@ -41,17 +41,12 @@ angular.module('sposApp')
         $scope.sessionId = "";
 
         $scope.clearPredefinedVM = function () {
-            $scope.predefinedVMForm.$setPristine();
-            $scope.predefinedVMForm.$setValidity();
-            $scope.predefinedVMForm.$setUntouched();
             $scope.predefinedVM = "";
         };
 
         $scope.clearVMConfig = function () {
             $scope.vmConfig = {};
             $scope.vmConfigForm.$setPristine();
-            $scope.vmConfigForm.$setValidity();
-            $scope.vmConfigForm.$setUntouched();
         };
 
         $scope.getCompatibleMethods = function () {

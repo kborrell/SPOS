@@ -6,9 +6,9 @@
       you will have different methods of resolution to choose in the next step.</small>
   </h3>
   <div class="row col-xs-10">
-    <form name="modelForm" class="modelForm">
+    <form name="modelForm" class="modelForm" novalidate>
       <label>
-        <input type="radio" ng-model="selectedModel" value="GDS2SP" ng-change="getCompatibleMethods()"> General Discrete Stochastic Two Stage Problem
+        <input type="radio" ng-model="selectedModel" value="GDS2SP" ng-change="getCompatibleMethods()" required> General Discrete Stochastic Two Stage Problem
       </label>
       <label>
         <input type="radio" ng-model="selectedModel" value="SFLP" ng-change="getCompatibleMethods()"> Stochastic Facility Location Problem
