@@ -4,8 +4,8 @@
   <small>Optimal will give you best results, but Feasible let you choose the execution duration.</small>
 </h3>
 <div id="solutionType">
-  <form name="inputUpload" class="inputUpload text-center">
-    <label><input type="radio" ng-model="session.type" value="Optimal"> Optimal</label>
+  <form name="inputUpload" class="inputUpload text-center" novalidate>
+    <label><input type="radio" ng-model="session.type" value="Optimal" required> Optimal</label>
     <label><input type="radio" ng-model="session.type" value="Feasible"> Feasible</label>
     <label ng-show="session.type == 'Feasible'" >
       Maximum duration (minutes):

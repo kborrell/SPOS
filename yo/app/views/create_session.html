@@ -34,7 +34,11 @@
 
       </div>
     </div>
-    <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()">Submit!</button>
+    <form>
+      <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()"
+              ng-disabled="!parameters.infoFileContent || inputUpload.$invalid || emailInput.$invalid || (session.type == 'Feasible' && !session.maximumDuration)"
+      >Submit!</button>
+    </form>
   </div>
 
   <div id="creating" class="row text-center" ng-show="state == CreateState.CREATING" style="margin-top: 60px">

@@ -35,7 +35,7 @@
 
       <br>
       <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()"
-              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || modelForm.$invalid || methodForm.$invalid">
+              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || modelForm.$invalid || methodForm.$invalid || (parameters.isClustered && !parameters.groupSize)">
         Next step
       </button>
     </form>

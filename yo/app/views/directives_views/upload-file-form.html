@@ -6,12 +6,33 @@
 <div id="upload">
   <form name="inputUpload" class="inputUpload">
     <div ng-hide="parameters.infoFileName">
-      <label ng-show="parameters.method.mpsSupport">.MPS file: <input type="file" accept=".mps" ng-file-select="onFileSelect($files)"></label>
-      <label ng-show="parameters.method.lpSupport">.LP file:  <input type="file" accept=".lp" ng-file-select="onFileSelect($files)"></label>
-      <label ng-show="parameters.method.datSupport">.DAT file: <input type="file" accept=".dat" ng-file-select="onFileSelect($files)"></label>
+      <div class="row" style="margin: 10px 0" ng-show="parameters.method.mpsSupport">
+        <div class="col-xs-5 text-center">
+          <label class="control-label">.MPS file: </label>
+        </div>
+        <div class="col-xs-6">
+          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".mps" ng-file-select="onFileSelect($files)"></button>
+        </div>
+      </div>
+      <div class="row" style="margin: 10px 0" ng-show="parameters.method.lpSupport">
+        <div class="col-xs-5 text-center">
+          <label class="control-label">.LP file: </label>
+        </div>
+        <div class="col-xs-6">
+          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".lp" ng-file-select="onFileSelect($files)"></button>
+        </div>
+      </div>
+      <div class="row" style="margin: 10px 0"  ng-show="parameters.method.datSupport">
+        <div class="col-xs-5 text-center">
+          <label class="control-label">.DAT file: </label>
+        </div>
+        <div class="col-xs-6">
+          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".dat" ng-file-select="onFileSelect($files)"></button>
+        </div>
+      </div>
     </div>
     <div ng-show="parameters.infoFileName">
-      <label>Information file has been loaded correctly. Thanks!</label>
+      <label class="text-success">Information file has been loaded correctly. Thanks!</label>
     </div>
   </form>
 </div>
