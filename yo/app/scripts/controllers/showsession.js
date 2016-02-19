@@ -13,6 +13,7 @@ angular.module('sposApp')
       $scope.sessionId = $stateParams.id;
       $scope.session = null;
       $scope.logged = false;
+      $scope.loginError = "";
       $scope.sessionStatus = "";
       $scope.file = {name: "", content: ""};
 
@@ -23,22 +24,26 @@ angular.module('sposApp')
       };
 
       $scope.logInSession = function(){
-        $scope.logged = true;
         GetSession();
       };
 
       var GetSession = function () {
         Session.query({id: $scope.sessionId, key: $scope.sessionKey})
           .$promise.then(function (session) {
-            $scope.session = session;
-            GetSessionStatus();
+            if (session){
+              $scope.logged = true;
+              $scope.session = session;
+              GetSessionStatus();
 
-          $http.post("http://127.0.0.1:8080/session/" + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
-            .success(function (data, status) {
-              var fileContent = JSON.parse(data);
-              $scope.file.name = fileContent["name"];
-              $scope.file.content = fileContent["content"];
-            });
+              $http.post("http://127.0.0.1:8080/session/" + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
+                .success(function (data, status) {
+                  var fileContent = JSON.parse(data);
+                  $scope.file.name = fileContent["name"];
+                  $scope.file.content = fileContent["content"];
+                });
+            }
+        }).catch(function (error) {
+            $scope.loginError = "Incorrect ID or key. Please try again";
         });
       };
 

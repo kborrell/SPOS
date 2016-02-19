@@ -17,8 +17,10 @@
         <input type="text" class="form-control" id="sessionKey" required ng-model="sessionKey">
       </div>
     </div>
-    <br>
-    <div class="form-group">
+    <div ng-show="loginError" class="col-xs-6 col-xs-offset-1" style="display: block; clear:both;">
+      <p class="help-block" style="color: #ae7479;">{{loginError}}</p>
+    </div>
+    <div class="form-group col-xs-12">
       <button type="submit" class="btn btn-primary col-sm-2 col-sm-offset-3" ng-disabled="sessionlogin.$invalid">Log In</button>
     </div>
   </form>
