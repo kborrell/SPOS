@@ -9,7 +9,11 @@
     <label><input type="radio" ng-model="session.type" value="Feasible"> Feasible</label>
     <label ng-show="session.type == 'Feasible'" >
       Maximum duration (minutes):
-      <input type="number" ng-model="session.maximumDuration" min="1" value="1">
+      <input id="timeLimit" name="timeLimit" type="number" ng-model="session.maximumDuration" min="1" value="1">
+      <div ng-show="inputUpload.timeLimit.$invalid && !inputUpload.timeLimit.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
+        <p class="help-block" style="color: #ae7479;" ng-show="inputUpload.timeLimit.$error.required">You must specify the maximum time.</p>
+        <p class="help-block" style="color: #ae7479;" ng-show="inputUpload.timeLimit.$error.min || vmConfigForm.timeLimit.$error.number">Time must be positive and greater than 0.</p>
+      </div>
     </label>
   </form>
 </div>

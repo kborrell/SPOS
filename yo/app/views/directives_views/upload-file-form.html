@@ -11,7 +11,7 @@
           <label class="control-label">.MPS file: </label>
         </div>
         <div class="col-xs-6">
-          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".mps" ng-file-select="onFileSelect($files)"></button>
+          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".mps" ng-file-select="onFileSelect($files, {ext:mps})"></button>
         </div>
       </div>
       <div class="row" style="margin: 10px 0" ng-show="parameters.method.lpSupport">
@@ -33,6 +33,9 @@
     </div>
     <div ng-show="parameters.infoFileName">
       <label class="text-success">Information file has been loaded correctly. Thanks!</label>
+    </div>
+    <div ng-show="errorFile && !inputUpload.$pristine && !parameters.infoFileName" class="col-xs-12 text-center" style="display: block; clear:both;">
+      <p class="help-block" style="color: #ae7479;">Error! {{errorFile}}</p>
     </div>
   </form>
 </div>

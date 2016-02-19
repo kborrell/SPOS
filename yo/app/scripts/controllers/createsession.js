@@ -36,6 +36,7 @@ angular.module('sposApp')
         $scope.uploadMessage = "";
         $scope.selectedModel = "";
         $scope.selectedMethod = "";
+        $scope.errorFile = "";
 
         $scope.sessionKey = "";
         $scope.sessionId = "";
