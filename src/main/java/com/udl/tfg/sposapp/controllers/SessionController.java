@@ -132,7 +132,7 @@ public class SessionController {
             return;
 
         String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        sshManager.OpenSession("192.168.56.101", 22, "root");
+        sshManager.OpenSession(GetVmIp(), 22, "root");
         sshManager.SendFile(sourceFile.getPath(), destPath);
         sshManager.CloseSession();
     }
@@ -140,7 +140,7 @@ public class SessionController {
     private File getInfoFile(long id, String fileName) throws Exception {
 
         String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
-        sshManager.OpenSession("192.168.56.101", 22, "root");
+        sshManager.OpenSession(GetVmIp(), 22, "root");
         File f = sshManager.ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
         sshManager.CloseSession();
         return f;

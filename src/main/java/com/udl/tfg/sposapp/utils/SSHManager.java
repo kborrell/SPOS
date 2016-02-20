@@ -28,7 +28,7 @@ public class SSHManager {
             throw new IllegalStateException("SSHUtils has been already initialized");
 
         jSch = new JSch();
-        jSch.addIdentity(sshIdentityFile);
+        jSch.addIdentity(sshIdentityFile, sshIdentityPass);
         jSch.setKnownHosts(sshKnownHostsFile);
         System.out.println("JSCH Initialized");
     }
