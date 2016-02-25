@@ -9,5 +9,8 @@ public enum MethodCodes {
     CBD,
     pCBD,
     LD,
-    pLD
+    pLD,
+    Gurobi,
+    Xpress,
+    Lpsolve
 }
