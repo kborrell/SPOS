@@ -37,6 +37,7 @@ angular.module('sposApp')
         $scope.selectedModel = "";
         $scope.selectedMethod = "";
         $scope.errorFile = "";
+        $scope.problemType = "";
 
         $scope.sessionKey = "";
         $scope.sessionId = "";

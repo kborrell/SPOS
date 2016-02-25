@@ -13,9 +13,13 @@
 
     <vm-config-form></vm-config-form>
 
-    <model-form></model-form>
+    <problem-form></problem-form>
 
-    <method-form></method-form>
+    <solver-form ng-show="problemType == 'Determinist'"></solver-form>
+
+    <model-form ng-show="problemType == 'Stochastic'"></model-form>
+
+    <method-form ng-show="problemType == 'Stochastic'"></method-form>
 
   </div>
 

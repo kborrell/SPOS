@@ -99,7 +99,7 @@ form {
   margin-top: 20px;
 }
 
-.methodForm label {
+.methodForm label, .solverForm label {
   display: block;
 }
 

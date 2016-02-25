@@ -1,0 +1,27 @@
+<div class="row" id="solvers">
+  <h3>
+    3b. Choose the solver
+    <br>
+    <small>Almost there... Now choose the solver used to solve the problem.</small>
+  </h3>
+    <form name="solverForm" class="solverForm">
+        <label>
+          <input type="radio" ng-model="$parent.selectedMethod" value="CPLEX" ng-change="loadMethod()" required> CPLEX
+        </label>
+      <label>
+        <input type="radio" ng-model="$parent.selectedMethod" value="Gurobi" ng-change="loadMethod()" required> Gurobi
+      </label>
+      <label>
+        <input type="radio" ng-model="$parent.selectedMethod" value="Xpress" ng-change="loadMethod()" required> Xpress
+      </label>
+      <label>
+        <input type="radio" ng-model="$parent.selectedMethod" value="Lpsolve" ng-change="loadMethod()" required> Lpsolve
+      </label>
+
+      <br>
+      <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()"
+              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || solverForm.$invalid">
+        Next step
+      </button>
+    </form>
+</div>

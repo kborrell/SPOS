@@ -55,8 +55,9 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         CreateMethods(MethodCodes.CBD, "Cluster Benders Decomposition", false, false, true, false, true);
         CreateMethods(MethodCodes.pCBD, "Parallel Cluster Benders Decomposition", false, false, true, true, true);
         CreateMethods(MethodCodes.pBDc, "Parallel Benders Decomposition with Clusters", false, false, true, true, false);
-        CreateMethods(MethodCodes.LD, "Lagrande Decomposition", false, false, true, false, false);
+        CreateMethods(MethodCodes.LD, "Lagrange Decomposition", false, false, true, false, false);
         CreateMethods(MethodCodes.pLD, "Parallel Lagrande Decomposition", false, false, true, true, false);
+        //TODO: Create remaining determinist methods (or solvers)
 
         CreateModels(ModelCodes.GDS2SP, "General Discrete S2SP", new ArrayList<>(
                 Arrays.asList(
