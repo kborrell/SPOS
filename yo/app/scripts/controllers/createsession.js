@@ -85,6 +85,7 @@ angular.module('sposApp')
                     $scope.parameters.infoFileContent = result;
                 });
             $scope.parameters.infoFileName = $scope.file.name;
+            $("#input-" + $scope.fileType).fileinput('disable');
         };
 
         var getPredefinedVM = function () {
@@ -138,4 +139,24 @@ angular.module('sposApp')
                 $scope.state = $scope.CreateState.ERROR;
             });
         };
+
+        $scope.activateInput = function (format) {
+          $scope.fileType = format;
+          $scope.parameters.infoFileName = "";
+          $scope.parameters.infoFileContent = "";
+          $('#input-mps').fileinput('reset');
+          $('#input-lp').fileinput('reset');
+          $('#input-dat').fileinput('reset');
+          $('#input-mod').fileinput('reset');
+
+          $('#input-mps').fileinput('enable');
+          $('#input-lp').fileinput('enable');
+          $('#input-dat').fileinput('enable');
+          $('#input-mod').fileinput('enable');
+
+          $('#input-mps').fileinput('clear');
+          $('#input-lp').fileinput('clear');
+          $('#input-dat').fileinput('clear');
+          $('#input-mod').fileinput('clear');
+        }
     });

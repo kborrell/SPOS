@@ -3,40 +3,38 @@
   <br>
   <small>If you have chosen CPLEX method, only one type of input is necessary</small>
 </h3>
-<div id="upload">
-  <form name="inputUpload" class="inputUpload">
-    <div ng-hide="parameters.infoFileName">
-      <div class="row" style="margin: 10px 0" ng-show="parameters.method.mpsSupport">
-        <div class="col-xs-5 text-center">
-          <label class="control-label">.MPS file: </label>
-        </div>
-        <div class="col-xs-6">
-          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".mps" ng-file-select="onFileSelect($files, {ext:mps})"></button>
-        </div>
-      </div>
-      <div class="row" style="margin: 10px 0" ng-show="parameters.method.lpSupport">
-        <div class="col-xs-5 text-center">
-          <label class="control-label">.LP file: </label>
-        </div>
-        <div class="col-xs-6">
-          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".lp" ng-file-select="onFileSelect($files)"></button>
-        </div>
-      </div>
-      <div class="row" style="margin: 10px 0"  ng-show="parameters.method.datSupport">
-        <div class="col-xs-5 text-center">
-          <label class="control-label">.DAT file: </label>
-        </div>
-        <div class="col-xs-6">
-          <button class="btn btn-primary btn-file"><span class="glyphicon glyphicon-folder-open"></span> Browse...<input type="file" accept=".dat" ng-file-select="onFileSelect($files)"></button>
-        </div>
-      </div>
+<div id="upload" style="padding-bottom: 30px;">
+
+  <form name="inputUpload" class="inputUpload" style="overflow: hidden; height: 100%;">
+    <script src="bower_components/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <div role="group" class="btn-group col-xs-10 col-xs-offset-2" style="margin-bottom: 20px;">
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.mpsSupport" ng-click="activateInput('mps')">MPS File</button>
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.lpSupport" ng-click="activateInput('lp')">LP File</button>
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.datSupport" ng-click="activateInput('dat')">DAT File</button>
     </div>
-    <div ng-show="parameters.infoFileName">
-      <label class="text-success">Information file has been loaded correctly. Thanks!</label>
+
+    <div ng-show="fileType == 'mps'" class="col-xs-11 col-xs-offset-1">
+      <label class="control-label">Select MPS File</label>
+      <input id="input-mps" type="file" class="file" data-show-preview="false" accept=".mps" ng-file-select="onFileSelect($files, {ext:mps})" data-show-remove="false" data-show-upload="false">
     </div>
-    <div ng-show="errorFile && !inputUpload.$pristine && !parameters.infoFileName" class="col-xs-12 text-center" style="display: block; clear:both;">
-      <p class="help-block" style="color: #ae7479;">Error! {{errorFile}}</p>
+
+    <div ng-show="fileType == 'lp'" class="col-xs-11 col-xs-offset-1">
+      <label class="control-label">Select LP File</label>
+      <input id="input-lp" type="file" class="file" data-show-preview="false" accept=".lp" ng-file-select="onFileSelect($files, {ext:lp})" data-show-remove="false" data-show-upload="false">
+    </div>
+
+    <div ng-show="fileType == 'dat'" class="col-xs-11 col-xs-offset-1">
+      <label class="control-label">Select DAT File</label>
+      <input id="input-dat" type="file" class="file" data-show-preview="false" accept=".mps" ng-file-select="onFileSelect($files, {ext:dat})" data-show-remove="false" data-show-upload="false">
+      <label class="control-label">Select MOD File</label>
+      <input id="input-mod" type="file" class="file" data-show-preview="false" accept=".mod" ng-file-select="onFileSelect($files, {ext:mod})" data-show-remove="false" data-show-upload="false">
     </div>
   </form>
+  <div ng-show="parameters.infoFileName" class="col-xs-12 text-center" style="margin-top: 20px;">
+    <label class="text-success">Information file has been loaded correctly. Thanks!</label>
+  </div>
+  <div ng-show="errorFile && !inputUpload.$pristine && !parameters.infoFileName" class="col-xs-12 text-center" style="display: block; clear:both;">
+    <p class="help-block" style="color: #ae7479;">Error! {{errorFile}}</p>
+  </div>
 </div>
 <br>
