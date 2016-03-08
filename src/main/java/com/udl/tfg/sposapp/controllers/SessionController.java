@@ -53,10 +53,27 @@ public class SessionController {
     @Value("${sshStorageFolder}")
     private String sshStorageFolder;
 
+    @RequestMapping(value = "/session", method = RequestMethod.GET)
+    public @ResponseBody HttpEntity<List<Session>> getSessions(HttpServletRequest request, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Iterable<Session> sessions = sessionRepository.findAll();
+        if (sessions == null)
+            throw new NullPointerException();
+
+        List<Session> sessionsList = new ArrayList<>();
+        for (Session actualSession : sessions) {
+            if (actualSession.getKey().equals(key))
+                sessionsList.add(actualSession);
+        }
+
+        if (sessionsList.size() == 0) {
+            throw new InvalidKeyException();
+        }
+
+        return ResponseEntity.ok().body(sessionsList);
+    }
+
     @RequestMapping(value = "/session/{id}", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
@@ -69,9 +86,7 @@ public class SessionController {
     }
 
     @RequestMapping(value = "/session/{id}/getFile", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
@@ -91,14 +106,8 @@ public class SessionController {
         }
     }
 
-    private String readFile(File f) throws IOException {
-        byte[] encoded = Files.readAllBytes(f.toPath());
-        return new String(encoded, Charset.defaultCharset());
-    }
-
     @RequestMapping(value = "/session", method = RequestMethod.POST)
-    @ResponseBody
-    public HttpEntity<HashMap<String, String>> returnKey(HttpServletRequest request, @Valid @RequestBody Session session) throws Exception {
+    public @ResponseBody HttpEntity<HashMap<String, String>> returnKey(HttpServletRequest request, @Valid @RequestBody Session session) throws Exception {
         if (session != null) {
             session.generateKey();
             sessionRepository.save(session);
@@ -106,8 +115,7 @@ public class SessionController {
                 File sourceFile = saveInfoFile(session);
                 sendInfoFile(session.getId(), sourceFile);
                 VirtualMachine vmConfig = session.getVmConfig();
-                vmConfig.setIP(GetVmIp());
-                System.out.println(vmConfig.getIP());
+                vmConfig.setIP("192.168.101.113");
                 vmRepository.save(vmConfig);
                 return GeneratePostResponse(request, session);
             } catch (Exception e) {
@@ -117,6 +125,43 @@ public class SessionController {
         } else {
             throw new NullPointerException();
         }
+    }
+
+    @RequestMapping(value = "/session/{id}", method = RequestMethod.PUT)
+    public @ResponseBody HttpEntity<Session> updateSession(@PathVariable String id, @Valid @RequestBody Session session, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Session oldSession = sessionRepository.findOne(Long.parseLong(id));
+        if (oldSession != null) {
+            if (!oldSession.getKey().equals(key))
+                throw new InvalidKeyException();
+            oldSession.setEmail(session.getEmail());
+            oldSession.setInfo(session.getInfo());
+            oldSession.setMaximumDuration(session.getMaximumDuration());
+            oldSession.setSessionResults(session.getSessionResults());
+            oldSession.setType(session.getType());
+            oldSession.setVmConfig(session.getVmConfig());
+            sessionRepository.save(oldSession);
+            return ResponseEntity.ok().body(oldSession);
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    @RequestMapping(value = "/session/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody HttpEntity<Void> deleteSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Session session = sessionRepository.findOne(Long.parseLong(id));
+        if (session != null) {
+            if (!session.getKey().equals(key))
+                throw new InvalidKeyException();
+            sessionRepository.delete(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    private String readFile(File f) throws IOException {
+        byte[] encoded = Files.readAllBytes(f.toPath());
+        return new String(encoded, Charset.defaultCharset());
     }
 
     private String GetVmIp() {
@@ -149,7 +194,6 @@ public class SessionController {
     private File saveInfoFile(Session session) throws IOException {
         Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
 
-
         if (!Files.exists(storagePath.getParent())) {
             Files.createDirectories(storagePath.getParent());
         }
@@ -171,60 +215,5 @@ public class SessionController {
         response.put("id", String.valueOf(session.getId()));
         response.put("key", session.getKey());
         return ResponseEntity.created(URI.create(request.getRequestURL() + "/" + session.getId())).body(response);
-    }
-
-    @RequestMapping(value = "/session/{id}", method = RequestMethod.PUT)
-    @ResponseBody
-    public HttpEntity<Session> updateSession(@PathVariable String id, @Valid @RequestBody Session session, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session oldSession = sessionRepository.findOne(Long.parseLong(id));
-        if (oldSession != null) {
-            if (!oldSession.getKey().equals(key))
-                throw new InvalidKeyException();
-            oldSession.setEmail(session.getEmail());
-            oldSession.setInfo(session.getInfo());
-            oldSession.setMaximumDuration(session.getMaximumDuration());
-            oldSession.setSessionResults(session.getSessionResults());
-            oldSession.setType(session.getType());
-            oldSession.setVmConfig(session.getVmConfig());
-            sessionRepository.save(oldSession);
-            return ResponseEntity.ok().body(oldSession);
-        } else {
-            throw new NullPointerException();
-        }
-    }
-
-    @RequestMapping(value = "/session/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public HttpEntity<Void> deleteSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Session session = sessionRepository.findOne(Long.parseLong(id));
-        if (session != null) {
-            if (!session.getKey().equals(key))
-                throw new InvalidKeyException();
-            sessionRepository.delete(Long.parseLong(id));
-            return ResponseEntity.ok().build();
-        } else {
-            throw new NullPointerException();
-        }
-    }
-
-    @RequestMapping(value = "/session", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    HttpEntity<List<Session>> getSessions(HttpServletRequest request, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Iterable<Session> sessions = sessionRepository.findAll();
-        if (sessions == null)
-            throw new NullPointerException();
-
-        List<Session> sessionsList = new ArrayList<>();
-        for (Session actualSession : sessions) {
-            if (actualSession.getKey().equals(key))
-                sessionsList.add(actualSession);
-        }
-
-        if (sessionsList.size() == 0) {
-            throw new InvalidKeyException();
-        }
-
-        return ResponseEntity.ok().body(sessionsList);
     }
 }
