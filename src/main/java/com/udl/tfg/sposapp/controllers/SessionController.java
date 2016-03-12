@@ -91,19 +91,20 @@ public class SessionController {
         if (session == null)
             throw new NullPointerException();
 
-        if (session.getKey().equals(key)) {
-            String response = "{";
-            try {
-                File f = getInfoFile(session.getId(), session.getInfo().getInfoFileName());
-                response += "\"name\":\"" + f.getName() + "\",";
-                response += "\"content\":\"" + readFile(f) + "\"}";
-                return response;
-            } catch (Exception e){
-                return "";
-            }
-        } else {
-            throw new InvalidKeyException();
-        }
+//        if (session.getKey().equals(key)) {
+//            String response = "{";
+//            try {
+//                File f = getInfoFile(session.getId(), session.getInfo().getInfoFileName());
+//                response += "\"name\":\"" + f.getName() + "\",";
+//                response += "\"content\":\"" + readFile(f) + "\"}";
+//                return response;
+//            } catch (Exception e){
+//                return "";
+//            }
+//        } else {
+//            throw new InvalidKeyException();
+//        }
+        return "";
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.POST)
@@ -192,22 +193,23 @@ public class SessionController {
     }
 
     private File saveInfoFile(Session session) throws IOException {
-        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
-
-        if (!Files.exists(storagePath.getParent())) {
-            Files.createDirectories(storagePath.getParent());
-        }
-
-        File infoFile = storagePath.toFile();
-        if (!infoFile.exists()) {
-            infoFile.createNewFile();
-        }
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
-        bw.write(session.getInfo().getInfoFileContent());
-        bw.close();
-
-        return infoFile;
+//        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
+//
+//        if (!Files.exists(storagePath.getParent())) {
+//            Files.createDirectories(storagePath.getParent());
+//        }
+//
+//        File infoFile = storagePath.toFile();
+//        if (!infoFile.exists()) {
+//            infoFile.createNewFile();
+//        }
+//
+//        BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
+//        bw.write(session.getInfo().getInfoFileContent());
+//        bw.close();
+//
+//        return infoFile;
+        return null;
     }
 
     private HttpEntity<HashMap<String, String>> GeneratePostResponse(HttpServletRequest request, @Valid @RequestBody Session session) {

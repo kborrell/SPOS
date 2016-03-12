@@ -5,6 +5,9 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.xml.crypto.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -24,11 +27,8 @@ public class Parameters {
     @ManyToOne
     private ModelInfo model;
 
-    @NotBlank(message = "You must upload at least one info file")
-    private String infoFileContent;
-
-    @NotBlank(message = "You must upload at least one info file")
-    private String infoFileName;
+    @ElementCollection
+    public List<DataFile> files;
 
     private boolean isParallel;
 
@@ -58,20 +58,12 @@ public class Parameters {
         this.model = model;
     }
 
-    public String getInfoFileContent() {
-        return infoFileContent;
+    public List<DataFile> getFiles() {
+        return files;
     }
 
-    public void setInfoFileContent(String infoFileContent) {
-        this.infoFileContent = infoFileContent;
-    }
-
-    public String getInfoFileName() {
-        return infoFileName;
-    }
-
-    public void setInfoFileName(String infoFileName) {
-        this.infoFileName = infoFileName;
+    public void setFiles(List<DataFile> files) {
+        this.files = files;
     }
 
     public boolean isParallel() {

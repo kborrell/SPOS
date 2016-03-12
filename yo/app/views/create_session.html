@@ -40,7 +40,7 @@
     </div>
     <form>
       <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()"
-              ng-disabled="!parameters.infoFileContent || inputUpload.$invalid || emailInput.$invalid || (session.type == 'Feasible' && !session.maximumDuration)"
+              ng-disabled="!validateFiles() || inputUpload.$invalid || emailInput.$invalid || (session.type == 'Feasible' && !session.maximumDuration)"
       >Submit!</button>
     </form>
   </div>

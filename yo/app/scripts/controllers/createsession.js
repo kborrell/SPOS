@@ -11,7 +11,7 @@
 angular.module('sposApp')
     .controller('CreateSessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
         $scope.vmConfig = {};
-        $scope.parameters = {isClustered:false};
+        $scope.parameters = {isClustered:false, files: []};
         $scope.session = {};
 
         $scope.CreateState = {
@@ -80,11 +80,13 @@ angular.module('sposApp')
         };
 
         $scope.getFile = function () {
+
             fileReader.readAsText($scope.file, $scope)
                 .then(function (result) {
-                    $scope.parameters.infoFileContent = result;
+                  var file = {extension: $scope.file.name.split('.').pop(), name: $scope.file.name, content: result}
+                    $scope.parameters.files.push(file);
                 });
-            $scope.parameters.infoFileName = $scope.file.name;
+
             $("#input-" + $scope.fileType).fileinput('disable');
         };
 
@@ -158,5 +160,22 @@ angular.module('sposApp')
           $('#input-lp').fileinput('clear');
           $('#input-dat').fileinput('clear');
           $('#input-mod').fileinput('clear');
+        }
+
+        $scope.validateFiles = function () {
+
+          if ($scope.parameters.files.length == 0)
+            return false;
+
+          if ($scope.parameters.files[0].name == "")
+            return false;
+
+          if ($scope.parameters.files[0].extension == "dat" && $scope.parameters.files.length < 2)
+            return false;
+
+          if ($scope.parameters.files[0].extension == "dat" && $scope.parameters.files[1].name == "")
+            return false;
+
+          return true;
         }
     });
