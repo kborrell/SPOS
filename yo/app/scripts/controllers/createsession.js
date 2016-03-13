@@ -123,10 +123,6 @@ angular.module('sposApp')
             }
         };
 
-        var createParameters = function () {
-            Parameters.save($scope.parameters);
-        };
-
         var createSession = function () {
             $scope.session.info = $scope.parameters;
             if ($scope.session.type == 'Optimal') {
@@ -144,8 +140,7 @@ angular.module('sposApp')
 
         $scope.activateInput = function (format) {
           $scope.fileType = format;
-          $scope.parameters.infoFileName = "";
-          $scope.parameters.infoFileContent = "";
+          $scope.parameters.files = [];
           $('#input-mps').fileinput('reset');
           $('#input-lp').fileinput('reset');
           $('#input-dat').fileinput('reset');
@@ -177,5 +172,15 @@ angular.module('sposApp')
             return false;
 
           return true;
+        }
+
+        $scope.setDeterminist = function () {
+          if ($scope.problemType == "Determinist"){
+            ModelInfo.query({action: 'search', search: 'findByModel', modelName: "Determinist"})
+              .$promise.then(function (modelResponse) {
+              $scope.parameters.model = modelResponse._embedded.models[0];
+              }
+            );
+          }
         }
     });

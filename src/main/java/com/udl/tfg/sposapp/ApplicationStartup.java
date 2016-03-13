@@ -85,6 +85,14 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
                         methods.get(MethodCodes.pLD)
                 )
         ));
+        CreateModels(ModelCodes.Determinist, "Determinist model", new ArrayList<>(
+                Arrays.asList(
+                        methods.get(MethodCodes.CPLEX),
+                        methods.get(MethodCodes.Gurobi),
+                        methods.get(MethodCodes.Xpress),
+                        methods.get(MethodCodes.Lpsolve)
+                )
+        ));
     }
 
     private void CreateVmConfig(int cpuCount, int ram, float realPercentage) {

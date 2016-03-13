@@ -9,7 +9,7 @@
     <form name="problemForm" class="problemForm" novalidate>
       <div class="col-xs-6">
         <label>
-          <input type="radio" ng-model="problemType" value="Determinist" required> Determinist problem
+          <input type="radio" ng-model="problemType" value="Determinist" required ng-change="setDeterminist()"> Determinist problem
         </label>
       </div>
       <div class="col-xs-6">

@@ -28,6 +28,7 @@ public class Parameters {
     private ModelInfo model;
 
     @ElementCollection
+    @OneToMany (cascade = {CascadeType.ALL})
     public List<DataFile> files;
 
     private boolean isParallel;
