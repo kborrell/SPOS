@@ -208,11 +208,12 @@ public class SessionController {
     }
 
     private String GetVmIp() {
-        List<Integer> vmIDs = ocaManager.GetAllVmIds();
-        if (vmIDs.size() > 0){
-            return ocaManager.GetIP(vmIDs.get(0));
-        }
-        return "";
+        return "192.168.101.113";
+//        List<Integer> vmIDs = ocaManager.GetAllVmIds();
+//        if (vmIDs.size() > 0){
+//            return ocaManager.GetIP(vmIDs.get(0));
+//        }
+//        return "";
     }
 
     private File getInfoFile(long id, String fileName) throws Exception {
