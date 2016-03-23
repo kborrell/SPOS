@@ -166,10 +166,13 @@ public class SessionController {
     }
 
     private void SendFiles(Session session) throws Exception {
+        sshManager.OpenSession(GetVmIp(), 22, "root");
+        sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
         for (int i=0; i < session.getInfo().getFiles().size(); i++){
             File file = saveFile(session, session.getInfo().getFiles().get(i));
             sendFile(session.getId(), file);
         }
+        sshManager.CloseSession();
     }
 
     private File saveFile(Session session, DataFile dataFile) throws IOException {
@@ -196,9 +199,7 @@ public class SessionController {
             return;
 
         String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        sshManager.OpenSession(GetVmIp(), 22, "root");
         sshManager.SendFile(sourceFile.getPath(), destPath);
-        sshManager.CloseSession();
     }
 
     private String readFile(File f) throws IOException {

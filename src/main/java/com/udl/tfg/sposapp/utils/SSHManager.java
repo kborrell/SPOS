@@ -2,6 +2,7 @@ package com.udl.tfg.sposapp.utils;
 
 import com.jcraft.jsch.*;
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,17 @@ public class SSHManager {
             System.out.println("Session opened in " + address + " as " + username);
         } catch (Exception e){
             session = null;
+            throw new Exception(e);
+        }
+    }
+
+    public void CleanPath(String destPath) throws Exception {
+        try {
+            System.out.println("Cleaning dest path...");
+            ExecuteCommand("rm -rf " + destPath.replace('\\', '/'));
+            System.out.println("Cleaning done!");
+        } catch (Exception e) {
+            CloseSession();
             throw new Exception(e);
         }
     }
