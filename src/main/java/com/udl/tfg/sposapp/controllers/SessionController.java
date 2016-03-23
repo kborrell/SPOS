@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
+import com.udl.tfg.sposapp.models.DataFile;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.models.VirtualMachine;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
@@ -91,20 +92,25 @@ public class SessionController {
         if (session == null)
             throw new NullPointerException();
 
-//        if (session.getKey().equals(key)) {
-//            String response = "{";
-//            try {
-//                File f = getInfoFile(session.getId(), session.getInfo().getInfoFileName());
-//                response += "\"name\":\"" + f.getName() + "\",";
-//                response += "\"content\":\"" + readFile(f) + "\"}";
-//                return response;
-//            } catch (Exception e){
-//                return "";
-//            }
-//        } else {
-//            throw new InvalidKeyException();
-//        }
-        return "";
+        if (session.getKey().equals(key)) {
+            String response = "{\"files\":[";
+            try {
+                for (int i=0; i < session.getInfo().getFiles().size(); i++){
+                    File f = getInfoFile(session.getId(), session.getInfo().getFiles().get(i).getName());
+                    response += "{\"name\":\"" + f.getName() + "\",";
+                    response += "\"content\":\"" + readFile(f) + "\"}";
+                    if (i != session.getInfo().getFiles().size() - 1){
+                        response += ",";
+                    }
+                }
+                response += "]}";
+                return response;
+            } catch (Exception e){
+                return "";
+            }
+        } else {
+            throw new InvalidKeyException();
+        }
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.POST)
@@ -113,8 +119,7 @@ public class SessionController {
             session.generateKey();
             sessionRepository.save(session);
             try {
-                File sourceFile = saveInfoFile(session);
-                sendInfoFile(session.getId(), sourceFile);
+                SendFiles(session);
                 VirtualMachine vmConfig = session.getVmConfig();
                 vmConfig.setIP("192.168.101.113");
                 vmRepository.save(vmConfig);
@@ -160,6 +165,42 @@ public class SessionController {
         }
     }
 
+    private void SendFiles(Session session) throws Exception {
+        for (int i=0; i < session.getInfo().getFiles().size(); i++){
+            File file = saveFile(session, session.getInfo().getFiles().get(i));
+            sendFile(session.getId(), file);
+        }
+    }
+
+    private File saveFile(Session session, DataFile dataFile) throws IOException {
+        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), dataFile.getName());
+
+        if (!Files.exists(storagePath.getParent())) {
+            Files.createDirectories(storagePath.getParent());
+        }
+
+        File infoFile = storagePath.toFile();
+        if (!infoFile.exists()) {
+            infoFile.createNewFile();
+        }
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
+        bw.write(dataFile.getContent());
+        bw.close();
+
+        return infoFile;
+    }
+
+    private void sendFile(long id, File sourceFile) throws Exception {
+        if (sourceFile == null)
+            return;
+
+        String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
+        sshManager.OpenSession(GetVmIp(), 22, "root");
+        sshManager.SendFile(sourceFile.getPath(), destPath);
+        sshManager.CloseSession();
+    }
+
     private String readFile(File f) throws IOException {
         byte[] encoded = Files.readAllBytes(f.toPath());
         return new String(encoded, Charset.defaultCharset());
@@ -173,43 +214,12 @@ public class SessionController {
         return "";
     }
 
-    private void sendInfoFile(long id, File sourceFile) throws Exception {
-        if (sourceFile == null)
-            return;
-
-        String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        sshManager.OpenSession(GetVmIp(), 22, "root");
-        sshManager.SendFile(sourceFile.getPath(), destPath);
-        sshManager.CloseSession();
-    }
-
     private File getInfoFile(long id, String fileName) throws Exception {
-
         String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
         sshManager.OpenSession(GetVmIp(), 22, "root");
         File f = sshManager.ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
         sshManager.CloseSession();
         return f;
-    }
-
-    private File saveInfoFile(Session session) throws IOException {
-//        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), session.getInfo().getInfoFileName());
-//
-//        if (!Files.exists(storagePath.getParent())) {
-//            Files.createDirectories(storagePath.getParent());
-//        }
-//
-//        File infoFile = storagePath.toFile();
-//        if (!infoFile.exists()) {
-//            infoFile.createNewFile();
-//        }
-//
-//        BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
-//        bw.write(session.getInfo().getInfoFileContent());
-//        bw.close();
-//
-//        return infoFile;
-        return null;
     }
 
     private HttpEntity<HashMap<String, String>> GeneratePostResponse(HttpServletRequest request, @Valid @RequestBody Session session) {
