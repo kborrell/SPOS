@@ -49,6 +49,9 @@ public class SessionController {
     @Autowired
     private OCAManager ocaManager;
 
+    @Autowired
+    private ExecutionManager executionManager;
+
     @Value("${localStorageFolder}")
     private String localStorageFolder;
 
@@ -124,7 +127,7 @@ public class SessionController {
                 VirtualMachine vmConfig = session.getVmConfig();
                 vmConfig.setIP("192.168.101.113");
                 vmRepository.save(vmConfig);
-                ExecutionManager.LaunchExecution(session);
+                executionManager.LaunchExecution(session);
                 return GeneratePostResponse(request, session);
             } catch (Exception e) {
                 sessionRepository.delete(session);
@@ -189,10 +192,10 @@ public class SessionController {
             infoFile.createNewFile();
         }
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter(infoFile));
-        bw.write(dataFile.getContent());
-        bw.close();
-
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(infoFile));
+        bufferedOutputStream.write(dataFile.getContent());
+        bufferedOutputStream.flush();
+        bufferedOutputStream.close();
         return infoFile;
     }
 

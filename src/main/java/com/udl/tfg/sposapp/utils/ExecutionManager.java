@@ -17,14 +17,14 @@ import java.util.List;
 public class ExecutionManager {
 
     @Autowired
-    private static SSHManager sshManager;
+    private SSHManager sshManager;
 
-    private static final Logger logger = LoggerFactory.getLogger(SSHManager.class);
+    private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    private static String cplexMpsLp = "";//cplex -c \"read {0}\" \"optimize\" \"display solution variables -\" >> {1}";
-    private static String cplexDatMod = "cplex-opl {0} {1} {2}";
+    private String cplexMpsLp = "";//cplex -c \"read {0}\" \"optimize\" \"display solution variables -\" >> {1}";
+    private String cplexDatMod = "cplex-opl %1$s %2$s %3$s";
 
-    public static void LaunchExecution(Session session) throws Exception {
+    public void LaunchExecution(Session session) throws Exception {
         sshManager.OpenSession("192.168.101.113", 22, "root");
         switch (session.getInfo().getMethod().getMethod()) {
             case CPLEX:
@@ -37,7 +37,7 @@ public class ExecutionManager {
         sshManager.CloseSession();
     }
 
-    private static void runCplex(Session session) throws Exception {
+    private void runCplex(Session session) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
             sshManager.ExecuteCommand(String.format(cplexDatMod, session.getId(), session.getInfo().getFiles().get(0).getName(), session.getInfo().getFiles().get(1).getName()));
         } else {
