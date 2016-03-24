@@ -117,7 +117,7 @@ public class SSHManager {
         }
     }
 
-    private void ExecuteCommand(String command) throws Exception {
+    public void ExecuteCommand(String command) throws Exception {
         try {
             ChannelExec channelExec = (ChannelExec) getChannel("exec");
             System.out.println("Running command: " + command);

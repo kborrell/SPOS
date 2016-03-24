@@ -9,6 +9,7 @@ import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.models.VirtualMachine;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
+import com.udl.tfg.sposapp.utils.ExecutionManager;
 import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -123,6 +124,7 @@ public class SessionController {
                 VirtualMachine vmConfig = session.getVmConfig();
                 vmConfig.setIP("192.168.101.113");
                 vmRepository.save(vmConfig);
+                ExecutionManager.LaunchExecution(session);
                 return GeneratePostResponse(request, session);
             } catch (Exception e) {
                 sessionRepository.delete(session);
