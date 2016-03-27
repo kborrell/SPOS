@@ -1,15 +1,16 @@
 #!/bin/bash
 # Runs a CPLEX execution with mod/dat files, saves the results and send an email
 
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
 	echo "You must provide 2 input files and session ID"
 	exit
 fi
 
 ID=$1
+EMAIL=$2
 SESSION_PATH="/home/sposApp/sessions/$ID/"
-FILEMOD=$SESSION_PATH$3
-FILEDAT=$SESSION_PATH$2
+FILEMOD=$SESSION_PATH$4
+FILEDAT=$SESSION_PATH$3
 
 if ! { [ -e $FILEMODE ] && [ -e $FILEDAT ]; }; then
 	echo "Files must exist"
@@ -17,7 +18,8 @@ if ! { [ -e $FILEMODE ] && [ -e $FILEDAT ]; }; then
 fi
 
 SendEmail() {
-	echo "done"
+	echo "Execution Complete. Sending email...."
+	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
 }
 
 RESULTS_NAME="results.txt"
