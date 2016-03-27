@@ -102,7 +102,7 @@ public class SessionController {
                 for (int i=0; i < session.getInfo().getFiles().size(); i++){
                     File f = getInfoFile(session.getId(), session.getInfo().getFiles().get(i).getName());
                     response += "{\"name\":\"" + f.getName() + "\",";
-                    response += "\"content\":\"" + readFile(f) + "\"}";
+                    response += "\"content\":\"" + readFile(f).replace("\n", "\\n").replace("\"", "\\\"").replace("\t", "\\t") + "\"}";
                     if (i != session.getInfo().getFiles().size() - 1){
                         response += ",";
                     }

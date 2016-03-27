@@ -54,9 +54,11 @@
       <div id="session-input-row" class="panel panel-default" style="margin-top: 50px;">
         <div class="panel-heading">Input file</div>
         <div class="panel-body">
-          <span style="font-size: large; font-weight: 600">{{file.name}}</span>
-          <br>
-          {{file.content}}
+          <div ng-repeat="file in files">
+            <span style="font-size: large; font-weight: 600">{{file.name}}</span>
+            <br>
+            <span style="white-space: pre;">{{file.content}} </span>
+            </div>
         </div>
       </div>
 
