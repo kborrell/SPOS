@@ -100,7 +100,7 @@ public class SessionController {
             String response = "{\"files\":[";
             try {
                 for (int i=0; i < session.getInfo().getFiles().size(); i++){
-                    File f = getInfoFile(session.getId(), session.getInfo().getFiles().get(i).getName());
+                    File f = getFile(session.getId(), session.getInfo().getFiles().get(i).getName());
                     response += "{\"name\":\"" + f.getName() + "\",";
                     response += "\"content\":\"" + readFile(f).replace("\n", "\\n").replace("\"", "\\\"").replace("\t", "\\t") + "\"}";
                     if (i != session.getInfo().getFiles().size() - 1){
@@ -108,6 +108,35 @@ public class SessionController {
                     }
                 }
                 response += "]}";
+                return response;
+            } catch (Exception e){
+                return "";
+            }
+        } else {
+            throw new InvalidKeyException();
+        }
+    }
+
+    @RequestMapping(value = "/session/{id}/getResults", method = RequestMethod.POST)
+    public @ResponseBody String getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+        Session session = sessionRepository.findOne(Long.parseLong(id));
+        if (session == null)
+            throw new NullPointerException();
+
+        if (session.getKey().equals(key)) {
+            String response = "{\"results\":\"";
+            try {
+                File f = getFile(session.getId(), "results.txt");
+                String results = readFile(f).replace("\n", "\\n").replace("\"", "\\\"").replace("\t", "\\t");
+                if (!results.equals("")){
+                    VirtualMachine vm = session.getVmConfig();
+                    vm.setIP(null);
+                    vmRepository.save(vm);
+                    session.setVmConfig(vm);
+                    session.setSessionResults(results.getBytes(Charset.forName("UTF-8")));
+                    sessionRepository.save(session);
+                }
+                response += results + "\"}";
                 return response;
             } catch (Exception e){
                 return "";
@@ -221,7 +250,7 @@ public class SessionController {
 //        return "";
     }
 
-    private File getInfoFile(long id, String fileName) throws Exception {
+    private File getFile(long id, String fileName) throws Exception {
         String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
         sshManager.OpenSession(GetVmIp(), 22, "root");
         File f = sshManager.ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);

@@ -36,9 +36,10 @@ public class Session {
     @RestResource(exported = false)
     private Parameters info;
 
-    @OneToOne(cascade = {CascadeType.ALL})
-    @RestResource(exported = false)
-    private Result sessionResults;
+    //@OneToOne(cascade = {CascadeType.ALL})
+    //@RestResource(exported = false)
+    @Lob
+    private byte[] sessionResults;
 
     @JsonIgnore
     private String key = "";
@@ -79,11 +80,11 @@ public class Session {
         this.info = info;
     }
 
-    public Result getSessionResults() {
+    public byte[] getSessionResults() {
         return sessionResults;
     }
 
-    public void setSessionResults(Result sessionResults) {
+    public void setSessionResults(byte[] sessionResults) {
         this.sessionResults = sessionResults;
     }
 

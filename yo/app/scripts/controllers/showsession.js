@@ -14,7 +14,7 @@ angular.module('sposApp')
       $scope.session = null;
       $scope.logged = false;
       $scope.loginError = "";
-      $scope.sessionStatus = "";
+      $scope.sessionStatus = "---------";
       $scope.files = [];
 
       $scope.init = function () {
@@ -33,7 +33,7 @@ angular.module('sposApp')
             if (session){
               $scope.logged = true;
               $scope.session = session;
-              GetSessionStatus();
+
 
               $http.post("http://127.0.0.1:8080/session/" + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
                 .success(function (data, status) {
@@ -44,6 +44,13 @@ angular.module('sposApp')
                     file.content = fileContent["files"][i]["content"];
                     $scope.files.push(file);
                   }
+
+                  $http.post("http://127.0.0.1:8080/session/" + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
+                    .success(function (data, status) {
+                      var fileContent = JSON.parse(data);
+                      session.results = fileContent["results"];
+                      GetSessionStatus();
+                    });
                 });
             }
         }).catch(function (error) {
@@ -55,10 +62,10 @@ angular.module('sposApp')
         if ($scope.session.vmConfig.ip == null && $scope.session.results == null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Not started </span>");
 
-        if ($scope.session.vmConfig.ip != null && $scope.session.results == null)
+        if ($scope.session.vmConfig.ip != null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
-        if ($scope.session.vmConfig.ip == null && $scope.session.results != null)
+        if ($scope.session.results != null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
       };
 
