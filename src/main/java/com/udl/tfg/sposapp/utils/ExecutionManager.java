@@ -21,14 +21,22 @@ public class ExecutionManager {
 
     private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    private String cplexMpsLp = "";//cplex -c \"read {0}\" \"optimize\" \"display solution variables -\" >> {1}";
+    private String cplexMpsLp = "cplex-exec %1$s %2$s %3$s";
     private String cplexDatMod = "cplex-opl %1$s %2$s %3$s %4$s";
+    private String gurobi = "gurobi-exec %1$s %2$s %3$s";
+    private String lpsolve = "lpsolve-exec %1$s %2$s %3$s";
 
     public void LaunchExecution(Session session) throws Exception {
         sshManager.OpenSession("192.168.101.113", 22, "root");
         switch (session.getInfo().getMethod().getMethod()) {
             case CPLEX:
                 runCplex(session);
+                break;
+            case Gurobi:
+                runGurobi(session);
+                break;
+            case Lpsolve:
+                runLpsolve(session);
                 break;
             default:
                 System.out.println("UNKNOWN METHOD");
@@ -43,5 +51,13 @@ public class ExecutionManager {
         } else {
             sshManager.ExecuteCommand(String.format(cplexMpsLp, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
         }
+    }
+
+    private void runGurobi(Session session) throws Exception {
+        sshManager.ExecuteCommand(String.format(gurobi, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
+    }
+
+    private void runLpsolve(Session session) throws Exception {
+        sshManager.ExecuteCommand(String.format(lpsolve, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
     }
 }

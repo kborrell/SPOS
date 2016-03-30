@@ -1,0 +1,27 @@
+#!/bin/bash
+# Runs a CPLEX execution with mps or lp files, saves the results and send an email
+
+if [ $# -lt 3 ]; then
+	echo "You must provide one input file, session ID and an email"
+	exit
+fi
+
+ID=$1
+EMAIL=$2
+SESSION_PATH="/home/sposApp/sessions/$ID/"
+FILE=$SESSION_PATH$4
+
+if ! [ -e $FILE ] then
+	echo "File must exist"
+	exit
+fi
+
+SendEmail() {
+	echo "Execution Complete. Sending email...."
+	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
+}
+
+RESULTS_NAME="results.txt"
+RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
+
+cplex -c "read $FILEMOD" "optimize" "display solution variabes -" > $RESULTS_FILE && SendEmail
