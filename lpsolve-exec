@@ -9,9 +9,9 @@ fi
 ID=$1
 EMAIL=$2
 SESSION_PATH="/home/sposApp/sessions/$ID/"
-FILE=$SESSION_PATH$4
+FILE=$SESSION_PATH$3
 
-if ! [ -e $FILE ] then
+if ! [[ -e $FILE ]]; then
 	echo "File must exist"
 	exit
 fi
@@ -24,4 +24,4 @@ SendEmail() {
 RESULTS_NAME="results.txt"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 
-lpsolve -rxli xli_CPLEX $FILEMOD > $RESULTS_FILE && SendEmail
+lp_solve -rxli xli_CPLEX $FILE > $RESULTS_FILE && SendEmail

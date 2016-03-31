@@ -21,10 +21,10 @@ public class ExecutionManager {
 
     private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    private String cplexMpsLp = "cplex-exec %1$s %2$s %3$s";
-    private String cplexDatMod = "cplex-opl %1$s %2$s %3$s %4$s";
-    private String gurobi = "gurobi-exec %1$s %2$s %3$s";
-    private String lpsolve = "lpsolve-exec %1$s %2$s %3$s";
+    private String cplexMpsLp = "source cplex-exec %1$s %2$s %3$s";
+    private String cplexDatMod = "source cplex-opl %1$s %2$s %3$s %4$s";
+    private String gurobi = "source gurobi-exec %1$s %2$s %3$s";
+    private String lpsolve = "source lpsolve-exec %1$s %2$s %3$s";
 
     public void LaunchExecution(Session session) throws Exception {
         sshManager.OpenSession("192.168.101.113", 22, "root");

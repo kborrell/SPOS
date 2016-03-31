@@ -102,7 +102,7 @@ public class SessionController {
                 for (int i=0; i < session.getInfo().getFiles().size(); i++){
                     File f = getFile(session.getId(), session.getInfo().getFiles().get(i).getName());
                     response += "{\"name\":\"" + f.getName() + "\",";
-                    response += "\"content\":\"" + readFile(f).replace("\n", "\\n").replace("\"", "\\\"").replace("\t", "\\t") + "\"}";
+                    response += "\"content\":\"" + readFile(f).replaceAll("\\r|\\n", "~").replaceAll("\"", "\\\"").replaceAll("\t", "\\t") + "\"}";
                     if (i != session.getInfo().getFiles().size() - 1){
                         response += ",";
                     }
@@ -127,7 +127,7 @@ public class SessionController {
             String response = "{\"results\":\"";
             try {
                 File f = getFile(session.getId(), "results.txt");
-                String results = readFile(f).replace("\n", "\\n").replace("\"", "\\\"").replace("\t", "\\t");
+                String results = readFile(f).replaceAll("\\r|\\n", "~").replaceAll("\"", "\\\"").replaceAll("\t", "\\t");
                 if (!results.equals("")){
                     VirtualMachine vm = session.getVmConfig();
                     vm.setIP(null);

@@ -41,14 +41,14 @@ angular.module('sposApp')
                   for (var i=0; i<fileContent["files"].length; i++){
                     var file = {name: "", content: ""};
                     file.name = fileContent["files"][i]["name"];
-                    file.content = fileContent["files"][i]["content"];
+                    file.content = fileContent["files"][i]["content"].split("~").join("\n");
                     $scope.files.push(file);
                   }
 
                   $http.post("http://127.0.0.1:8080/session/" + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
                     .success(function (data, status) {
                       var fileContent = JSON.parse(data);
-                      session.results = fileContent["results"];
+                      session.results = fileContent["results"].split("~").join("\n");
                       GetSessionStatus();
                     });
                 });
