@@ -141,7 +141,7 @@ angular.module('sposApp')
     var createVMConfig = function () {
       if ($scope.predefinedVM === "") {
         $scope.vmConfig.realPercentage = $scope.vmConfig.realPercentage / 100;
-        $http.post('http://127.0.0.1:8080/virtualmachine', $scope.vmConfig)
+        $http.post('/virtualmachine', $scope.vmConfig)
           .success(function (data, status, headers, config) {
             VirtualMachine.get({id: headers('Location').split('/').pop()}).$promise.then(function (vm) {
               $scope.session.vmConfig = vm;

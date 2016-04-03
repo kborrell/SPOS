@@ -4,24 +4,42 @@
     <br>
     <small>Almost there... Now choose the solver used to solve the problem.</small>
   </h3>
-    <form name="solverForm" class="solverForm">
+  <div ng-show="methodLoadState == MethodLoadState.NONLOADED">
+    <h5>You must select an execution model first.</h5>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.LOADING">
+    <img src="../../images/loading_spinner.gif" width="45" style="display: inline;"><h5 style="display: inline;">Loading methods...</h5>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.LOADED">
+    <form name="methodForm" class="methodForm">
+      <div ng-repeat="method in parameters.model.compatibleMethods">
         <label>
-          <input type="radio" ng-model="selectedMethod" value="CPLEX" ng-change="loadMethod()" required> CPLEX
+          <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()" required> {{method.method}}
         </label>
-      <label>
-        <input type="radio" ng-model="selectedMethod" value="Gurobi" ng-change="loadMethod()" required> Gurobi
-      </label>
-      <label>
-        <input type="radio" ng-model="selectedMethod" value="Xpress" ng-change="loadMethod()" required> Xpress
-      </label>
-      <label>
-        <input type="radio" ng-model="selectedMethod" value="Lpsolve" ng-change="loadMethod()" required> Lpsolve
-      </label>
+        <div class="options" ng-show="$parent.parameters.method.method == method.method" style="margin: 10px 0 10px 20px;">
+          <form name="methodOptionsForm" class="methodOptionsForm" novalidate>
+            <label ng-show="method.parallelizationSupport">
+              <input type="checkbox" ng-model="$parent.parameters.isParallel"> Parallelized
+            </label>
+            <label ng-show="method.clusterSupport">
+              <input name="clusters" id="clusters" type="checkbox" ng-model="$parent.parameters.isClustered"> Clustered
+              <br>
+                    <span style="margin-left: 20px;" ng-show="$parent.parameters.isClustered">
+                        <input ng-model="$parent.parameters.groupSize" type="number" min="0" max="10"> clusters
+                    </span>
+            </label>
+          </form>
+        </div>
+      </div>
 
       <br>
       <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()"
-              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || solverForm.$invalid">
+              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || modelForm.$invalid || methodForm.$invalid || (parameters.isClustered && !parameters.groupSize)">
         Next step
       </button>
     </form>
+  </div>
+  <div ng-show="methodLoadState == MethodLoadState.ERROR">
+    <h5 style="color: red;">An error has occurred when trying to load methods. Please try again later.</h5>
+  </div>
 </div>
