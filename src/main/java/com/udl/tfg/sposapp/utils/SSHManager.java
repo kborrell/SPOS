@@ -1,8 +1,6 @@
 package com.udl.tfg.sposapp.utils;
 
 import com.jcraft.jsch.*;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,12 +137,12 @@ public class SSHManager {
         }
     }
 
-    private Channel getChannel(String channelType) throws JSchException, InvalidArgumentException {
+    private Channel getChannel(String channelType) throws JSchException, Exception {
         if (session == null)
             throw new NullPointerException("You must open a new session before open any channel");
         Channel channel = session.openChannel(channelType);
         if (channel == null)
-            throw new InvalidArgumentException(new String[]{"Channel type does not exist"});
+            throw new Exception("Channel type does not exist");
         return channel;
     }
 

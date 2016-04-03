@@ -1,9 +1,5 @@
 package com.udl.tfg.sposapp.controllers;
 
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import com.udl.tfg.sposapp.models.DataFile;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.models.VirtualMachine;
@@ -12,8 +8,6 @@ import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.ExecutionManager;
 import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -23,7 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
