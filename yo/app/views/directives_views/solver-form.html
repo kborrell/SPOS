@@ -16,25 +16,11 @@
         <label>
           <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()" required> {{method.method}}
         </label>
-        <div class="options" ng-show="$parent.parameters.method.method == method.method" style="margin: 10px 0 10px 20px;">
-          <form name="methodOptionsForm" class="methodOptionsForm" novalidate>
-            <label ng-show="method.parallelizationSupport">
-              <input type="checkbox" ng-model="$parent.parameters.isParallel"> Parallelized
-            </label>
-            <label ng-show="method.clusterSupport">
-              <input name="clusters" id="clusters" type="checkbox" ng-model="$parent.parameters.isClustered"> Clustered
-              <br>
-                    <span style="margin-left: 20px;" ng-show="$parent.parameters.isClustered">
-                        <input ng-model="$parent.parameters.groupSize" type="number" min="0" max="10"> clusters
-                    </span>
-            </label>
-          </form>
-        </div>
       </div>
 
       <br>
       <button type="button" class="btn btn-md btn-success" ng-click="completeFirstStep()"
-              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || modelForm.$invalid || methodForm.$invalid || (parameters.isClustered && !parameters.groupSize)">
+              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || solverForm.$invalid || !selectedMethod">
         Next step
       </button>
     </form>

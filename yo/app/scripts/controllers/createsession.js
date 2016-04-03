@@ -207,11 +207,14 @@ angular.module('sposApp')
 
     $scope.setDeterminist = function () {
       if ($scope.problemType == "Determinist") {
+        $scope.methodLoadState = $scope.MethodLoadState.LOADING;
         ModelInfo.query({action: 'search', search: 'findByModel', modelName: "Determinist"})
           .$promise.then(function (modelResponse) {
-            $scope.parameters.model = modelResponse._embedded.models[0];
-          }
-        );
+          $scope.parameters.model = modelResponse._embedded.models[0];
+          $scope.methodLoadState = $scope.MethodLoadState.LOADED;
+        }).catch(function (error) {
+          $scope.methodLoadState = $scope.MethodLoadState.ERROR;
+        });
       }
     }
   });
