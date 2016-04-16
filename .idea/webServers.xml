@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1d308a53-33ab-4156-956d-e23e59cd91b5" name="Frontend" url="http://193.144.12.55">
+        <fileTransfer host="193.144.12.55" port="22" rootFolder="/root" accessType="SFTP" password="dff9df9bdf9adfd9df9cdfc5dfc3df98" username="root">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="b1f5a538-f63b-4332-80a3-66411d210c97" name="Test" url="http://192.168.101.79">
+        <fileTransfer host="192.168.101.79" port="22" privateKey="C:\Users\kborr\.ssh\spos_rsa" accessType="SFTP" passphrase="dfd9dfdadfc5dfd9df9bdf9fdfdfdfcedfc6" username="root" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="fa6e0cea-e60c-4142-ba94-d0968b00195b" name="ComputingNode" url="http://192.168.101.113">
+        <fileTransfer host="192.168.101.113" port="22" privateKey="C:\Users\kborr\.ssh\spos_rsa" accessType="SFTP" passphrase="dfd9dfdadfc5dfd9df9bdf9fdfdfdfcedfc6" username="root" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
