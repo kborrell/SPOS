@@ -8,7 +8,7 @@
  * Controller of the sposApp
  */
 angular.module('sposApp')
-  .controller('ShowSessionCtrl', function ($scope, $sce, $http, $stateParams, Session, $location) {
+  .controller('ShowSessionCtrl', function ($scope, $sce, $http, $stateParams, Session) {
       $scope.sessionKey = $stateParams.key;
       $scope.sessionId = $stateParams.id;
       $scope.session = null;
@@ -35,7 +35,7 @@ angular.module('sposApp')
               $scope.session = session;
 
 
-              $http.post('/session/' + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
+              $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
                 .success(function (data, status) {
                   var fileContent = JSON.parse(data);
                   for (var i=0; i<fileContent["files"].length; i++){
@@ -45,7 +45,7 @@ angular.module('sposApp')
                     $scope.files.push(file);
                   }
 
-                  $http.post('/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
+                  $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
                     .success(function (data, status) {
                       var fileContent = JSON.parse(data);
                       session.results = fileContent["results"].split("~").join("\n");
