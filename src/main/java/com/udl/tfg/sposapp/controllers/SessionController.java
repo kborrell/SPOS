@@ -8,6 +8,7 @@ import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.ExecutionManager;
 import com.udl.tfg.sposapp.utils.OCAManager;
 import com.udl.tfg.sposapp.utils.SSHManager;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -99,7 +100,7 @@ public class SessionController {
                 for (int i=0; i < session.getInfo().getFiles().size(); i++){
                     File f = getFile(session.getId(), session.getInfo().getFiles().get(i).getName());
                     response += "{\"name\":\"" + f.getName() + "\",";
-                    response += "\"content\":\"" + readFile(f).replaceAll("\\r|\\n", "~").replaceAll("\"", "\\\"").replaceAll("\t", "\\t") + "\"}";
+                    response += "\"content\":\"" + JSONObject.escape(readFile(f)) + "\"}";
                     if (i != session.getInfo().getFiles().size() - 1){
                         response += ",";
                     }
@@ -124,7 +125,7 @@ public class SessionController {
             String response = "{\"results\":\"";
             try {
                 File f = getFile(session.getId(), "results.txt");
-                String results = readFile(f).replaceAll("\\r|\\n", "~").replaceAll("\"", "\\\"").replaceAll("\t", "\\t");
+                String results = JSONObject.escape(readFile(f));
                 if (!results.equals("")){
                     VirtualMachine vm = session.getVmConfig();
                     vm.setIP(null);
