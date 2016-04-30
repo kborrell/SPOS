@@ -42,6 +42,23 @@ angular.module('sposApp')
     $scope.sessionKey = "";
     $scope.sessionId = "";
 
+    var resultsMod =  "main {\n" +
+      "    var before = new Date();\n" +
+      "\tvar temp = before.getTime();\n" +
+      "\t\tthisOplModel.generate();\n" +
+      "    \tif (cplex.solve()) {\n" +
+      "    \t\t\twriteln(\"+-+-+-+\");\n" +
+      "    \t\t\twriteln(\"-- Objective = \", cplex.getObjValue());\n" +
+      "    \t\t\twriteln(\"-- Solution: \");\n" +
+      " \t\t\t\twriteln(thisOplModel.printSolution());\n" +
+      "                var after = new Date();\n" +
+      "\t\t\t\twriteln(\"-- Solving time ~= \",after.getTime()-temp, \"ms\");   \t\n" +
+      "        }else{\n" +
+      "        \t\twriteln(\"ERROR - No Solution for this model!\");\n" +
+      "        }\n" +
+      "    writeln(\"+-+-+-+\"); \n" +
+      "}";
+
     function toUTF8Array(str) {
       var utf8 = [];
       for (var i = 0; i < str.length; i++) {
@@ -114,6 +131,9 @@ angular.module('sposApp')
 
       fileReader.readAsText($scope.file, $scope)
         .then(function (result) {
+          if ($scope.file.name.split('.').pop() == "mod" && (result.indexOf("main") == -1)){
+            result += "\n" + resultsMod;
+          }
           var file = {extension: $scope.file.name.split('.').pop(), name: $scope.file.name, content: toUTF8Array(result)};
           $scope.parameters.files.push(file);
         });
