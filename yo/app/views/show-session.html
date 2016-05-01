@@ -55,10 +55,18 @@
         <div class="panel-heading">Input file</div>
         <div class="panel-body">
           <div ng-repeat="file in files">
-            <span style="font-size: large; font-weight: 600">{{file.name}}</span>
-            <br>
-            <span style="white-space: pre;">{{file.content}} </span>
+            <div class="col-xs-6">
+              <span style="font-size: large; font-weight: 600">{{file.name}}</span>
+              <br>
+              <hm-read-more
+                hm-text="{{file.content}}"
+                hm-limit="200"
+                hm-more-text="Show more"
+                hm-less-text="Show less"
+                hm-dots-class="dots"
+                hm-link-class="links"></hm-read-more>
             </div>
+          </div>
         </div>
       </div>
 
