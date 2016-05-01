@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 
 
@@ -15,8 +16,13 @@ public class Result {
     @GeneratedValue
     private long Id;
 
+    @Lob
     @NotNull
-    private String results;
+    private byte[] fullResults;
+
+    @Lob
+    @NotNull
+    private byte[] shortResults;
 
     public long getId() {
         return Id;
@@ -26,11 +32,19 @@ public class Result {
         Id = id;
     }
 
-    public String getResults() {
-        return results;
+    public byte[] getShortResults() {
+        return shortResults;
     }
 
-    public void setResults(String results) {
-        this.results = results;
+    public void setShortResults(byte[] shortResults) {
+        this.shortResults = shortResults;
+    }
+
+    public byte[] getFullResults() {
+        return fullResults;
+    }
+
+    public void setFullResults(byte[] fullResults) {
+        this.fullResults = fullResults;
     }
 }

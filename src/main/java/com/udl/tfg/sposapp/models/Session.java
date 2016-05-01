@@ -36,10 +36,8 @@ public class Session {
     @RestResource(exported = false)
     private Parameters info;
 
-    //@OneToOne(cascade = {CascadeType.ALL})
-    //@RestResource(exported = false)
-    @Lob
-    private byte[] sessionResults;
+    @OneToOne
+    private Result results;
 
     @JsonIgnore
     private String key = "";
@@ -80,12 +78,16 @@ public class Session {
         this.info = info;
     }
 
-    public byte[] getSessionResults() {
-        return sessionResults;
+    public Result getResults() {
+        return results;
     }
 
-    public void setSessionResults(byte[] sessionResults) {
-        this.sessionResults = sessionResults;
+    public void setResults(Result results) {
+        this.results = results;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public int getMaximumDuration() {

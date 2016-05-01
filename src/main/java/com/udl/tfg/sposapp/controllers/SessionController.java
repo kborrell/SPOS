@@ -7,6 +7,7 @@ import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.ExecutionManager;
 import com.udl.tfg.sposapp.utils.OCAManager;
+import com.udl.tfg.sposapp.utils.ResultsParser;
 import com.udl.tfg.sposapp.utils.SSHManager;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +47,7 @@ public class SessionController {
     private SSHManager sshManager;
 
     @Autowired
-    private OCAManager ocaManager;
+    private ResultsParser resultsParser;
 
     @Autowired
     private ExecutionManager executionManager;
@@ -95,50 +97,32 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
-            String response = "{\"files\":[";
-            try {
-                for (int i=0; i < session.getInfo().getFiles().size(); i++){
-                    File f = getFile(session.getId(), session.getInfo().getFiles().get(i).getName());
-                    response += "{\"name\":\"" + f.getName() + "\",";
-                    response += "\"content\":\"" + JSONObject.escape(readFile(f)) + "\"}";
-                    if (i != session.getInfo().getFiles().size() - 1){
-                        response += ",";
-                    }
+            String files = "";
+            for (int i = 0; i < session.getInfo().getFiles().size(); i++) {
+                files += session.getInfo().getFiles().get(i).getName() + "@" + new String(session.getInfo().getFiles().get(i).getContent(), StandardCharsets.UTF_8);
+                if (i < session.getInfo().getFiles().size() - 1){
+                    files += "^";
                 }
-                response += "]}";
-                return response;
-            } catch (Exception e){
-                return "";
             }
+            return files;
         } else {
             throw new InvalidKeyException();
         }
     }
 
     @RequestMapping(value = "/session/{id}/getResults", method = RequestMethod.POST)
-    public @ResponseBody String getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody String[] getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
-            String response = "{\"results\":\"";
-            try {
                 File f = getFile(session.getId(), "results.txt");
-                String results = JSONObject.escape(readFile(f));
-                if (!results.equals("")){
-                    VirtualMachine vm = session.getVmConfig();
-                    vm.setIP(null);
-                    vmRepository.save(vm);
-                    session.setVmConfig(vm);
-                    session.setSessionResults(results.getBytes(Charset.forName("UTF-8")));
-                    sessionRepository.save(session);
-                }
-                response += results + "\"}";
-                return response;
-            } catch (Exception e){
-                return "";
-            }
+                resultsParser.ParseResults(session, readFile(f));
+                return new String[]{
+                    new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
+                    new String(session.getResults().getFullResults(), Charset.forName("UTF-8"))
+                };
         } else {
             throw new InvalidKeyException();
         }
@@ -174,7 +158,7 @@ public class SessionController {
             oldSession.setEmail(session.getEmail());
             oldSession.setInfo(session.getInfo());
             oldSession.setMaximumDuration(session.getMaximumDuration());
-            oldSession.setSessionResults(session.getSessionResults());
+            oldSession.setResults(session.getResults());
             oldSession.setType(session.getType());
             oldSession.setVmConfig(session.getVmConfig());
             sessionRepository.save(oldSession);

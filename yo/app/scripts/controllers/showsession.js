@@ -16,6 +16,8 @@ angular.module('sposApp')
       $scope.loginError = "";
       $scope.sessionStatus = "---------";
       $scope.files = [];
+      $scope.shortResults = "";
+      $scope.fullResults = "";
 
       $scope.init = function () {
         $scope.logged = $scope.sessionKey && $scope.sessionId;
@@ -36,19 +38,20 @@ angular.module('sposApp')
 
 
               $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
-                .success(function (data, status) {
-                  var fileContent = JSON.parse(data);
-                  for (var i=0; i<fileContent["files"].length; i++){
+                .success(function (rawData, status) {
+                  var files = rawData.split("^");
+                  for (var i=0; i<files.length; i++){
                     var file = {name: "", content: ""};
-                    file.name = fileContent["files"][i]["name"];
-                    file.content = fileContent["files"][i]["content"];
+                    var fileData = files[i].split('@');
+                    file.name = fileData[0];
+                    file.content = fileData[1];
                     $scope.files.push(file);
                   }
 
                   $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
-                    .success(function (data, status) {
-                      var fileContent = JSON.parse(data);
-                      session.results = fileContent["results"];
+                    .success(function (resultData, status) {
+                      $scope.shortResults = resultData[0];
+                      $scope.fullResults = resultData[1];
                       GetSessionStatus();
                     });
                 });
