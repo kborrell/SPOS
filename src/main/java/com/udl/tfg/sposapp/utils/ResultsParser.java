@@ -82,14 +82,90 @@ public class ResultsParser {
     }
 
     private String parseMpsCplex(Session session, String results) {
-        return  results;
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
+        boolean areResults = false;
+        String shortResults = "";
+        String line = null;
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("MIP - Integer optimal solution")){
+                    shortResults += line.substring(line.indexOf("Objective")) + "\n";
+                }
+                if (line.contains("Solution time")) {
+                    shortResults += line.substring(0, line.indexOf("Iterations")) + "\n";
+                }
+                if (line.contains("Variable Name")) {
+                    shortResults += "\n";
+                    areResults = true;
+                }
+                if (areResults && line.contains("CPLEX>")) {
+                    areResults = false;
+                }
+                if (areResults) {
+                    shortResults += line + "\n";
+                }
+            }
+            return shortResults;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
-    private String parseGurobi(Session session, String results) throws Exception {
-        return results;
+    private String parseGurobi(Session session, String results) {
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
+        String shortResults = "";
+        String line = null;
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("Explored")){
+                    shortResults += "Execution time: " + line.substring(line.indexOf("in") + 2) + "\n";
+                }
+                if (line.contains("Best objective")) {
+                    String[] data = line.split(",");
+                    shortResults += String.join("\n", data);
+                }
+            }
+            return shortResults;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
-    private String parseLpsolve(Session session, String results) throws Exception {
-        return results;
+    private String parseLpsolve(Session session, String results)  {
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
+        boolean areResults = false;
+        boolean existZeroVar = false;
+        String shortResults = "";
+        String line = null;
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("Value of objective function")){
+                    shortResults += line + "\n";
+                }
+                if (line.contains("Actual values of the variables")) {
+                    areResults = true;
+                    shortResults += "\n";
+                    continue;
+                }
+
+                if (areResults){
+                    String[] var = line.split(" ");
+                    if (var.length > 0 && Integer.parseInt(var[var.length - 1]) > 0) {
+                        shortResults += line + "\n";
+                    } else {
+                        existZeroVar = true;
+                    }
+                }
+            }
+            if (existZeroVar) {
+                shortResults += "All other variables are 0.";
+            }
+            return shortResults;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
