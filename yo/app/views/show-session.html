@@ -71,10 +71,23 @@
       </div>
 
     <div id="session-output-row" class="panel panel-default" style="margin-top: 50px;">
-      <div class="panel-heading">Results</div>
+      <div class="panel-heading" style="height: 50px;">
+        <div style="float: left; margin-top: 5px;">
+          Results
+        </div>
+        <div style="float: right;">
+          <a ng-href="{{ url }}" class="btn btn-info" role="button" download="Execution_{{session.id}}_results.txt">Download full results</a>
+        </div>
+      </div>
       <div class="panel-body">
         <h4 ng-hide="shortResults">Results will be shown when the execution ends.</h4>
-        <span style="white-space: pre;">{{shortResults}}</span>
+        <hm-read-more
+          hm-text="{{shortResults}}"
+          hm-limit="200"
+          hm-more-text="Show more"
+          hm-less-text="Show less"
+          hm-dots-class="dots"
+          hm-link-class="links"></hm-read-more>
       </div>
     </div>
     </div>

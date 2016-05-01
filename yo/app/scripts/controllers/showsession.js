@@ -52,6 +52,8 @@ angular.module('sposApp')
                     .success(function (resultData, status) {
                       $scope.shortResults = resultData[0];
                       $scope.fullResults = resultData[1];
+                      var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
+                      $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
                       GetSessionStatus();
                     });
                 });
@@ -73,4 +75,8 @@ angular.module('sposApp')
       };
 
       $scope.init();
-  });
+  })
+  .config(['$compileProvider',
+    function ($compileProvider) {
+      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
+    }]);
