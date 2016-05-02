@@ -133,17 +133,21 @@ public class SessionController {
         if (session != null) {
             session.generateKey();
             sessionRepository.save(session);
-            try {
-                SendFiles(session);
-                VirtualMachine vmConfig = session.getVmConfig();
-                vmConfig.setIP("192.168.101.113");
-                vmRepository.save(vmConfig);
-                executionManager.LaunchExecution(session);
-                return GeneratePostResponse(request, session);
-            } catch (Exception e) {
-                sessionRepository.delete(session);
-                throw new Exception(e);
-            }
+            SendFiles(session);
+            new Thread() {
+                public void run() {
+                    try {
+                        Thread.sleep(18000);
+                        VirtualMachine vmConfig = session.getVmConfig();
+                        vmConfig.setIP("192.168.101.113");
+                        vmRepository.save(vmConfig);
+                        executionManager.LaunchExecution(session);
+                    } catch (Exception e) {
+                        sessionRepository.delete(session);
+                    }
+                }
+            }.start();
+            return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
         }

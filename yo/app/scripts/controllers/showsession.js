@@ -20,6 +20,7 @@ angular.module('sposApp')
       $scope.fullResults = "";
 
       $scope.init = function () {
+        ClearSession();
         $scope.logged = $scope.sessionKey && $scope.sessionId;
         if ($scope.logged)
           GetSession();
@@ -48,14 +49,15 @@ angular.module('sposApp')
                     $scope.files.push(file);
                   }
 
-                  $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
-                    .success(function (resultData, status) {
-                      $scope.shortResults = resultData[0];
-                      $scope.fullResults = resultData[1];
-                      var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
-                      $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
-                      GetSessionStatus();
-                    });
+                    $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
+                      .success(function (resultData, status) {
+                        $scope.shortResults = resultData[0];
+                        $scope.fullResults = resultData[1];
+                        var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
+                        $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
+                        GetSessionStatus();
+                      });
+                  GetSessionStatus();
                 });
             }
         }).catch(function (error) {
@@ -64,14 +66,37 @@ angular.module('sposApp')
       };
 
       var GetSessionStatus = function () {
-        if ($scope.session.vmConfig.ip == null && $scope.session.results == null)
-          $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Not started </span>");
+        if ($scope.session.vmConfig.ip == null && $scope.shortResults == "")
+          $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Preparing </span>");
 
-        if ($scope.session.vmConfig.ip != null && $scope.session.results == null)
+        if ($scope.session.vmConfig.ip != null && $scope.shortResults == "")
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
-        if ($scope.session.results != null)
+        if ($scope.shortResults != "")
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
+      };
+
+      var ClearSession = function () {
+        $scope.sessionKey = $stateParams.key;
+        $scope.sessionId = $stateParams.id;
+        $scope.session = null;
+        $scope.logged = false;
+        $scope.loginError = "";
+        $scope.sessionStatus = "---------";
+        $scope.files = [];
+        $scope.shortResults = "";
+        $scope.fullResults = "";
+      };
+
+      $scope.refresh = function () {
+        var $icon = document.getElementsByClassName("icon-refresh"),
+          animateClass = "icon-refresh-animate";
+        ClearSession();
+        GetSession();
+        $(".icon-refresh").addClass( animateClass );
+        window.setTimeout( function() {
+          $(".icon-refresh").removeClass( animateClass );
+        }, 2000 );
       };
 
       $scope.init();

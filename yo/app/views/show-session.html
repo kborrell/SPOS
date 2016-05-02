@@ -4,7 +4,9 @@
   </div>
   <div id="sessionInfo" ng-show="logged">
     <h2>Session #{{session.id}}</h2>
-    <h3>Status: <div style="display: inline;" ng-bind-html="sessionStatus"></div></h3>
+    <h3>Status:
+      <div style="display: inline;" ng-bind-html="sessionStatus"></div>
+      <a style="color: #000;" ng-click="refresh()"><span style="font-size: 15px; margin-left: 10px;" class="glyphicon glyphicon-refresh icon-refresh"></span></a></h3>
 
     <div id="session-info-row" class="panel panel-default" style="margin-top: 50px;">
       <div class="panel-heading">Information summary</div>
@@ -76,7 +78,7 @@
           Results
         </div>
         <div style="float: right;">
-          <a ng-href="{{ url }}" class="btn btn-info" role="button" download="Execution_{{session.id}}_results.txt">Download full results</a>
+          <a ng-href="{{ url }}" ng-show="fullResults" class="btn btn-info" role="button" download="Execution_{{session.id}}_results.txt">Download full results</a>
         </div>
       </div>
       <div class="panel-body">
