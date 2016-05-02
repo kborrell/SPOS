@@ -67,7 +67,7 @@ angular.module('sposApp')
         if ($scope.session.vmConfig.ip == null && $scope.session.results == null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Not started </span>");
 
-        if ($scope.session.vmConfig.ip != null)
+        if ($scope.session.vmConfig.ip != null && $scope.session.results == null)
           $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
         if ($scope.session.results != null)
