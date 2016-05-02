@@ -138,9 +138,8 @@ public class SessionController {
                 public void run() {
                     try {
                         Thread.sleep(18000);
-                        VirtualMachine vmConfig = session.getVmConfig();
-                        vmConfig.setIP("192.168.101.113");
-                        vmRepository.save(vmConfig);
+                        session.setIP("192.168.101.113");
+                        sessionRepository.save(session);
                         executionManager.LaunchExecution(session);
                     } catch (Exception e) {
                         sessionRepository.delete(session);

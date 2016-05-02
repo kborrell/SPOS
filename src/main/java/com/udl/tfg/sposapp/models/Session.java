@@ -39,6 +39,9 @@ public class Session {
     @OneToOne
     private Result results;
 
+    @Nullable
+    private String IP;
+
     @JsonIgnore
     private String key = "";
 
@@ -96,6 +99,19 @@ public class Session {
 
     public void setMaximumDuration(int maximumDuration) {
         this.maximumDuration = maximumDuration;
+    }
+
+    public void setId(long id) {
+        Id = id;
+    }
+
+    @Nullable
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(@Nullable String IP) {
+        this.IP = IP;
     }
 
     public String getKey() {

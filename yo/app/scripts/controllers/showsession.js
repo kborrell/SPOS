@@ -66,14 +66,28 @@ angular.module('sposApp')
       };
 
       var GetSessionStatus = function () {
-        if ($scope.session.vmConfig.ip == null && $scope.shortResults == "")
-          $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FF5722;\"> Preparing </span>");
+        var result;
 
-        if ($scope.session.vmConfig.ip != null && $scope.shortResults == "")
-          $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
+        if ($scope.session == null)
+          result = "---------";
+
+        if ($scope.session.ip == null && $scope.shortResults == "")
+          result = $sce.trustAsHtml("<span style=\"color: #ff7f02;\"> Preparing </span>");
+
+        if ($scope.session.ip != null && $scope.shortResults == "")
+          result = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
         if ($scope.shortResults != "")
-          $scope.sessionStatus = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
+          result = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
+
+        if ($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("error") != -1
+          || $scope.fullResults.toLowerCase().indexOf("fatal") != -1)) {
+
+          result = $sce.trustAsHtml("<span style=\"color: #ff0011;\"> Error </span>");
+          $scope.shortResults = "An error has occurred during the execution. Please download the full result to check the solver output";
+        }
+
+        $scope.sessionStatus = result;
       };
 
       var ClearSession = function () {

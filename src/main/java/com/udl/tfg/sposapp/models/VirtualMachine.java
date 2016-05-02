@@ -28,9 +28,6 @@ public class VirtualMachine {
     @DecimalMin(message = "This value must be greater than zero", value = "0")
     private float realPercentage;
 
-    @Nullable
-    private String IP;
-
     public long getId() {
         return Id;
     }
@@ -61,14 +58,5 @@ public class VirtualMachine {
 
     public void setRealPercentage(float realPercentage) {
         this.realPercentage = realPercentage;
-    }
-
-    @Nullable
-    public String getIP() {
-        return IP;
-    }
-
-    public void setIP(@Nullable String IP) {
-        this.IP = IP;
     }
 }

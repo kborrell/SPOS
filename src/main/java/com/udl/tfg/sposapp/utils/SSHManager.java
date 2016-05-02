@@ -105,10 +105,14 @@ public class SSHManager {
                 outputFile.createNewFile();
 
             FileOutputStream output = new FileOutputStream(outputFile);
-            channelSftp.get(filePath, output);
-            output.close();
+            try {
+                channelSftp.get(filePath, output);
+            } catch (SftpException e){
 
-            return outputFile;
+            }finally {
+                output.close();
+                return outputFile;
+            }
         }catch (Exception e) {
             CloseSession();
             throw new Exception(e);
