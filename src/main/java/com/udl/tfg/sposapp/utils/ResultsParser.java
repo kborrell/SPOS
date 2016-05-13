@@ -151,16 +151,8 @@ public class ResultsParser {
                 }
 
                 if (areResults){
-                    String[] var = line.split(" ");
-                    if (var.length > 0 && Integer.parseInt(var[var.length - 1]) > 0) {
-                        shortResults += line + "\n";
-                    } else {
-                        existZeroVar = true;
-                    }
+                    shortResults += line + "\n";
                 }
-            }
-            if (existZeroVar) {
-                shortResults += "All other variables are 0.";
             }
             return shortResults;
         } catch (IOException e) {

@@ -137,7 +137,6 @@ public class SessionController {
             new Thread() {
                 public void run() {
                     try {
-                        Thread.sleep(18000);
                         session.setIP("192.168.101.113");
                         sessionRepository.save(session);
                         executionManager.LaunchExecution(session);
