@@ -21,10 +21,10 @@ public class ExecutionManager {
 
     private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    private String cplexMpsLp = "source cplex-exec %1$s %2$s %3$s";
-    private String cplexDatMod = "source cplex-opl %1$s %2$s %3$s %4$s";
-    private String gurobi = "source gurobi-exec %1$s %2$s %3$s";
-    private String lpsolve = "source lpsolve-exec %1$s %2$s %3$s";
+    private String cplexMpsLp = "source cplex-exec %1$s %2$s %3$s %4$s";
+    private String cplexDatMod = "source cplex-opl %1$s %2$s %3$s %4$s %5$s";
+    private String gurobi = "source gurobi-exec %1$s %2$s %3$s %4$s";
+    private String lpsolve = "source lpsolve-exec %1$s %2$s %3$s %4$s";
 
     public void LaunchExecution(Session session) throws Exception {
         sshManager.OpenSession("192.168.101.113", 22, "root");
@@ -47,17 +47,17 @@ public class ExecutionManager {
 
     private void runCplex(Session session) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
-            sshManager.ExecuteCommand(String.format(cplexDatMod, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getInfo().getFiles().get(1).getName()));
+            sshManager.ExecuteCommand(String.format(cplexDatMod, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getInfo().getFiles().get(1).getName()));
         } else {
-            sshManager.ExecuteCommand(String.format(cplexMpsLp, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
+            sshManager.ExecuteCommand(String.format(cplexMpsLp, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
         }
     }
 
     private void runGurobi(Session session) throws Exception {
-        sshManager.ExecuteCommand(String.format(gurobi, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
+        sshManager.ExecuteCommand(String.format(gurobi, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
     }
 
     private void runLpsolve(Session session) throws Exception {
-        sshManager.ExecuteCommand(String.format(lpsolve, session.getId(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
+        sshManager.ExecuteCommand(String.format(lpsolve, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName()));
     }
 }
