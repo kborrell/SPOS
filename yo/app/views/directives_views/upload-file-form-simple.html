@@ -1,0 +1,32 @@
+<div id="upload" style="padding-bottom: 30px;">
+
+  <form name="inputUpload" class="inputUpload" style="overflow: hidden; height: 100%;">
+    <script src="bower_components/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <div role="group" class="btn-group col-xs-12 col-xs-offset-4" style="margin-bottom: 20px;">
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.mpsSupport" ng-click="activateInput('mps')">MPS File</button>
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.lpSupport" ng-click="activateInput('lp')">LP File</button>
+      <button type="button" class="btn btn-default" ng-disabled="!parameters.method.datSupport" ng-click="activateInput('dat')">DAT File</button>
+    </div>
+
+    <div ng-show="fileType == 'mps'" class="col-xs-7 col-xs-offset-3">
+      <label class="control-label">Select MPS File</label>
+      <input id="input-mps" type="file" class="file" data-show-preview="false" accept=".mps" ng-file-select="onFileSelect($files, {ext:mps})" data-show-remove="false" data-show-upload="false">
+    </div>
+
+    <div ng-show="fileType == 'lp'" class="col-xs-7 col-xs-offset-3">
+      <label class="control-label">Select LP File</label>
+      <input id="input-lp" type="file" class="file" data-show-preview="false" accept=".lp" ng-file-select="onFileSelect($files, {ext:lp})" data-show-remove="false" data-show-upload="false">
+    </div>
+
+    <div ng-show="fileType == 'dat'" class="col-xs-7 col-xs-offset-3">
+      <label class="control-label">Select DAT File</label>
+      <input id="input-dat" type="file" class="file" data-show-preview="false" accept=".dat" ng-file-select="onFileSelect($files, {ext:dat})" data-show-remove="false" data-show-upload="false">
+      <label class="control-label">Select MOD File</label>
+      <input id="input-mod" type="file" class="file" data-show-preview="false" accept=".mod" ng-file-select="onFileSelect($files, {ext:mod})" data-show-remove="false" data-show-upload="false">
+    </div>
+  </form>
+  <div ng-show="errorFile && !inputUpload.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
+    <p class="help-block" style="color: #ae7479;">Error! {{errorFile}}</p>
+  </div>
+</div>
+<br>

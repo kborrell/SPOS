@@ -9,10 +9,16 @@
     </h2>
   </div>
 
-  <div id="first-step" ng-show="state == CreateState.FIRSTSTEP || state == CreateState.SECONDSTEP">
+  <div id="first-step" ng-show="state == CreateState.FIRSTSTEP">
 
     <h3>
-      1. Choose the type of the problem<br>
+      1. Virtual Machine configuration <br>
+      <small>Choose the parameters of the virtual machine where the execution will run.</small>
+    </h3>
+    <vm-config-form></vm-config-form>
+
+    <h3>
+      2. Choose the type of the problem<br>
       <small>Do you have a determinist or a stochastic problem? The remaining steps of the session creation will be adapted
         to your choice here</small>
     </h3>
@@ -20,7 +26,7 @@
 
     <div ng-show="problemType == 'Determinist'">
       <h3>
-        2. Choose the solver<br>
+        3. Choose the solver<br>
         <small>Almost there... Now choose the solver which will be used to solve the problem.</small>
       </h3>
       <solver-form></solver-form>
@@ -29,35 +35,48 @@
     <!--<model-form ng-show="problemType == 'Stochastic'"></model-form>-->
 
     <!--<method-form ng-show="problemType == 'Stochastic'"></method-form>-->
+
+    <form>
+      <button type="button" class="btn btn-md btn-success center-block" ng-click="completeFirstStep()"
+              ng-disabled="(vmConfigForm.$invalid && predefinedVMForm.$invalid) || solverForm.$invalid || !selectedMethod">
+        Next step
+      </button>
+    </form>
   </div>
 
-  <div id="second-step" ng-hide="(solverForm.$invalid || !selectedMethod) || state != CreateState.SECONDSTEP">
+  <div id="second-step" class="row" ng-show="state == CreateState.SECONDSTEP">
+    <div class="row" style="margin-bottom: 50px;">
+
+      <session-summary></session-summary>
+
+      <div id="secondStep" class="col-xs-6">
 
         <h3>
-          3. Upload input file<br>
+          4. Upload input file<br>
           <small>If you have chosen CPLEX method, only one type of input is necessary</small>
         </h3>
-        <upload-file-form-simple></upload-file-form-simple>
+        <upload-file-form-advanced></upload-file-form-advanced>
 
         <h3>
-          4. Choose solution type<br>
+          5. Choose solution type<br>
           <small>Optimal will give you best results, but Feasible let you choose the execution duration.</small>
         </h3>
         <solution-type-form></solution-type-form>
 
         <h3>
-          5. Contact information<br>
+          6. Contact information<br>
           <small>That's all! Give us your email address to alert you when execution is finished.</small>
         </h3>
         <contact-form></contact-form>
 
-        <form>
-        <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()"
-              ng-disabled="!validateFiles() || inputUpload.$invalid || emailInput.$invalid || (session.type == 'Feasible' && !session.maximumDuration)"
-        >Submit!</button>
-        </form>
-
+      </div>
     </div>
+    <form>
+      <button type="button" class="btn btn-md btn-success center-block" ng-click="createSession()"
+              ng-disabled="!validateFiles() || inputUpload.$invalid || emailInput.$invalid || (session.type == 'Feasible' && !session.maximumDuration)"
+      >Submit!</button>
+    </form>
+  </div>
 
   <div id="creating" class="row text-center" ng-show="state == CreateState.CREATING" style="margin-top: 60px">
     <h3>

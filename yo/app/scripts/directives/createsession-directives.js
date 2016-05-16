@@ -60,9 +60,16 @@ angular.module('sposApp').directive('solverForm', function () {
     };
   });
 
-angular.module('sposApp').directive('uploadFileForm', function () {
+angular.module('sposApp').directive('uploadFileFormAdvanced', function () {
     return {
-      templateUrl: 'views/directives_views/upload-file-form.html',
+      templateUrl: 'views/directives_views/upload-file-form-advanced.html',
       restrict: 'E'
     };
   });
+
+angular.module('sposApp').directive('uploadFileFormSimple', function () {
+  return {
+    templateUrl: 'views/directives_views/upload-file-form-simple.html',
+    restrict: 'E'
+  };
+});

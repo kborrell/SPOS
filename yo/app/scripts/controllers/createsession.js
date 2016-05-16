@@ -9,7 +9,7 @@
  */
 
 angular.module('sposApp')
-  .controller('CreateSessionCtrl', function ($scope, $q, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
+  .controller('CreateSessionCtrl', function ($scope, $q, $state, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
     $scope.vmConfig = {};
     $scope.parameters = {isClustered: false, files: []};
     $scope.session = {};
@@ -111,6 +111,10 @@ angular.module('sposApp')
     };
 
     $scope.loadMethod = function () {
+      if ($state.current.name == "createSession") {
+        SetSimpleVM();
+        $scope.state = $scope.CreateState.SECONDSTEP;
+      }
       MethodInfo.query({action: 'search', search: 'findByMethod', methodName: $scope.selectedMethod})
         .$promise.then(function (methodResponse) {
         $scope.parameters.method = methodResponse._embedded.methods[0];
@@ -175,6 +179,14 @@ angular.module('sposApp')
     };
 
     var createSession = function () {
+      CreateSession();
+    };
+
+    var SetSimpleVM = function() {
+      $scope.session.vmConfig = VirtualMachine.query({id: 3});
+    };
+
+    var CreateSession = function() {
       $scope.session.info = $scope.parameters;
       if ($scope.session.type == 'Optimal') {
         $scope.session.maximumDuration = -1;

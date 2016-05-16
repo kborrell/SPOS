@@ -31,6 +31,11 @@ angular
         templateUrl: 'views/create_session.html',
         controller: 'CreateSessionCtrl'
       })
+      .state('createSessionAdvanced', {
+        url: '/session/new/advanced',
+        templateUrl: 'views/create_session_advanced.html',
+        controller: 'CreateSessionCtrl'
+      })
       .state('viewSession', {
         url: '/session/view/:id?key',
         templateUrl: 'views/show-session.html',
