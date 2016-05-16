@@ -7,9 +7,9 @@
   </div>
   <div ng-show="methodLoadState == MethodLoadState.LOADED">
     <form name="methodForm" class="methodForm">
-      <div class="row col-xs-12 col-xs-offset-3">
+      <div class="row col-xs-12 col-xs-offset-1">
         <div ng-repeat="method in parameters.model.compatibleMethods">
-          <div class="clearfix" ng-if="$index % 2 == 0"></div>
+          <div class="clearfix" ng-if="$index % 3 == 0"></div>
           <div class="col-sm-4">
             <label>
               <input type="radio" ng-model="$parent.selectedMethod" value="{{method.method}}" ng-change="$parent.loadMethod()" required> {{method.method}}

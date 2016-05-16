@@ -80,8 +80,7 @@ angular.module('sposApp')
         if ($scope.shortResults != "")
           result = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
 
-        if ($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("error") != -1
-          || $scope.fullResults.toLowerCase().indexOf("fatal") != -1)) {
+        if ($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("fatal") != -1)) {
 
           result = $sce.trustAsHtml("<span style=\"color: #ff0011;\"> Error </span>");
           $scope.shortResults = "An error has occurred during the execution. Please download the full result to check the solver output";
