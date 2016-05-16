@@ -150,6 +150,10 @@ public class ResultsParser {
                     continue;
                 }
 
+                if (line.startsWith("real")) {
+                    shortResults += "Execution times: \n";
+                }
+
                 if (areResults){
                     shortResults += line + "\n";
                 }
