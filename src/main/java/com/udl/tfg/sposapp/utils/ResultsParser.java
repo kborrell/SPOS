@@ -116,6 +116,8 @@ public class ResultsParser {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         String shortResults = "";
         String line = null;
+        boolean areResults = false;
+        boolean existZeroVar = false;
         try {
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains("Explored")){
@@ -125,6 +127,24 @@ public class ResultsParser {
                     String[] data = line.split(",");
                     shortResults += String.join("\n", data);
                 }
+
+                if (line.contains("Objective value")) {
+                    areResults = true;
+                    shortResults += "\n\n" + line.substring(2) + "\n\n";
+                    continue;
+                }
+
+                if (areResults){
+                    String[] var = line.split(" ");
+                    if (var.length > 0 && Integer.parseInt(var[var.length - 1]) > 0) {
+                        shortResults += line + "\n";
+                    } else {
+                        existZeroVar = true;
+                    }
+                }
+            }
+            if (existZeroVar) {
+                shortResults += "All other variables are 0.";
             }
             return shortResults;
         } catch (IOException e) {
