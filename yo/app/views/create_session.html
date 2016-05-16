@@ -11,11 +11,26 @@
 
   <div id="first-step" ng-show="state == CreateState.FIRSTSTEP">
 
-    <vm-config-form ></vm-config-form>
+    <h3>
+      1. Virtual Machine configuration <br>
+      <small>Choose the parameters of the virtual machine where the execution will run.</small>
+    </h3>
+    <vm-config-form></vm-config-form>
 
+    <h3>
+      2. Choose the type of the problem<br>
+      <small>Do you have a determinist or a stochastic problem? The remaining steps of the session creation will be adapted
+        to your choice here</small>
+    </h3>
     <problem-form></problem-form>
 
-    <solver-form ng-show="problemType == 'Determinist'"></solver-form>
+    <div ng-show="problemType == 'Determinist'">
+      <h3>
+        3. Choose the solver<br>
+        <small>Almost there... Now choose the solver which will be used to solve the problem.</small>
+      </h3>
+      <solver-form></solver-form>
+    </div>
 
     <!--<model-form ng-show="problemType == 'Stochastic'"></model-form>-->
 
@@ -30,10 +45,22 @@
 
       <div id="secondStep" class="col-xs-6">
 
+        <h3>
+          4. Upload input file<br>
+          <small>If you have chosen CPLEX method, only one type of input is necessary</small>
+        </h3>
         <upload-file-form></upload-file-form>
 
+        <h3>
+          5. Choose solution type<br>
+          <small>Optimal will give you best results, but Feasible let you choose the execution duration.</small>
+        </h3>
         <solution-type-form></solution-type-form>
 
+        <h3>
+          6. Contact information<br>
+          <small>That's all! Give us your email address to alert you when execution is finished.</small>
+        </h3>
         <contact-form></contact-form>
 
       </div>
