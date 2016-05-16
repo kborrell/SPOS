@@ -11,15 +11,15 @@
 
   <div id="first-step" ng-show="state == CreateState.FIRSTSTEP">
 
-    <vm-config-form></vm-config-form>
+    <vm-config-form ></vm-config-form>
 
     <problem-form></problem-form>
 
     <solver-form ng-show="problemType == 'Determinist'"></solver-form>
 
-    <model-form ng-show="problemType == 'Stochastic'"></model-form>
+    <!--<model-form ng-show="problemType == 'Stochastic'"></model-form>-->
 
-    <method-form ng-show="problemType == 'Stochastic'"></method-form>
+    <!--<method-form ng-show="problemType == 'Stochastic'"></method-form>-->
 
   </div>
 
