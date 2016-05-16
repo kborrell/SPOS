@@ -135,7 +135,7 @@ angular.module('sposApp')
 
       fileReader.readAsText($scope.file, $scope)
         .then(function (result) {
-          if ($scope.file.name.split('.').pop() == "mod" && (result.indexOf("main") == -1)){
+          if ($scope.file.name.split('.').pop() == "mod" && ((result.indexOf("main") == -1) || (result.indexOf("exec") == -1) )){
             result += "\n" + resultsMod;
           }
           var file = {extension: $scope.file.name.split('.').pop(), name: $scope.file.name, content: toUTF8Array(result)};
