@@ -1,16 +1,17 @@
 #!/bin/bash
 # Runs a CPLEX execution with mod/dat files, saves the results and send an email
 
-if [ $# -lt 4 ]; then
-	echo "You must provide 2 input files and session ID"
+if [ $# -lt 5 ]; then
+	echo "You must provide 2 input files and session ID, email and key"
 	exit
 fi
 
 ID=$1
-EMAIL=$2
+KEY=$2
+EMAIL=$3
 SESSION_PATH="/home/sposApp/sessions/$ID/"
-FILEMOD=$SESSION_PATH$4
-FILEDAT=$SESSION_PATH$3
+FILEMOD=$SESSION_PATH$5
+FILEDAT=$SESSION_PATH$4
 
 if ! { [ -e $FILEMODE ] && [ -e $FILEDAT ]; }; then
 	echo "Files must exist"
@@ -19,10 +20,10 @@ fi
 
 SendEmail() {
 	echo "Execution Complete. Sending email...."
-	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
+	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n\n Session ID: $ID \nSession Key: $KEY \n\n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
 }
 
 RESULTS_NAME="results.txt"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 
-oplrun $FILEMOD $FILEDAT > $RESULTS_FILE && SendEmail
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && oplrun $FILEMOD $FILEDAT >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE && SendEmail

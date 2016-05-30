@@ -30,13 +30,13 @@ public class ResultsParser {
         String shortResults;
         switch (session.getInfo().getMethod().getMethod()) {
             case CPLEX:
-                shortResults = parseCplex(session, results);
+                shortResults = parseCplex(session, results, executionResults);
                 break;
             case Gurobi:
-                shortResults = parseGurobi(session, results);
+                shortResults = parseGurobi(session, results, executionResults);
                 break;
             case Lpsolve:
-                shortResults = parseLpsolve(session, results);
+                shortResults = parseLpsolve(session, results, executionResults);
                 break;
             default:
                 shortResults = "";
@@ -50,21 +50,31 @@ public class ResultsParser {
         sessionRepository.save(session);
     }
 
-    private String parseCplex(Session session, String results) throws Exception {
+    private String parseCplex(Session session, String results, Result executionResults) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
-            return parseOpl(session, results);
+            return parseOpl(session, results, executionResults);
         } else {
-            return parseMpsCplex(session, results);
+            return parseMpsCplex(session, results, executionResults);
         }
     }
 
-    private String parseOpl(Session session, String results) {
+    private String parseOpl(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
         String line = null;
+        int startTime = 0;
+        int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null){
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                }
                 if (line.equals("+-+-+-+")) {
                     areResults = !areResults;
                     continue;
@@ -74,6 +84,8 @@ public class ResultsParser {
                     shortResults += line + "\n";
                 }
             }
+            executionResults.setStartTime(startTime);
+            executionResults.setFinishTime(finishTime);
             return shortResults;
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,11 +93,13 @@ public class ResultsParser {
         }
     }
 
-    private String parseMpsCplex(Session session, String results) {
+    private String parseMpsCplex(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
         String line = null;
+        int startTime = 0;
+        int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains("MIP - Integer optimal solution")){
@@ -98,6 +112,14 @@ public class ResultsParser {
                     shortResults += "\n";
                     areResults = true;
                 }
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                }
                 if (areResults && line.contains("CPLEX>")) {
                     areResults = false;
                 }
@@ -105,6 +127,8 @@ public class ResultsParser {
                     shortResults += line + "\n";
                 }
             }
+            executionResults.setStartTime(startTime);
+            executionResults.setFinishTime(finishTime);
             return shortResults;
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,14 +136,24 @@ public class ResultsParser {
         }
     }
 
-    private String parseGurobi(Session session, String results) {
+    private String parseGurobi(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         String shortResults = "";
         String line = null;
         boolean areResults = false;
         boolean existZeroVar = false;
+        int startTime = 0;
+        int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                }
                 if (line.contains("Explored")){
                     shortResults += "Execution time: " + line.substring(line.indexOf("in") + 2) + "\n";
                 }
@@ -146,6 +180,8 @@ public class ResultsParser {
             if (existZeroVar) {
                 shortResults += "All other variables are 0.";
             }
+            executionResults.setStartTime(startTime);
+            executionResults.setFinishTime(finishTime);
             return shortResults;
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,12 +189,14 @@ public class ResultsParser {
         }
     }
 
-    private String parseLpsolve(Session session, String results)  {
+    private String parseLpsolve(Session session, String results, Result executionResults)  {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         boolean existZeroVar = false;
         String shortResults = "";
         String line = null;
+        int startTime = 0;
+        int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains("Value of objective function")){
@@ -169,7 +207,14 @@ public class ResultsParser {
                     shortResults += "\n";
                     continue;
                 }
-
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                }
                 if (line.startsWith("real")) {
                     shortResults += "Execution times: \n";
                 }
@@ -178,10 +223,17 @@ public class ResultsParser {
                     shortResults += line + "\n";
                 }
             }
+            executionResults.setStartTime(startTime);
+            executionResults.setFinishTime(finishTime);
             return shortResults;
         } catch (IOException e) {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public void ParseCharts(Session session) {
+        Result results = session.getResults();
+
     }
 }

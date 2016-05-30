@@ -1,15 +1,16 @@
 #!/bin/bash
 # Runs a CPLEX execution with mps or lp files, saves the results and send an email
 
-if [ $# -lt 3 ]; then
-	echo "You must provide one input file, session ID and an email"
+if [ $# -lt 4 ]; then
+	echo "You must provide one input file, session ID, key and an email"
 	exit
 fi
 
 ID=$1
-EMAIL=$2
+KEY=$2
+EMAIL=$3
 SESSION_PATH="/home/sposApp/sessions/$ID/"
-FILE=$SESSION_PATH$3
+FILE=$SESSION_PATH$4
 
 if ! [[ -e $FILE ]]; then
 	echo "File must exist"
@@ -18,10 +19,10 @@ fi
 
 SendEmail() {
 	echo "Execution Complete. Sending email...."
-	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
+	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n\n Session ID: $ID \n Session Key: $KEY \n\n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
 }
 
 RESULTS_NAME="results.txt"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 
-cplex -c "read $FILE" "optimize" "display solution variables -" > $RESULTS_FILE && SendEmail
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && cplex -c "read $FILE" "optimize" "display solution variables -" "quit" >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE && SendEmail

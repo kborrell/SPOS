@@ -119,6 +119,7 @@ public class SessionController {
         if (session.getKey().equals(key)) {
                 File f = getFile(session.getId(), "results.txt");
                 resultsParser.ParseResults(session, readFile(f));
+                resultsParser.ParseCharts(session);
                 return new String[]{
                     new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
                     new String(session.getResults().getFullResults(), Charset.forName("UTF-8"))
