@@ -23,6 +23,9 @@ public class ResultsParser {
     @Autowired
     ResultRepository resultRepository;
 
+    @Autowired
+    private SSHManager sshManager;
+
     public void ParseResults(Session session, String results) throws Exception {
         Result executionResults = new Result();
         executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
@@ -234,6 +237,23 @@ public class ResultsParser {
 
     public void ParseCharts(Session session) {
         Result results = session.getResults();
+        try {
+            sshManager.CloseSession();
+            sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshManager.collectChartData(1464621900, 1464630300);
+            String cpuData = sshManager.getCPUData().trim();
+            String memData = sshManager.getMemData().trim();
+            sshManager.CloseSession();
+            if (cpuData.length() > 0 && memData.length() > 0){
+                results.setCpuData(cpuData.getBytes(Charset.forName("UTF-8")));
+                results.setMemData(memData.getBytes(Charset.forName("UTF-8")));
+                resultRepository.save(results);
+                session.setResults(results);
+                sessionRepository.save(session);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

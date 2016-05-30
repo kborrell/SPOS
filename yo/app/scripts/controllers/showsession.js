@@ -19,6 +19,12 @@ angular.module('sposApp')
       $scope.shortResults = "";
       $scope.fullResults = "";
 
+      $scope.cpuLabels = [];
+      $scope.cpuData = [[]];
+
+      $scope.memLabels = [];
+      $scope.memData = [[]];
+
       $scope.init = function () {
         ClearSession();
         $scope.logged = $scope.sessionKey && $scope.sessionId;
@@ -51,10 +57,8 @@ angular.module('sposApp')
 
                     $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
                       .success(function (resultData, status) {
-                        $scope.shortResults = resultData[0];
-                        $scope.fullResults = resultData[1];
-                        var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
-                        $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
+                        GetResults(resultData);
+                        GetChartsData(resultData);
                         GetSessionStatus();
                       });
                   GetSessionStatus();
@@ -63,6 +67,48 @@ angular.module('sposApp')
         }).catch(function (error) {
             $scope.loginError = "Incorrect ID or key. Please try again";
         });
+      };
+
+      var GetResults = function (resultData) {
+        $scope.shortResults = resultData[0];
+        $scope.fullResults = resultData[1];
+        var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
+        $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
+      };
+
+      var GetChartsData = function(resultData) {
+        var rawCpuData = resultData[2].match(/^.*((\r\n|\n|\r)|$)/gm);
+        var rawMemData = resultData[3].match(/^.*((\r\n|\n|\r)|$)/gm);
+
+        for (var i=0; i < rawCpuData.length; i++){
+
+          if (rawCpuData[i].indexOf(':') == -1 || rawMemData[i].indexOf(':') == -1)
+            continue;
+
+          var splitCpuData = rawCpuData[i].split(':');
+          var splitMemData = rawMemData[i].split(':');
+
+          var utcCpuSeconds = parseInt(splitCpuData[0].trim());
+          var utcMemSeconds = parseInt(splitMemData[0].trim());
+
+          var cpuDate = new Date(0);
+          var memDate = new Date(0);
+
+          cpuDate.setUTCSeconds(utcCpuSeconds);
+          memDate.setUTCSeconds(utcMemSeconds);
+
+          if (i%3 == 0){
+            $scope.cpuLabels.push(cpuDate.toLocaleTimeString());
+            $scope.memLabels.push(memDate.toLocaleTimeString());
+          } else {
+            $scope.cpuLabels.push("");
+            $scope.memLabels.push("");
+          }
+
+
+          $scope.cpuData[0].push(Number(splitCpuData[1].trim()));
+          $scope.memData[0].push(Number(splitMemData[1].trim()) / 1048576);
+        }
       };
 
       var GetSessionStatus = function () {

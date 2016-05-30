@@ -17,7 +17,8 @@ angular
     'ngSanitize',
     'ngTouch',
     'ui.router',
-    'hm.readmore'
+    'hm.readmore',
+    'chart.js'
   ])
   .config(function ($stateProvider) {
     $stateProvider

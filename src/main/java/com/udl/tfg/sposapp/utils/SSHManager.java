@@ -91,6 +91,25 @@ public class SSHManager {
         }
     }
 
+    public String ReadFile(String filePath) throws Exception {
+        try {
+            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            channelSftp.connect();
+            InputStream out = channelSftp.get(filePath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(out));
+            String line;
+            String content = "";
+            while ((line = br.readLine()) != null){
+                content += line + "\n";
+            }
+            br.close();
+            channelSftp.disconnect();
+            return content;
+        }catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
     public File ReceiveFile(String filePath, String destPath) throws Exception {
         try {
             ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
@@ -119,7 +138,7 @@ public class SSHManager {
         }
     }
 
-    public void ExecuteCommand(String command) throws Exception {
+    public String ExecuteCommand(String command) throws Exception {
         try {
             ChannelExec channelExec = (ChannelExec) getChannel("exec");
             System.out.println("Running command: " + command);
@@ -128,13 +147,16 @@ public class SSHManager {
             channelExec.setErrStream(System.err);
             channelExec.connect();
 
+            String output = "";
             String msg = null;
             while((msg = in.readLine()) != null){
                 System.out.println(msg);
+                output += msg;
             }
 
             System.out.println("Finished running command. Return code " + channelExec.getExitStatus());
             channelExec.disconnect();
+            return output;
         } catch (Exception e){
             CloseSession();
             throw new Exception(e);
@@ -154,6 +176,31 @@ public class SSHManager {
         if (null != session){
             session.disconnect();
             session = null;
+        }
+    }
+
+    public void collectChartData(int startTime, int finishTime) throws Exception {
+        System.out.println("Moving to database path...");
+        ExecuteCommand("cd /var/lib/munin/168.101.113");
+        System.out.println("Collecting data...");
+        ExecuteCommand("./collectData " + startTime + " " + finishTime);
+    }
+
+    public String getCPUData() throws Exception {
+        try {
+            return ReadFile("/var/lib/munin/168.101.113/cpuData.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+    }
+
+    public String getMemData() throws Exception {
+        try {
+            return ReadFile("/var/lib/munin/168.101.113/memData.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
         }
     }
 }

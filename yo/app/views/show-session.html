@@ -74,22 +74,40 @@
 
     <div id="session-output-row" class="panel panel-default" style="margin-top: 50px;">
       <div class="panel-heading" style="height: 50px;">
-        <div style="float: left; margin-top: 5px;">
-          Results
-        </div>
         <div style="float: right;">
           <a ng-href="{{ url }}" ng-show="fullResults" class="btn btn-info" role="button" download="Execution_{{session.id}}_results.txt">Download full results</a>
         </div>
+
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href data-target="#results">Results</a></li>
+          <li ng-show="shortResults"><a data-toggle="tab" href data-target="#charts">Charts</a></li>
+        </ul>
       </div>
       <div class="panel-body">
-        <h4 ng-hide="shortResults">Results will be shown when the execution ends.</h4>
-        <hm-read-more
-          hm-text="{{shortResults}}"
-          hm-limit="200"
-          hm-more-text="Show more"
-          hm-less-text="Show less"
-          hm-dots-class="dots"
-          hm-link-class="links"></hm-read-more>
+        <div class="tab-content">
+          <div id="results" class="tab-pane fade in active">
+            <h4 ng-hide="shortResults">Results will be shown when the execution ends.</h4>
+            <hm-read-more
+              hm-text="{{shortResults}}"
+              hm-limit="200"
+              hm-more-text="Show more"
+              hm-less-text="Show less"
+              hm-dots-class="dots"
+              hm-link-class="links"></hm-read-more>
+          </div>
+          <div id="charts" class="tab-pane fade">
+            <h4>CPU Usage Chart (%)</h4>
+            <canvas id="cpuChart" class="chart chart-line" chart-data="cpuData"
+                             chart-labels="cpuLabels" chart-legend="false" chart-options="{xAxisID: 'Hola', pointHitDetectionRadius : 1}"
+                              >
+          </canvas>
+            <h4>Memory Usage Chart (MB)</h4>
+            <canvas id="memChart" class="chart chart-line" chart-data="memData"
+                    chart-labels="memLabels" chart-legend="false" chart-options="{pointHitDetectionRadius : 1}"
+                    >
+            </canvas>
+          </div>
+        </div>
       </div>
     </div>
     </div>

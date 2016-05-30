@@ -117,12 +117,19 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
-                File f = getFile(session.getId(), "results.txt");
-                resultsParser.ParseResults(session, readFile(f));
-                resultsParser.ParseCharts(session);
+                if (session.getResults() == null){
+                    File f = getFile(session.getId(), "results.txt");
+                    resultsParser.ParseResults(session, readFile(f));
+
+                }
+                if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null))
+                    resultsParser.ParseCharts(session);
+
                 return new String[]{
                     new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
-                    new String(session.getResults().getFullResults(), Charset.forName("UTF-8"))
+                    new String(session.getResults().getFullResults(), Charset.forName("UTF-8")),
+                    new String(session.getResults().getCpuData(), Charset.forName("UTF-8")),
+                    new String(session.getResults().getMemData(), Charset.forName("UTF-8"))
                 };
         } else {
             throw new InvalidKeyException();
