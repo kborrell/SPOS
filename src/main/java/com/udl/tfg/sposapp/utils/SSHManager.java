@@ -180,10 +180,8 @@ public class SSHManager {
     }
 
     public void collectChartData(int startTime, int finishTime) throws Exception {
-        System.out.println("Moving to database path...");
-        ExecuteCommand("cd /var/lib/munin/168.101.113");
         System.out.println("Collecting data...");
-        ExecuteCommand("./collectData " + startTime + " " + finishTime);
+        ExecuteCommand("source collectData " + startTime + " " + finishTime);
     }
 
     public String getCPUData() throws Exception {

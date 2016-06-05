@@ -192,6 +192,7 @@ public class SessionController {
     }
 
     private void SendFiles(Session session) throws Exception {
+        sshManager.CloseSession();
         sshManager.OpenSession(GetVmIp(), 22, "root");
         sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
         for (int i=0; i < session.getInfo().getFiles().size(); i++){

@@ -152,17 +152,21 @@ public class ResultsParser {
                 if (line.contains("StartTime: ")){
                     String time = line.substring(11);
                     startTime = Integer.parseInt(time);
+                    continue;
                 }
                 if (line.contains("FinishTime: ")){
                     String time = line.substring(12);
                     finishTime = Integer.parseInt(time);
+                    continue;
                 }
                 if (line.contains("Explored")){
                     shortResults += "Execution time: " + line.substring(line.indexOf("in") + 2) + "\n";
+                    continue;
                 }
                 if (line.contains("Best objective")) {
                     String[] data = line.split(",");
                     shortResults += String.join("\n", data);
+                    continue;
                 }
 
                 if (line.contains("Objective value")) {
@@ -173,7 +177,7 @@ public class ResultsParser {
 
                 if (areResults){
                     String[] var = line.split(" ");
-                    if (var.length > 0 && Integer.parseInt(var[var.length - 1]) > 0) {
+                    if (var.length > 1 && Integer.parseInt(var[var.length - 1]) > 0) {
                         shortResults += line + "\n";
                     } else {
                         existZeroVar = true;
@@ -240,7 +244,7 @@ public class ResultsParser {
         try {
             sshManager.CloseSession();
             sshManager.OpenSession("192.168.101.113", 22, "root");
-            sshManager.collectChartData(1464621900, 1464630300);
+            sshManager.collectChartData(session.getResults().getStartTime() - 10, session.getResults().getFinishTime() + 10);
             String cpuData = sshManager.getCPUData().trim();
             String memData = sshManager.getMemData().trim();
             sshManager.CloseSession();

@@ -74,6 +74,7 @@ angular.module('sposApp')
         $scope.fullResults = resultData[1];
         var blob = new Blob([$scope.fullResults], { type : 'text/plain' });
         $scope.url = (window.URL || window.webkitURL).createObjectURL(blob);
+        GetSessionStatus();
       };
 
       var GetChartsData = function(resultData) {
