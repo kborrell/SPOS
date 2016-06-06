@@ -99,8 +99,8 @@ angular.module('sposApp')
           memDate.setUTCSeconds(utcMemSeconds);
 
           if (i%3 == 0){
-            $scope.cpuLabels.push(cpuDate.toLocaleTimeString());
-            $scope.memLabels.push(memDate.toLocaleTimeString());
+            $scope.cpuLabels.push(("0" + cpuDate.getHours()).slice(-2) + ":" +("0" + cpuDate.getMinutes()).slice(-2));
+            $scope.memLabels.push(("0" + memDate.getHours()).slice(-2) + ":" +("0" + memDate.getMinutes()).slice(-2));
           } else {
             $scope.cpuLabels.push("");
             $scope.memLabels.push("");
