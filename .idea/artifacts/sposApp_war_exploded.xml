@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="sposApp:war exploded">
-    <output-path>$PROJECT_DIR$/target/sposApp-1.0.0</output-path>
+    <output-path>$PROJECT_DIR$/target/spos</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -84,8 +84,8 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.1.8.RELEASE" />
           <element id="library" level="project" name="Maven: javax.el:javax.el-api:2.2.4" />
           <element id="library" level="project" name="Maven: com.h2database:h2:1.4.190" />
-          <element id="library" level="project" name="Maven: org.opennebula.client:org.opennebula.client:1.0" />
-          <element id="library" level="project" name="Maven: org.apache.ws.commons:org.apache.ws.commons:1.0.2" />
+          <element id="library" level="project" name="Maven: org.opennebula.client:org.opennebula.client:1.1" />
+          <element id="library" level="project" name="Maven: org.apache.ws.commons:org.apache.ws.commons:1.0.3" />
           <element id="library" level="project" name="Maven: org.apache.xmlrpc.client:org.apache.xmlrpc.client:3.1.2" />
           <element id="library" level="project" name="Maven: org.apache.xmlrpc:org.apache.xmlrpc:3.1.2" />
           <element id="library" level="project" name="Maven: junit:junit:4.12" />
@@ -95,7 +95,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/target/sposApp-1.0.0/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/spos/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="sposApp/web/Web" />
     </root>
