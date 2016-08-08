@@ -72,7 +72,7 @@ public class SessionController {
         }
     }
 
-    @RequestMapping(value = "/session/{id}/getFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/session/{id}/inputFiles", method = RequestMethod.GET)
     public @ResponseBody String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
@@ -92,7 +92,7 @@ public class SessionController {
         }
     }
 
-    @RequestMapping(value = "/session/{id}/getResults", method = RequestMethod.GET)
+    @RequestMapping(value = "/session/{id}/resultsFile", method = RequestMethod.GET)
     public @ResponseBody String[] getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
