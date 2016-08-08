@@ -58,27 +58,9 @@ public class SessionController {
     @Value("${sshStorageFolder}")
     private String sshStorageFolder;
 
-    @RequestMapping(value = "/session", method = RequestMethod.GET)
-    public @ResponseBody HttpEntity<List<Session>> getSessions(HttpServletRequest request, @RequestParam(value = "key", required = false) String key) throws Exception {
-        Iterable<Session> sessions = sessionRepository.findAll();
-        if (sessions == null)
-            throw new NullPointerException();
-
-        List<Session> sessionsList = new ArrayList<>();
-        for (Session actualSession : sessions) {
-            if (actualSession.getKey().equals(key))
-                sessionsList.add(actualSession);
-        }
-
-        if (sessionsList.size() == 0) {
-            throw new InvalidKeyException();
-        }
-
-        return ResponseEntity.ok().body(sessionsList);
-    }
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.GET)
-    public @ResponseBody Session getSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody Session getSession(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
@@ -90,8 +72,8 @@ public class SessionController {
         }
     }
 
-    @RequestMapping(value = "/session/{id}/getFile", method = RequestMethod.POST)
-    public @ResponseBody String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    @RequestMapping(value = "/session/{id}/getFile", method = RequestMethod.GET)
+    public @ResponseBody String getSessionFile(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
@@ -110,8 +92,8 @@ public class SessionController {
         }
     }
 
-    @RequestMapping(value = "/session/{id}/getResults", method = RequestMethod.POST)
-    public @ResponseBody String[] getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    @RequestMapping(value = "/session/{id}/getResults", method = RequestMethod.GET)
+    public @ResponseBody String[] getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
             throw new NullPointerException();
@@ -160,7 +142,7 @@ public class SessionController {
     }
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.PUT)
-    public @ResponseBody HttpEntity<Session> updateSession(@PathVariable String id, @Valid @RequestBody Session session, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody HttpEntity<Session> updateSession(@PathVariable String id, @Valid @RequestBody Session session, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session oldSession = sessionRepository.findOne(Long.parseLong(id));
         if (oldSession != null) {
             if (!oldSession.getKey().equals(key))
@@ -179,7 +161,7 @@ public class SessionController {
     }
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody HttpEntity<Void> deleteSession(@PathVariable String id, @RequestParam(value = "key", required = false) String key) throws Exception {
+    public @ResponseBody HttpEntity<Void> deleteSession(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session != null) {
             if (!session.getKey().equals(key))

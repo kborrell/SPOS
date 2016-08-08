@@ -44,7 +44,7 @@ angular.module('sposApp')
               $scope.session = session;
 
 
-              $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
+              $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getFile?key=" + $scope.sessionKey, "")
                 .success(function (rawData, status) {
                   var files = rawData.split("^");
                   for (var i=0; i<files.length; i++){
@@ -55,7 +55,7 @@ angular.module('sposApp')
                     $scope.files.push(file);
                   }
 
-                    $http.post('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
+                    $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/getResults?key=" + $scope.sessionKey, "")
                       .success(function (resultData, status) {
                         GetResults(resultData);
                         GetChartsData(resultData);
