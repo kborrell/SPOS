@@ -25,6 +25,8 @@ angular.module('sposApp')
       $scope.memLabels = [];
       $scope.memData = [[]];
 
+      $scope.showCharts = true;
+
       $scope.init = function () {
         ClearSession();
         $scope.logged = $scope.sessionKey && $scope.sessionId;
@@ -55,7 +57,7 @@ angular.module('sposApp')
                     $scope.files.push(file);
                   }
 
-                    $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/resultsFileF?key=" + $scope.sessionKey, "")
+                    $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/results?key=" + $scope.sessionKey, "")
                       .success(function (resultData, status) {
                         GetResults(resultData);
                         GetChartsData(resultData);
@@ -80,6 +82,12 @@ angular.module('sposApp')
       var GetChartsData = function(resultData) {
         var rawCpuData = resultData[2].match(/^.*((\r\n|\n|\r)|$)/gm);
         var rawMemData = resultData[3].match(/^.*((\r\n|\n|\r)|$)/gm);
+
+        var executionDuration = parseInt(resultData[4]);
+        if (executionDuration < 60 * 5)
+        {
+          $scope.showCharts = false;
+        }
 
         for (var i=0; i < rawCpuData.length; i++){
 

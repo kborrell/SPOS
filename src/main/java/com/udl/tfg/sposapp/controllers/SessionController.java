@@ -92,7 +92,7 @@ public class SessionController {
         }
     }
 
-    @RequestMapping(value = "/session/{id}/resultsFile", method = RequestMethod.GET)
+    @RequestMapping(value = "/session/{id}/results", method = RequestMethod.GET)
     public @ResponseBody String[] getSessionResults(@PathVariable String id, @RequestParam(value = "key", required = true) String key) throws Exception {
         Session session = sessionRepository.findOne(Long.parseLong(id));
         if (session == null)
@@ -111,7 +111,8 @@ public class SessionController {
                     new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
                     new String(session.getResults().getFullResults(), Charset.forName("UTF-8")),
                     new String(session.getResults().getCpuData(), Charset.forName("UTF-8")),
-                    new String(session.getResults().getMemData(), Charset.forName("UTF-8"))
+                    new String(session.getResults().getMemData(), Charset.forName("UTF-8")),
+                    String.valueOf(session.getResults().getFinishTime() - session.getResults().getStartTime())
                 };
         } else {
             throw new InvalidKeyException();

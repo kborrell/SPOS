@@ -244,7 +244,7 @@ public class ResultsParser {
         try {
             sshManager.CloseSession();
             sshManager.OpenSession("192.168.101.113", 22, "root");
-            //sshManager.collectChartData(session.getResults().getStartTime() - 10, session.getResults().getFinishTime() + 10);
+            sshManager.collectChartData(session.getResults().getStartTime(), session.getResults().getFinishTime());
             String cpuData = sshManager.getCPUData().trim();
             String memData = sshManager.getMemData().trim();
             sshManager.CloseSession();
