@@ -14,9 +14,9 @@
         <div class="col-sm-4">
           <div id="session-vm" class="text-center">
             <h4>Virtual Machine</h4>
-            <h5>Nº of CPU: {{session.vmConfig.cpuCount}}</h5>
+            <h5>Virtual CPUs: {{session.vmConfig.virtualCPUs}}</h5>
             <h5>Memory: {{session.vmConfig.ram}} Mb</h5>
-            <h5>Real percentage: {{session.vmConfig.realPercentage}}</h5>
+            <h5>Real CPUs: {{session.vmConfig.realCPUs}}</h5>
             <h5>IP:
               <span ng-show="session.ip">{{session.ip}}</span>
               <span ng-hide="session.ip">Not assigned yet</span>

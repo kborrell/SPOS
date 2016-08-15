@@ -1,8 +1,5 @@
 package com.udl.tfg.sposapp.models;
 
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +15,7 @@ public class VirtualMachine {
     private long Id;
 
     @NotNull(message = "You must introduce the number of emulated CPU's")
-    private int cpuCount;
+    private int virtualCPUs;
 
     @NotNull(message = "You must introduce the amount of memory that will have the VM created")
     @DecimalMin(message = "Amount of memory has to be greater than zero", value = "0")
@@ -26,7 +23,9 @@ public class VirtualMachine {
 
     @NotNull(message = "You must enter the real percentage of real cpu's used by the VM")
     @DecimalMin(message = "This value must be greater than zero", value = "0")
-    private float realPercentage;
+    private float realCPUs;
+
+    private int apiID;
 
     public long getId() {
         return Id;
@@ -36,12 +35,12 @@ public class VirtualMachine {
         Id = id;
     }
 
-    public int getCpuCount() {
-        return cpuCount;
+    public int getVirtualCPUs() {
+        return virtualCPUs;
     }
 
-    public void setCpuCount(int cpuCount) {
-        this.cpuCount = cpuCount;
+    public void setVirtualCPUs(int virtualCPUs) {
+        this.virtualCPUs = virtualCPUs;
     }
 
     public int getRam() {
@@ -52,11 +51,19 @@ public class VirtualMachine {
         this.ram = ram;
     }
 
-    public float getRealPercentage() {
-        return realPercentage;
+    public float getrealCPUs() {
+        return realCPUs;
     }
 
-    public void setRealPercentage(float realPercentage) {
-        this.realPercentage = realPercentage;
+    public void setrealCPUs(float realCPUs) {
+        this.realCPUs = realCPUs;
+    }
+
+    public int getApiID() {
+        return apiID;
+    }
+
+    public void setApiID(int apiID) {
+        this.apiID = apiID;
     }
 }

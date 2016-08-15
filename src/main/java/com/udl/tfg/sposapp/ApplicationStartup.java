@@ -45,9 +45,9 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
     }
 
     private void PopulateDB() {
-        CreateVmConfig(1, 64, 0.1f);
-        CreateVmConfig(10, 512, 0.3f);
-        CreateVmConfig(20, 1024, 0.6f);
+        CreateVmConfig(1, 1024, 0.5f);
+        CreateVmConfig(4, 1024, 1f);
+        CreateVmConfig(8, 4096, 2f);
 
         CreateMethods(MethodCodes.CPLEX, "General Solver", true, true, true, false, false);
         CreateMethods(MethodCodes.BD, "Benders Decompositions", false, false, true, false, false);
@@ -95,11 +95,11 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         ));
     }
 
-    private void CreateVmConfig(int cpuCount, int ram, float realPercentage) {
+    private void CreateVmConfig(int virtualCPUs, int ram, float realCPUs) {
         VirtualMachine vm = new VirtualMachine();
-        vm.setCpuCount(cpuCount);
+        vm.setVirtualCPUs(virtualCPUs);
         vm.setRam(ram);
-        vm.setRealPercentage(realPercentage);
+        vm.setrealCPUs(realCPUs);
         virtualMachineRepository.save(vm);
     }
 

@@ -28,7 +28,7 @@ public class ExecutionManager {
     private String lpsolveLP = "source lpsolve-lp %1$s %2$s %3$s %4$s";
 
     public void LaunchExecution(Session session) throws Exception {
-        sshManager.OpenSession("192.168.101.113", 22, "root");
+        sshManager.OpenSession(session.getIP(), 22, "root");
         switch (session.getInfo().getMethod().getMethod()) {
             case CPLEX:
                 runCplex(session);

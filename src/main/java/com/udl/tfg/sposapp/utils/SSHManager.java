@@ -15,9 +15,17 @@ public class SSHManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    @Value("${sshIdentityFile}") private String sshIdentityFile;
-    @Value("${sshIdentityPass}") private String sshIdentityPass;
-    @Value("${sshKnownHostsFile}") private String sshKnownHostsFile;
+    private final String keyString = "AAAAB3NzaC1yc2EAAAADAQABAAABAQDQOZfsakkxrA01sgvEv+ECdr/" +
+            "DcSC9M4fnCVotvS/zNK4ntE2aOTXavHJScIn4doNmLcHz66OLmvI4Og2/v0dKUsU75wkjURANqjtlBF/" +
+            "Kk1aDD69kenBq7xYbDWs6iHey26gyfkfCUVQaT6LzSFR/05kIvdgfI6um3wrJ5cdYsBHVex4DOOttBqA/" +
+            "nTmev1Th3JrmJN7D1b5YJwh0iuKeVVEprzJJaEpEAmaa5wTyfH6tDCcSJOGQpmLjIiJRdLbTgLuxDk0Cnyx" +
+            "owk0mz00lv6j2sd0uoleIB53FylIP0EG6/mWdqFgmttWI+6iBq6qCUZnNpVG4kJIDIhaYUQg3";
+
+    @Value("${sshIdentityFile}")    private String sshIdentityFile;
+    @Value("${sshIdentityPass}")    private String sshIdentityPass;
+    @Value("${sshKnownHostsFile}")  private String sshKnownHostsFile;
+    @Value("${localStorageFolder}") private String localStorageFolder;
+    @Value("${sshStorageFolder}")   private String sshStorageFolder;
 
     private JSch jSch = null;
     private Session session = null;
@@ -48,6 +56,8 @@ public class SSHManager {
             Properties config = new Properties();
             if (properties != null)
                 config.putAll(properties);
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
             session.setConfig(config);
             session.connect();
             System.out.println("Session opened in " + address + " as " + username);
@@ -66,6 +76,14 @@ public class SSHManager {
             CloseSession();
             throw new Exception(e);
         }
+    }
+
+    public void SendFile(long id, File sourceFile) throws Exception {
+        if (sourceFile == null)
+            return;
+
+        String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
+        SendFile(sourceFile.getPath(), destPath);
     }
 
     public void SendFile(String sourcePath, String destPath) throws Exception {
@@ -136,6 +154,14 @@ public class SSHManager {
             CloseSession();
             throw new Exception(e);
         }
+    }
+
+    public File GetFile(long id, String ip, String fileName) throws Exception {
+        String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
+        OpenSession(ip, 22, "root");
+        File f = ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
+        CloseSession();
+        return f;
     }
 
     public String ExecuteCommand(String command) throws Exception {

@@ -4,8 +4,6 @@ import com.udl.tfg.sposapp.models.Result;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.ResultRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,30 +25,31 @@ public class ResultsParser {
     private SSHManager sshManager;
 
     public void ParseResults(Session session, String results) throws Exception {
-        Result executionResults = new Result();
-        executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
+        if (!results.equals("")) {
+            Result executionResults = new Result();
+            executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
+            String shortResults;
+            switch (session.getInfo().getMethod().getMethod()) {
+                case CPLEX:
+                    shortResults = parseCplex(session, results, executionResults);
+                    break;
+                case Gurobi:
+                    shortResults = parseGurobi(session, results, executionResults);
+                    break;
+                case Lpsolve:
+                    shortResults = parseLpsolve(session, results, executionResults);
+                    break;
+                default:
+                    shortResults = "";
+                    System.out.println("UNKNOWN METHOD");
+                    break;
+            }
 
-        String shortResults;
-        switch (session.getInfo().getMethod().getMethod()) {
-            case CPLEX:
-                shortResults = parseCplex(session, results, executionResults);
-                break;
-            case Gurobi:
-                shortResults = parseGurobi(session, results, executionResults);
-                break;
-            case Lpsolve:
-                shortResults = parseLpsolve(session, results, executionResults);
-                break;
-            default:
-                shortResults = "";
-                System.out.println("UNKNOWN METHOD");
-                break;
+            executionResults.setShortResults(shortResults.getBytes(Charset.forName("UTF-8")));
+            resultRepository.save(executionResults);
+            session.setResults(executionResults);
+            sessionRepository.save(session);
         }
-
-        executionResults.setShortResults(shortResults.getBytes(Charset.forName("UTF-8")));
-        resultRepository.save(executionResults);
-        session.setResults(executionResults);
-        sessionRepository.save(session);
     }
 
     private String parseCplex(Session session, String results, Result executionResults) throws Exception {
@@ -243,7 +242,7 @@ public class ResultsParser {
         Result results = session.getResults();
         try {
             sshManager.CloseSession();
-            sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshManager.OpenSession(session.getIP(), 22, "root");
             sshManager.collectChartData(session.getResults().getStartTime(), session.getResults().getFinishTime());
             String cpuData = sshManager.getCPUData().trim();
             String memData = sshManager.getMemData().trim();

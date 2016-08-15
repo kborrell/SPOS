@@ -1,15 +1,9 @@
 package com.udl.tfg.sposapp.controllers;
 
-import com.udl.tfg.sposapp.models.DataFile;
 import com.udl.tfg.sposapp.models.Session;
-import com.udl.tfg.sposapp.models.VirtualMachine;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
-import com.udl.tfg.sposapp.utils.ExecutionManager;
-import com.udl.tfg.sposapp.utils.OCAManager;
-import com.udl.tfg.sposapp.utils.ResultsParser;
-import com.udl.tfg.sposapp.utils.SSHManager;
-import org.json.simple.JSONObject;
+import com.udl.tfg.sposapp.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -19,20 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @RepositoryRestController
 public class SessionController {
@@ -52,11 +40,11 @@ public class SessionController {
     @Autowired
     private ExecutionManager executionManager;
 
-    @Value("${localStorageFolder}")
-    private String localStorageFolder;
+    @Autowired
+    private OCAManager ocaManager;
 
-    @Value("${sshStorageFolder}")
-    private String sshStorageFolder;
+    @Value("${localStorageFolder}") private String localStorageFolder;
+    @Value("${sshStorageFolder}")   private String sshStorageFolder;
 
 
     @RequestMapping(value = "/session/{id}", method = RequestMethod.GET)
@@ -99,21 +87,27 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
-                if (session.getResults() == null){
-                    File f = getFile(session.getId(), "results.txt");
-                    resultsParser.ParseResults(session, readFile(f));
-
+                if (session.getResults() == null && session.getIP() != null) {
+                    File f = sshManager.GetFile(session.getId(), session.getIP(), "results.txt");
+                    String content = readFile(f);
+                    if (!content.isEmpty()) {
+                        resultsParser.ParseResults(session, readFile(f));
+                        resultsParser.ParseCharts(session);
+                        ocaManager.deleteVM(session.getVmConfig().getApiID());
+                    }
                 }
-                if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null))
-                    resultsParser.ParseCharts(session);
 
-                return new String[]{
-                    new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
-                    new String(session.getResults().getFullResults(), Charset.forName("UTF-8")),
-                    new String(session.getResults().getCpuData(), Charset.forName("UTF-8")),
-                    new String(session.getResults().getMemData(), Charset.forName("UTF-8")),
-                    String.valueOf(session.getResults().getFinishTime() - session.getResults().getStartTime())
-                };
+                if (session.getResults() == null) {
+                    return new String[]{"","","","","-1"};
+                } else {
+                    return new String[]{
+                            new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
+                            new String(session.getResults().getFullResults(), Charset.forName("UTF-8")),
+                            new String(session.getResults().getCpuData(), Charset.forName("UTF-8")),
+                            new String(session.getResults().getMemData(), Charset.forName("UTF-8")),
+                            String.valueOf(session.getResults().getFinishTime() - session.getResults().getStartTime())
+                    };
+                }
         } else {
             throw new InvalidKeyException();
         }
@@ -124,18 +118,7 @@ public class SessionController {
         if (session != null) {
             session.generateKey();
             sessionRepository.save(session);
-            SendFiles(session);
-            new Thread() {
-                public void run() {
-                    try {
-                        session.setIP("192.168.101.113");
-                        sessionRepository.save(session);
-                        executionManager.LaunchExecution(session);
-                    } catch (Exception e) {
-                        sessionRepository.delete(session);
-                    }
-                }
-            }.start();
+            new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder).start();
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
@@ -174,64 +157,9 @@ public class SessionController {
         }
     }
 
-    private void SendFiles(Session session) throws Exception {
-        sshManager.CloseSession();
-        sshManager.OpenSession(GetVmIp(), 22, "root");
-        sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
-        for (int i=0; i < session.getInfo().getFiles().size(); i++){
-            File file = saveFile(session, session.getInfo().getFiles().get(i));
-            sendFile(session.getId(), file);
-        }
-        sshManager.CloseSession();
-    }
-
-    private File saveFile(Session session, DataFile dataFile) throws IOException {
-        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), dataFile.getName());
-
-        if (!Files.exists(storagePath.getParent())) {
-            Files.createDirectories(storagePath.getParent());
-        }
-
-        File infoFile = storagePath.toFile();
-        if (!infoFile.exists()) {
-            infoFile.createNewFile();
-        }
-
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(infoFile));
-        bufferedOutputStream.write(dataFile.getContent());
-        bufferedOutputStream.flush();
-        bufferedOutputStream.close();
-        return infoFile;
-    }
-
-    private void sendFile(long id, File sourceFile) throws Exception {
-        if (sourceFile == null)
-            return;
-
-        String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        sshManager.SendFile(sourceFile.getPath(), destPath);
-    }
-
     private String readFile(File f) throws IOException {
         byte[] encoded = Files.readAllBytes(f.toPath());
         return new String(encoded, Charset.defaultCharset());
-    }
-
-    private String GetVmIp() {
-        return "192.168.101.113";
-//        List<Integer> vmIDs = ocaManager.GetAllVmIds();
-//        if (vmIDs.size() > 0){
-//            return ocaManager.GetIP(vmIDs.get(0));
-//        }
-//        return "";
-    }
-
-    private File getFile(long id, String fileName) throws Exception {
-        String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
-        sshManager.OpenSession(GetVmIp(), 22, "root");
-        File f = sshManager.ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
-        sshManager.CloseSession();
-        return f;
     }
 
     private HttpEntity<HashMap<String, String>> GeneratePostResponse(HttpServletRequest request, @Valid @RequestBody Session session) {

@@ -12,13 +12,13 @@
       <h4>Or choose your own configuration:</h4>
       <form name="vmConfigForm" role="form" class="vmConfig form-horizontal" novalidate>
         <div class="form-group">
-          <label class="control-label col-xs-5" for="cpuCount"> Num. CPUs: </label>
+          <label class="control-label col-xs-5" for="virtualCPUs"> Virtual CPUs: </label>
           <div class="col-xs-4">
-            <input name="cpuCount" id="cpuCount" class="form-control" type="number" ng-model="vmConfig.cpuCount" min="1" max="64" required ng-change="clearPredefinedVM()">
+            <input name="virtualCPUs" id="virtualCPUs" class="form-control" type="number" ng-model="vmConfig.virtualCPUs" min="1" max="64" required ng-change="clearPredefinedVM()">
           </div>
-          <div ng-show="vmConfigForm.cpuCount.$invalid && !vmConfigForm.cpuCount.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.cpuCount.$error.required">You must specify the number of used CPUs.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.cpuCount.$error.min || vmConfigForm.cpuCount.$error.number">You need at least 1 CPU.</p>
+          <div ng-show="vmConfigForm.virtualCPUs.$invalid && !vmConfigForm.virtualCPUs.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
+            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.virtualCPUs.$error.required">You must specify the number of emulated CPUs.</p>
+            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.virtualCPUs.$error.min || vmConfigForm.virtualCPUs.$error.number">You need at least 1 CPU.</p>
           </div>
         </div>
         <div class="form-group">
@@ -38,19 +38,19 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-xs-5" for="power"> Real Power: </label>
+          <label class="control-label col-xs-5" for="power"> Real CPUs: </label>
           <div class="col-xs-7">
             <div class="col-xs-8" style="margin: 0 0 0 -15px;">
-              <input name="power" id="power" class="form-control" type="number" ng-model="vmConfig.realPercentage" min="1" max="100" required ng-change="clearPredefinedVM()">
+              <input name="power" id="power" class="form-control" type="number" ng-model="vmConfig.realCPUs" min="1" max="100" required ng-change="clearPredefinedVM()">
             </div>
             <div class="col-xs-1" style="margin: 10px 0 0 -15px;">
               %
             </div>
           </div>
           <div ng-show="vmConfigForm.power.$invalid && !vmConfigForm.power.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.required">You must specify the real power used.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.min || vmConfigForm.power.$error.number">The minimum used power is 1%.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.max">The real power cannot be over 100%.</p>
+            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.required">You must specify the real cpu used.</p>
+            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.min || vmConfigForm.power.$error.number">The minimum used cpu is 0.5</p>
+            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.max">The used cpu can't be over 100%.</p>
           </div>
         </div>
       </form>
