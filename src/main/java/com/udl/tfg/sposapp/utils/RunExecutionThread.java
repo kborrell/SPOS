@@ -63,11 +63,11 @@ public class RunExecutionThread extends Thread {
 
     private String getPredefinedVMIp() {
         switch ((int)session.getVmConfig().getId()) {
-            case 0:
-                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.LOW);
             case 1:
-                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.MEDIUM);
+                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.LOW);
             case 2:
+                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.MEDIUM);
+            case 3:
                 return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.HIGH);
             default:
                 return null;
