@@ -88,7 +88,7 @@ public class SessionController {
 
         if (session.getKey().equals(key)) {
                 if (session.getResults() == null && session.getIP() != null) {
-                    File f = sshManager.GetFile(session.getId(), session.getIP(), "results.txt");
+                    File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
                     String content = readFile(f);
                     if (!content.isEmpty()) {
                         resultsParser.ParseResults(session, readFile(f));

@@ -1,0 +1,27 @@
+#!/bin/bash
+# Runs a lpsolve execution with mps or lp files, saves the results and send an email
+
+if [ $# -lt 4 ]; then
+	echo "You must provide one input file, session ID, key and an email"
+	exit
+fi
+
+ID=$1
+KEY=$2
+EMAIL=$3
+SESSION_PATH="/home/sposApp/sessions/$ID/"
+FILE=$SESSION_PATH$4
+
+if ! [[ -e $FILE ]]; then
+	echo "File must exist"
+	exit
+fi
+
+SendEmail() {
+	echo "Execution Complete. Sending email...."
+	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n\nSession ID: $ID \nSession Key: $KEY \n\n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
+}
+
+RESULTS_NAME="results.txt"
+RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && (time lp_solve -s -fmps -ia $FILE) &>> $RESULTS_FILE && echo "FinishTime: $(date +'%s')" >> $RESULTS_FILE  && sshpass -p 'sposudl15' scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE && SendEmail

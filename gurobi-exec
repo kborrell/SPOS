@@ -27,4 +27,4 @@ SOLUTION_NAME="solution.sol"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 SOLUTION_FILE=$SESSION_PATH$SOLUTION_NAME
 
-echo "StartTime: $(date +'%s')" > $RESULTS_FILE && gurobi_cl ResultFile=$SOLUTION_FILE $FILE >> $RESULTS_FILE && cat $SOLUTION_FILE >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE &&  SendEmail
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && gurobi_cl ResultFile=$SOLUTION_FILE $FILE >> $RESULTS_FILE && cat $SOLUTION_FILE >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE  && sshpass -p 'sposudl15' scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE &&  SendEmail

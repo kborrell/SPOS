@@ -26,4 +26,4 @@ SendEmail() {
 RESULTS_NAME="results.txt"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 
-echo "StartTime: $(date +'%s')" > $RESULTS_FILE && oplrun $FILEMOD $FILEDAT >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE && SendEmail
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && oplrun $FILEMOD $FILEDAT >> $RESULTS_FILE && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE  && sshpass -p 'sposudl15' scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE && SendEmail
