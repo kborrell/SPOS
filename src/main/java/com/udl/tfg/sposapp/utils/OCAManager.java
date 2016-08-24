@@ -25,9 +25,9 @@ public class OCAManager {
         HIGH
     }
 
-    private final String LOW_VM_IP = "192.168.101.66";
-    private final String MEDIUM_VM_IP = "192.168.101.66";
-    private final String HIGH_VM_IP = "192.168.101.66";
+    private final String LOW_VM_IP = "192.168.101.69";
+    private final String MEDIUM_VM_IP = "192.168.101.69";
+    private final String HIGH_VM_IP = "192.168.101.69";
 
     @Value("${openNebulaUser}") private String user;
     @Value("${openNebulaPass}") private String pass;
@@ -168,14 +168,8 @@ public class OCAManager {
         if(rc.isError())
             throw new Exception( rc.getErrorMessage() );
 
-        org.opennebula.client.vm.VirtualMachine vm = null;
-        for (org.opennebula.client.vm.VirtualMachine vMachine : vmPool )
-        {
-            if (vMachine.getId().equals(""+vmID))
-            {
-                vm = vMachine;
-            }
-        }
+
+        org.opennebula.client.vm.VirtualMachine vm = vmPool.getById(vmID);
 
         if (vm != null) {
             rc = vm.delete();
@@ -196,7 +190,7 @@ public class OCAManager {
                 }else {
                     Thread.sleep(5000);
                     attempts++;
-                    if (attempts >= 60){
+                    if (attempts >= 120){
                         break;
                     }
                 }

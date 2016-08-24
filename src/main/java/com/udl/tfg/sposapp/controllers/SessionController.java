@@ -88,12 +88,12 @@ public class SessionController {
 
         if (session.getKey().equals(key)) {
                 if (session.getResults() == null && session.getIP() != null) {
-                    File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
+                    File f = sshManager.GetFile(session.getId(), "192.168.101.113", "results.txt");
                     String content = readFile(f);
                     if (!content.isEmpty()) {
                         resultsParser.ParseResults(session, readFile(f));
                         resultsParser.ParseCharts(session);
-                        ocaManager.deleteVM(session.getVmConfig().getApiID());
+                        //ocaManager.deleteVM(session.getVmConfig().getApiID());
                     }
                 }
 

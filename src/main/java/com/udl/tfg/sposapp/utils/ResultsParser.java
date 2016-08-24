@@ -242,10 +242,10 @@ public class ResultsParser {
         Result results = session.getResults();
         try {
             sshManager.CloseSession();
-            sshManager.OpenSession(session.getIP(), 22, "root");
-            sshManager.collectChartData(session.getResults().getStartTime(), session.getResults().getFinishTime());
-            String cpuData = sshManager.getCPUData().trim();
-            String memData = sshManager.getMemData().trim();
+            sshManager.OpenSession("192.168.101.113", 22, "root");
+            //sshManager.collectChartData(session.getResults().getStartTime(), session.getResults().getFinishTime());
+            String cpuData = sshManager.ReadFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
+            String memData = sshManager.ReadFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
             sshManager.CloseSession();
             if (cpuData.length() > 0 && memData.length() > 0){
                 results.setCpuData(cpuData.getBytes(Charset.forName("UTF-8")));

@@ -45,6 +45,9 @@ public class Session {
     @JsonIgnore
     private String key = "";
 
+    @JsonIgnore
+    private boolean vmDestroyed = false;
+
     public long getId() {
         return Id;
     }
@@ -116,6 +119,14 @@ public class Session {
 
     public String getKey() {
         return key;
+    }
+
+    public boolean isVmDestroyed() {
+        return vmDestroyed;
+    }
+
+    public void setVmDestroyed(boolean vmDestroyed) {
+        this.vmDestroyed = vmDestroyed;
     }
 
     public void generateKey(){

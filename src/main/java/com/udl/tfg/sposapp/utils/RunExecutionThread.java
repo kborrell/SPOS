@@ -83,6 +83,14 @@ public class RunExecutionThread extends Thread {
             sshManager.SendFile(session.getId(), file);
         }
         sshManager.CloseSession();
+
+        sshManager.OpenSession("192.168.101.113", 22, "root");
+        sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
+        for (int i=0; i < session.getInfo().getFiles().size(); i++){
+            File file = saveFile(session, session.getInfo().getFiles().get(i));
+            sshManager.SendFile(session.getId(), file);
+        }
+        sshManager.CloseSession();
     }
 
     private File saveFile(com.udl.tfg.sposapp.models.Session session, DataFile dataFile) throws IOException {
