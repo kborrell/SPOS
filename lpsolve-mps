@@ -11,6 +11,7 @@ KEY=$2
 EMAIL=$3
 SESSION_PATH="/home/sposApp/sessions/$ID/"
 FILE=$SESSION_PATH$4
+DURATION=$5
 
 if ! [[ -e $FILE ]]; then
 	echo "File must exist"
@@ -22,6 +23,32 @@ SendEmail() {
 	echo -e "Dear user, \n We are glad to announce that your execution with ID $ID has finished succesfully. \n Please go to our website and log in with the ID and password of your session to get the results. \n\nSession ID: $ID \nSession Key: $KEY \n\n Thanks for using our service. Best regards." | mail -s "SPOS - Execution complete" $EMAIL
 }
 
+SendResults() {
+        END_TIME=$(date +'%s')
+        CPU_DATA=cpuData.txt
+        MEM_DATA=memData.txt
+        collectData $START_TIME $END_TIME &&
+        echo "Sending results..." &&
+        eval "$(ssh-agent -s)" &&
+        echo "SSH Agent started" &&
+        scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE &&
+        scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@192.168.101.113:$SESSION_PATH$CPU_DATA &&
+        scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@192.168.101.113:$SESSION_PATH$MEM_DATA &&
+        echo "Results sent!" &&
+        SendEmail
+}
+
+RunExecution() {
+	if [ $DURATION -eq -1 ]; then
+		(time lp_solve -s -fmps -ia $FILE) &>> $RESULTS_FILE
+	else
+		(time lp_solve -s -fmps -ia -timeout $DURATION $FILE) &>> $RESULTS_FILE
+	fi
+	
+}
+
 RESULTS_NAME="results.txt"
 RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
-echo "StartTime: $(date +'%s')" > $RESULTS_FILE && (time lp_solve -s -fmps -ia $FILE) &>> $RESULTS_FILE && echo "FinishTime: $(date +'%s')" >> $RESULTS_FILE  && sshpass -p 'sposudl15' scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE && SendEmail
+START_TIME=$(date +'%s')
+
+echo "StartTime: $(date +'%s')" > $RESULTS_FILE && RunExecution && echo "FinishTime: $(date +'%s')" >> $RESULTS_FILE  && SendResults
