@@ -55,7 +55,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
 
             boolean sessionsHasResults(long id) {
                 try {
-                    File f = sshManager.GetFile(id, "192.168.101.113", "results.txt");
+                    File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
                     byte[] encoded = new byte[0];
                     encoded = Files.readAllBytes(f.toPath());
                     String content = new String(encoded, Charset.defaultCharset());

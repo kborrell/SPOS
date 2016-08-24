@@ -5,12 +5,15 @@ import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.ResultRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 @Service
 public class ResultsParser {
@@ -23,6 +26,8 @@ public class ResultsParser {
 
     @Autowired
     private SSHManager sshManager;
+
+    @Value("${localStorageFolder}") private String localStorageFolder;
 
     public void ParseResults(Session session, String results) throws Exception {
         if (!results.equals("")) {
@@ -241,12 +246,10 @@ public class ResultsParser {
     public void ParseCharts(Session session) {
         Result results = session.getResults();
         try {
-            sshManager.CloseSession();
-            sshManager.OpenSession("192.168.101.113", 22, "root");
-            //sshManager.collectChartData(session.getResults().getStartTime(), session.getResults().getFinishTime());
-            String cpuData = sshManager.ReadFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
-            String memData = sshManager.ReadFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
-            sshManager.CloseSession();
+            File cpuFile = new File(localStorageFolder + "/" + String.valueOf(session.getId()) + "/cpuData.txt");
+            File memFile = new File(localStorageFolder + "/" + String.valueOf(session.getId()) + "/memData.txt");
+            String cpuData = readFile(cpuFile).trim();
+            String memData = readFile(memFile).trim();
             if (cpuData.length() > 0 && memData.length() > 0){
                 results.setCpuData(cpuData.getBytes(Charset.forName("UTF-8")));
                 results.setMemData(memData.getBytes(Charset.forName("UTF-8")));
@@ -258,5 +261,10 @@ public class ResultsParser {
             e.printStackTrace();
         }
 
+    }
+
+    private String readFile(File f) throws IOException {
+        byte[] encoded = Files.readAllBytes(f.toPath());
+        return new String(encoded, Charset.defaultCharset());
     }
 }
