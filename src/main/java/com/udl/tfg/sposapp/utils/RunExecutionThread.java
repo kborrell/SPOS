@@ -24,9 +24,11 @@ public class RunExecutionThread extends Thread {
     private String localStorageFolder;
     private String sshStorageFolder;
 
+    private String vmIP;
+
     public RunExecutionThread(Session session, SessionRepository sessionRepository,
                               ExecutionManager executionManager, OCAManager ocaManager,
-                              SSHManager sshManager, String localStorageFolder, String sshStorageFolder) {
+                              SSHManager sshManager, String localStorageFolder, String sshStorageFolder, String vmIP) {
         this.sessionRepository = sessionRepository;
         this.executionManager = executionManager;
         this.ocaManager = ocaManager;
@@ -34,10 +36,12 @@ public class RunExecutionThread extends Thread {
         this.session = session;
         this.localStorageFolder = localStorageFolder;
         this.sshStorageFolder = sshStorageFolder;
+        this.vmIP = vmIP;
     }
 
     public void run() {
         try {
+            ocaManager.WaitUntilCreated(vmIP);
             session.setIP(GetVMIp());
             sessionRepository.save(session);
             SendFiles(session);

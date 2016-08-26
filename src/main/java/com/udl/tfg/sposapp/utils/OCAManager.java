@@ -179,7 +179,7 @@ public class OCAManager {
             throw new Exception( rc.getErrorMessage() );
     }
 
-    private void WaitUntilCreated(String ip) {
+    public void WaitUntilCreated(String ip) {
         InetAddress ping;
         int attempts = 0;
         while (true) {

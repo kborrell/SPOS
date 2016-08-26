@@ -112,9 +112,16 @@
       <h3>
         Ups!
         <br>
-        <small>
-          We are sorry. An error has occurred when trying to create your session. Please try again later.
-        </small>
+        <div ng-hide="errorType == 'VM'">
+          <small>
+            We are sorry. There was an error creating a virtual machine. Please wait some minutes and try to create it again.
+          </small>
+        </div>
+        <div ng-show="errorType == 'VM'">
+          <small>
+            We are sorry. There was an error creating a virtual machine. Please wait some minutes and try to create it again.
+          </small>
+        </div>
       </h3>
     </div>
     <div class="text-center" style="margin-top: 150px">

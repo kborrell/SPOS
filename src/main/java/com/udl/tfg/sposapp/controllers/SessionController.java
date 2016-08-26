@@ -118,7 +118,14 @@ public class SessionController {
         if (session != null) {
             session.generateKey();
             sessionRepository.save(session);
-            new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder).start();
+            String ip = "";
+            try {
+                ip = ocaManager.createNewVM(session.getVmConfig());
+            } catch (Exception e) {
+                sessionRepository.delete(session);
+                throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
+            }
+            new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder, ip).start();
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();

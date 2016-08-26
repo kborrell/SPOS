@@ -197,6 +197,10 @@ angular.module('sposApp')
         $scope.state = $scope.CreateState.CREATED;
       }).catch(function (error) {
         $scope.state = $scope.CreateState.ERROR;
+        if (error.data.message.substring(0, 7) == "VMERROR")
+        {
+          $scope.errorType = "VM";
+        }
       });
     };
 
