@@ -153,12 +153,8 @@ public class OCAManager {
         }
 
         String ip = GetIP(vm);
-
-        WaitUntilCreated(ip);
-
         vmInfo.setApiID(newVMId);
         virtualMachineRepository.save(vmInfo);
-
         return ip;
     }
 

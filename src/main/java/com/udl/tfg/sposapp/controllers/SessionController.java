@@ -120,7 +120,7 @@ public class SessionController {
             sessionRepository.save(session);
             String ip = "";
             try {
-                ip = ocaManager.createNewVM(session.getVmConfig());
+                ip = GetVMIp(session);
             } catch (Exception e) {
                 sessionRepository.delete(session);
                 throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
@@ -174,5 +174,32 @@ public class SessionController {
         response.put("id", String.valueOf(session.getId()));
         response.put("key", session.getKey());
         return ResponseEntity.created(URI.create(request.getRequestURL() + "/" + session.getId())).body(response);
+    }
+
+    private String GetVMIp(Session session) {
+        if (session.getIP() != null)
+            return session.getIP();
+
+        if (session.getVmConfig().getId() < 4)
+            return getPredefinedVMIp(session.getVmConfig().getId());
+
+        try {
+            return ocaManager.createNewVM(session.getVmConfig());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getPredefinedVMIp(long id) {
+        switch ((int)id) {
+            case 1:
+                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.LOW);
+            case 2:
+                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.MEDIUM);
+            case 3:
+                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.HIGH);
+            default:
+                return null;
+        }
     }
 }

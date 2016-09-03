@@ -41,8 +41,9 @@ public class RunExecutionThread extends Thread {
 
     public void run() {
         try {
+            CleanSessionPath();
             ocaManager.WaitUntilCreated(vmIP);
-            session.setIP(GetVMIp());
+            session.setIP(vmIP);
             sessionRepository.save(session);
             SendFiles(session);
             executionManager.LaunchExecution(session);
@@ -51,31 +52,21 @@ public class RunExecutionThread extends Thread {
         }
     }
 
-    private String GetVMIp() {
-        if (session.getIP() != null)
-            return session.getIP();
-
-        if (session.getVmConfig().getId() < 4)
-            return getPredefinedVMIp();
+    private void CleanSessionPath() {
+//        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
+//        try {
+//            FileUtils.cleanDirectory(storagePath.toFile());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         try {
-            return ocaManager.createNewVM(session.getVmConfig());
+            sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
-    }
-
-    private String getPredefinedVMIp() {
-        switch ((int)session.getVmConfig().getId()) {
-            case 1:
-                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.LOW);
-            case 2:
-                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.MEDIUM);
-            case 3:
-                return ocaManager.GetPredefinedVMIP(OCAManager.PredefinedVM.HIGH);
-            default:
-                return null;
-        }
+        sshManager.CloseSession();
     }
 
     private void SendFiles(Session session) throws Exception {

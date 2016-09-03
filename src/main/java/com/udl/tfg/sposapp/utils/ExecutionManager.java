@@ -14,11 +14,11 @@ public class ExecutionManager {
 
     private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
 
-    private String cplexMpsLp = "ts cplex-exec %1$s %2$s %3$s %4$s %5%s";
-    private String cplexDatMod = "ts cplex-opl %1$s %2$s %3$s %4$s %5$s %6%s";
-    private String gurobi = "ts gurobi-exec %1$s %2$s %3$s %4$s %5%s";
-    private String lpsolveMPS = "ts lpsolve-mps %1$s %2$s %3$s %4$s %5%s";
-    private String lpsolveLP = "ts lpsolve-lp %1$s %2$s %3$s %4$s %5%s";
+    private String cplexMpsLp = "ts cplex-exec %1$s %2$s %3$s %4$s %5$s";
+    private String cplexDatMod = "ts cplex-opl %1$s %2$s %3$s %4$s %5$s %6$s";
+    private String gurobi = "ts gurobi-exec %1$s %2$s %3$s %4$s %5$s";
+    private String lpsolveMPS = "ts lpsolve-mps %1$s %2$s %3$s %4$s %5$s";
+    private String lpsolveLP = "ts lpsolve-lp %1$s %2$s %3$s %4$s %5$s";
 
     public void LaunchExecution(Session session) throws Exception {
         sshManager.OpenSession(session.getIP(), 22, "root");
