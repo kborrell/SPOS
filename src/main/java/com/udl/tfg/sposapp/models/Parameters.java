@@ -1,12 +1,10 @@
 package com.udl.tfg.sposapp.models;
 
-import org.hibernate.validator.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,6 +25,7 @@ public class Parameters {
     @ManyToOne
     private ModelInfo model;
 
+    @JsonIgnore
     @ElementCollection
     @OneToMany (cascade = {CascadeType.ALL})
     public List<DataFile> files;

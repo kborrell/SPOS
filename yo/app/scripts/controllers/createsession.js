@@ -22,6 +22,11 @@ angular.module('sposApp')
       ERROR: 5
     };
 
+    $scope.CreateStep = {
+      CREATING_SESSION: 1,
+      UPLOADING_FILE: 2
+    };
+
     $scope.MethodLoadState = {
       NONLOADED: 1,
       LOADING: 2,
@@ -31,6 +36,7 @@ angular.module('sposApp')
 
     $scope.location = $location;
     $scope.predefinedVM = "";
+    $scope.createStep = $scope.CreateStep.CREATING_SESSION;
     $scope.state = $scope.CreateState.FIRSTSTEP;
     $scope.methodLoadState = $scope.MethodLoadState.NONLOADED;
     $scope.uploadMessage = "";
@@ -139,12 +145,40 @@ angular.module('sposApp')
             result += "\n" + resultsMod;
           }
           var file = {extension: $scope.file.name.split('.').pop(), name: $scope.file.name, content: toUTF8Array(result)};
-          $scope.parameters.files.push(file);
+          //$scope.parameters.files.push(file);
         });
 
       $("#input-" + $scope.fileType).fileinput('disable');
     };
 
+
+
+    var uploadFileToUrl = function(files, uploadUrl, success, error){
+      var fd = new FormData();
+
+      for (var i=0; i < files.length; i++)
+      {
+        fd.append('file' + i, files[i]);
+      }
+
+      $http.post(uploadUrl, fd, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+      })
+        .success(function(){
+          success();
+        })
+        .error(function(){
+          error();
+        });
+    };
+
+    $scope.uploadFiles = function (url, success, error) {
+      var files = [$scope.file1];
+      if ($scope.file2)
+        files.push($scope.file2);
+      uploadFileToUrl(files, url, success, error);
+    };
 
     var getPredefinedVM = function () {
       var id = -1;
@@ -194,7 +228,12 @@ angular.module('sposApp')
       Session.save($scope.session).$promise.then(function (session) {
         $scope.sessionId = session.id;
         $scope.sessionKey = session.key;
-        $scope.state = $scope.CreateState.CREATED;
+
+        $scope.uploadFiles("http://127.0.0.1:8080/session/" + $scope.sessionId + "/uploadFiles?key=" + $scope.sessionKey, function () {
+          $scope.state = $scope.CreateState.CREATED;
+        }, function() {
+          $scope.state = $scope.CreateState.ERROR;
+        });
       }).catch(function (error) {
         $scope.state = $scope.CreateState.ERROR;
         if (error.data.message.substring(0, 7) == "VMERROR")
@@ -225,9 +264,11 @@ angular.module('sposApp')
 
     $scope.validateFiles = function () {
 
-      if ($scope.parameters.files.length == 0)
-        return false;
+      if ($scope.file1)
+        return true;
 
+      return false;
+      
       if ($scope.parameters.files[0].name == "")
         return false;
 

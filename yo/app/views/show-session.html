@@ -56,12 +56,13 @@
       <div id="session-input-row" class="panel panel-default" style="margin-top: 50px;">
         <div class="panel-heading">Input file</div>
         <div class="panel-body">
+          <h5 ng-show="files.length == 0">Loading input file... Please wait.</h5>
           <div ng-repeat="file in files">
             <div class="col-xs-6">
               <span style="font-size: large; font-weight: 600">{{file.name}}</span>
               <br>
               <hm-read-more
-                hm-text="{{file.content}}"
+                hm-text="{{::file.content}}"
                 hm-limit="200"
                 hm-more-text="Show more"
                 hm-less-text="Show less"
@@ -86,7 +87,8 @@
       <div class="panel-body">
         <div class="tab-content">
           <div id="results" class="tab-pane fade in active">
-            <h4 ng-hide="shortResults">Results will be shown when the execution ends.</h4>
+            <h4 ng-show="!shortResults && !fullResults">Results will be shown when the execution ends.</h4>
+            <h4 ng-show="!shortResults && fullResults">There was an error in the execution. Please try again.</h4>
             <hm-read-more
               hm-text="{{shortResults}}"
               hm-limit="200"

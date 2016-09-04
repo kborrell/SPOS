@@ -63,7 +63,8 @@
     <h3>
       <img src="../images/loading_spinner.gif" width="75" style="margin-left: -25px">Creating session...
       <br>
-      <small>Your session is being created. Please wait...</small>
+      <small ng-show="createStep == CreateStep.CREATING_SESSION">Your session is being created. Please wait...</small>
+      <small ng-show="createStep == CreateStep.UPLOADING_FILES">Session created! Uploading files... This can take a while.</small>
     </h3>
   </div>
 

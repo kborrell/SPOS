@@ -10,19 +10,19 @@
 
     <div ng-show="fileType == 'mps'" class="col-xs-11 col-xs-offset-1">
       <label class="control-label">Select MPS File</label>
-      <input id="input-mps" type="file" class="file" data-show-preview="false" accept=".mps" ng-file-select="onFileSelect($files, {ext:mps})" data-show-remove="false" data-show-upload="false">
+      <input id="input-mps" type="file" class="file" data-show-preview="false" accept=".mps" file-model="file1" data-show-remove="false" data-show-upload="false">
     </div>
 
     <div ng-show="fileType == 'lp'" class="col-xs-11 col-xs-offset-1">
       <label class="control-label">Select LP File</label>
-      <input id="input-lp" type="file" class="file" data-show-preview="false" accept=".lp" ng-file-select="onFileSelect($files, {ext:lp})" data-show-remove="false" data-show-upload="false">
+      <input id="input-lp" type="file" class="file" data-show-preview="false" accept=".lp" file-model="file1" data-show-remove="false" data-show-upload="false">
     </div>
 
     <div ng-show="fileType == 'dat'" class="col-xs-11 col-xs-offset-1">
       <label class="control-label">Select DAT File</label>
-      <input id="input-dat" type="file" class="file" data-show-preview="false" accept=".dat" ng-file-select="onFileSelect($files, {ext:dat})" data-show-remove="false" data-show-upload="false">
+      <input id="input-dat" type="file" class="file" data-show-preview="false" accept=".dat" file-model="file1" data-show-remove="false" data-show-upload="false">
       <label class="control-label">Select MOD File</label>
-      <input id="input-mod" type="file" class="file" data-show-preview="false" accept=".mod" ng-file-select="onFileSelect($files, {ext:mod})" data-show-remove="false" data-show-upload="false">
+      <input id="input-mod" type="file" class="file" data-show-preview="false" accept=".mod" file-model="file2" data-show-remove="false" data-show-upload="false">
     </div>
   </form>
   <div ng-show="errorFile && !inputUpload.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">

@@ -41,31 +41,35 @@ angular.module('sposApp')
       var GetSession = function () {
         Session.query({id: $scope.sessionId, key: $scope.sessionKey})
           .$promise.then(function (session) {
-            if (session){
+            if (session) {
               $scope.logged = true;
               $scope.session = session;
 
-
-              $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/inputFiles?key=" + $scope.sessionKey, "")
-                .success(function (rawData, status) {
-                  var files = rawData.split("^");
-                  for (var i=0; i<files.length; i++){
-                    var file = {name: "", content: ""};
-                    var fileData = files[i].split('@');
-                    file.name = fileData[0];
-                    file.content = fileData[1];
-                    $scope.files.push(file);
-                  }
-
-                    $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/results?key=" + $scope.sessionKey, "")
-                      .success(function (resultData, status) {
-                        GetResults(resultData);
-                        GetChartsData(resultData);
-                        GetSessionStatus();
-                      });
-                  GetSessionStatus();
-                });
+              GetSessionStatus();
+              if ($scope.files.length == 0) {
+                $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/inputFiles?key=" + $scope.sessionKey, "")
+                  .success(function (rawData, status) {
+                    var files = rawData.split("^");
+                    for (var i = 0; i < files.length; i++) {
+                      var file = {name: "", content: ""};
+                      var fileData = files[i].split('@');
+                      file.name = fileData[0];
+                      file.content = fileData[1];
+                      $scope.files.push(file);
+                    }
+                  });
+              }
+              if ($scope.shortResults == "" && $scope.fullResults == "") {
+                $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/results?key=" + $scope.sessionKey, "")
+                  .success(function (resultData, status) {
+                    GetResults(resultData);
+                    GetChartsData(resultData);
+                    GetSessionStatus();
+                  });
+                GetSessionStatus();
+              }
             }
+
         }).catch(function (error) {
             $scope.loginError = "Incorrect ID or key. Please try again";
         });
@@ -122,6 +126,7 @@ angular.module('sposApp')
 
       var GetSessionStatus = function () {
         var result;
+        var errorMsg = "An error has occurred during the execution. Please download the full result to check the solver output";
 
         if ($scope.session == null)
           result = "---------";
@@ -132,13 +137,14 @@ angular.module('sposApp')
         if ($scope.session.ip != null && $scope.shortResults == "")
           result = $sce.trustAsHtml("<span style=\"color: #FFC107;\"> Executing </span>");
 
-        if ($scope.shortResults != "")
+        if ($scope.shortResults != "" && $scope.shortResults != errorMsg)
           result = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
 
-        if ($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("fatal") != -1)) {
+        if (($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("fatal") != -1))
+              || ($scope.fullResults != "" && ($scope.shortResults == "" || $scope.shortResults == errorMsg) )) {
 
           result = $sce.trustAsHtml("<span style=\"color: #ff0011;\"> Error </span>");
-          $scope.shortResults = "An error has occurred during the execution. Please download the full result to check the solver output";
+          $scope.shortResults = errorMsg;
         }
 
         $scope.sessionStatus = result;
@@ -151,9 +157,9 @@ angular.module('sposApp')
         $scope.logged = false;
         $scope.loginError = "";
         $scope.sessionStatus = "---------";
-        $scope.files = [];
-        $scope.shortResults = "";
-        $scope.fullResults = "";
+        //$scope.files = [];
+        //$scope.shortResults = "";
+        //$scope.fullResults = "";
       };
 
       $scope.refresh = function () {

@@ -5,15 +5,13 @@ import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.ResultRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ResultsParser {
@@ -93,6 +91,9 @@ public class ResultsParser {
             }
             executionResults.setStartTime(startTime);
             executionResults.setFinishTime(finishTime);
+            if (shortResults.isEmpty()){
+                return new String(executionResults.getFullResults(), StandardCharsets.UTF_8);
+            }
             return shortResults;
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,10 @@
 package com.udl.tfg.sposapp.controllers;
 
+import com.udl.tfg.sposapp.models.DataFile;
+import com.udl.tfg.sposapp.models.Parameters;
 import com.udl.tfg.sposapp.models.Session;
+import com.udl.tfg.sposapp.repositories.DataFileRepository;
+import com.udl.tfg.sposapp.repositories.ParametersRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.*;
@@ -10,6 +14,8 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -20,16 +26,42 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 @RepositoryRestController
 public class SessionController {
+
+    private static final String MOD_MAIN_METHOD = "main {\n" +
+            "    var before = new Date();\n" +
+            "\tvar temp = before.getTime();\n" +
+            "\t\tthisOplModel.generate();\n" +
+            "    \tif (cplex.solve()) {\n" +
+            "    \t\t\twriteln(\"+-+-+-+\");\n" +
+            "    \t\t\twriteln(\"-- Objective = \", cplex.getObjValue());\n" +
+            "    \t\t\twriteln(\"-- Solution: \");\n" +
+            " \t\t\t\twriteln(thisOplModel.printSolution());\n" +
+            "                var after = new Date();\n" +
+            "\t\t\t\twriteln(\"-- Solving time ~= \",after.getTime()-temp, \"ms\");   \t\n" +
+            "        }else{\n" +
+            "        \t\twriteln(\"ERROR - No Solution for this model!\");\n" +
+            "        }\n" +
+            "    writeln(\"+-+-+-+\"); \n" +
+            "}";
 
     @Autowired
     private SessionRepository sessionRepository;
 
     @Autowired
     private VirtualMachineRepository vmRepository;
+
+    @Autowired
+    private DataFileRepository dataFileRepository;
+
+    @Autowired
+    private ParametersRepository parametersRepository;
 
     @Autowired
     private SSHManager sshManager;
@@ -118,17 +150,73 @@ public class SessionController {
         if (session != null) {
             session.generateKey();
             sessionRepository.save(session);
-            String ip = "";
-            try {
-                ip = GetVMIp(session);
-            } catch (Exception e) {
-                sessionRepository.delete(session);
-                throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
-            }
-            new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder, ip).start();
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
+        }
+    }
+
+    @RequestMapping(value = "/session/{id}/uploadFiles", method = RequestMethod.POST)
+    public @ResponseBody HttpEntity<Void> upload(@PathVariable String id, MultipartHttpServletRequest request, @RequestParam(value = "key", required = true) String key) throws Exception {
+
+        Session session = sessionRepository.findOne(Long.parseLong(id));
+        if (session == null)
+            throw new NullPointerException();
+
+        if (session.getKey().equals(key)) {
+
+            List<DataFile> dataFiles = ParseFiles(request, session);
+            Parameters params = session.getInfo();
+            params.setFiles(dataFiles);
+            parametersRepository.save(params);
+            session.setInfo(params);
+            sessionRepository.save(session);
+
+            LaunchExecution(session);
+        } else {
+            throw new InvalidKeyException();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    private void LaunchExecution(Session session) {
+        String ip = "";
+        try {
+            ip = GetVMIp(session);
+        } catch (Exception e) {
+            sessionRepository.delete(session);
+            throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
+        }
+        new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder, ip).start();
+    }
+
+    private List<DataFile> ParseFiles(MultipartHttpServletRequest request, Session session) throws IOException {
+        Iterator<String> itr =  request.getFileNames();
+        List<DataFile> dataFiles = new ArrayList<DataFile>();
+        MultipartFile mpf = null;
+        while(itr.hasNext()){
+            mpf = request.getFile(itr.next());
+            DataFile df = new DataFile();
+            df.setContent(mpf.getBytes());
+            df.setName(mpf.getOriginalFilename());
+            df.setExtension(mpf.getOriginalFilename().split("\\.")[1]);
+
+            if (df.getExtension().toLowerCase().equals("mod"))
+            {
+                PrepareModFile(df);
+            }
+
+            dataFileRepository.save(df);
+            dataFiles.add(df);
+        }
+
+        return dataFiles;
+    }
+
+    private void PrepareModFile(DataFile df) {
+        String content = new String(df.getContent(), StandardCharsets.UTF_8);
+        if (!content.contains("main")){
+            content = content + "\n" + MOD_MAIN_METHOD;
         }
     }
 
