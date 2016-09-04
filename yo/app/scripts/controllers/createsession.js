@@ -264,22 +264,14 @@ angular.module('sposApp')
 
     $scope.validateFiles = function () {
 
-      if ($scope.file1)
-        return true;
-
-      return false;
-      
-      if ($scope.parameters.files[0].name == "")
+      if (!$scope.file1)
         return false;
 
-      if ($scope.parameters.files[0].extension == "dat" && $scope.parameters.files.length < 2)
-        return false;
-
-      if ($scope.parameters.files[0].extension == "dat" && $scope.parameters.files[1].name == "")
+      if (($scope.file1.name.split('.').pop() == "dat" || $scope.file1.name.split('.').pop() == "mod") && !$scope.file2)
         return false;
 
       return true;
-    }
+    };
 
     $scope.setDeterminist = function () {
       if ($scope.problemType == "Determinist") {

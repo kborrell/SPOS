@@ -15,6 +15,7 @@ FILEDAT=$SESSION_PATH$4
 DURATION=$6
 OPTIONS_FILENAME="options.ops"
 OPTIONS_FILE=$SESSION_PATH$OPTIONS_FILENAME
+SUCCESS=0
 
 if ! { [ -e $FILEMODE ] && [ -e $FILEDAT ]; }; then
 	echo "Files must exist"
@@ -38,6 +39,7 @@ SendResults() {
         scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@192.168.101.113:$SESSION_PATH$CPU_DATA &&
         scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@192.168.101.113:$SESSION_PATH$MEM_DATA &&
         echo "Results sent!" &&
+        SUCCESS=1 &&
         SendEmail
 }
 
@@ -55,3 +57,9 @@ RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 START_TIME=$(date +'%s')
 
 echo "StartTime: $(date +'%s')" > $RESULTS_FILE && RunExecution && echo -e "\nFinishTime: $(date +'%s')" >> $RESULTS_FILE && SendResults
+
+if [ $SUCCESS -eq 0 ]; then
+        if [ -e $RESULTS_FILE ]; then
+                scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE
+        fi
+fi

@@ -157,6 +157,7 @@ public class SSHManager {
     }
 
     public File GetFile(long id, String ip, String fileName) throws Exception {
+        //CloseSession();
         String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
         OpenSession(ip, 22, "root");
         File f = ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);

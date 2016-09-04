@@ -12,6 +12,7 @@ EMAIL=$3
 SESSION_PATH="/home/sposApp/sessions/$ID/"
 FILE=$SESSION_PATH$4
 DURATION=$5
+SUCCESS=0
 
 if ! [[ -e $FILE ]]; then
 	echo "File must exist"
@@ -35,6 +36,7 @@ SendResults() {
         scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@192.168.101.113:$SESSION_PATH$CPU_DATA &&
         scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@192.168.101.113:$SESSION_PATH$MEM_DATA &&
         echo "Results sent!" &&
+        SUCCESS=1 &&
         SendEmail
 }
 
@@ -51,3 +53,9 @@ RESULTS_FILE=$SESSION_PATH$RESULTS_NAME
 START_TIME=$(date +'%s')
 
 echo "StartTime: $(date +'%s')" > $RESULTS_FILE && RunExecution && echo "FinishTime: $(date +'%s')" >> $RESULTS_FILE  && SendResults
+
+if [ $SUCCESS -eq 0 ]; then
+        if [ -e $RESULTS_FILE ]; then
+                scp -i /root/.ssh/id_rsa $RESULTS_FILE root@192.168.101.113:$RESULTS_FILE
+        fi
+fi
