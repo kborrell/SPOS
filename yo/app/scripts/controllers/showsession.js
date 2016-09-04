@@ -49,10 +49,10 @@ angular.module('sposApp')
               if ($scope.files.length == 0) {
                 $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/inputFiles?key=" + $scope.sessionKey, "")
                   .success(function (rawData, status) {
-                    var files = rawData.split("^");
+                    var files = rawData.split("//++//@^@//++//");
                     for (var i = 0; i < files.length; i++) {
                       var file = {name: "", content: ""};
-                      var fileData = files[i].split('@');
+                      var fileData = files[i].split('//++//@*@//++//');
                       file.name = fileData[0];
                       file.content = fileData[1];
                       $scope.files.push(file);

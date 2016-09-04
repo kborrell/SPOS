@@ -59,25 +59,39 @@ public class RunExecutionThread extends Thread {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
+        com.jcraft.jsch.Session sshSession = null;
         try {
-            sshManager.OpenSession("192.168.101.113", 22, "root");
-            sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
+             sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
+            sshSession.disconnect();
         } catch (Exception e) {
+            if (sshSession!= null) sshSession.disconnect();
             e.printStackTrace();
         }
-        sshManager.CloseSession();
     }
 
     private void SendFiles(Session session) throws Exception {
-        sshManager.CloseSession();
-        sshManager.OpenSession(session.getIP(), 22, "root");
-        sshManager.CleanPath(sshStorageFolder + "/" + String.valueOf(session.getId()));
-        for (int i=0; i < session.getInfo().getFiles().size(); i++){
-            File file = saveFile(session, session.getInfo().getFiles().get(i));
-            sshManager.SendFile(session.getId(), file);
+        com.jcraft.jsch.Session sshSession = null;
+        try {
+            sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
+            sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
+            for (int i=0; i < session.getInfo().getFiles().size(); i++){
+                File file = saveFile(session, session.getInfo().getFiles().get(i));
+                sshManager.SendFile(sshSession, session.getId(), file);
+            }
+            sshSession.disconnect();
+
+            sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
+            for (int i=0; i < session.getInfo().getFiles().size(); i++){
+                File file = saveFile(session, session.getInfo().getFiles().get(i));
+                sshManager.SendFile(sshSession, session.getId(), file);
+            }
+            sshSession.disconnect();
+        } catch (Exception e) {
+            if (sshSession != null) sshSession.disconnect();
+            throw new Exception(e);
         }
-        sshManager.CloseSession();
     }
 
     private File saveFile(com.udl.tfg.sposapp.models.Session session, DataFile dataFile) throws IOException {

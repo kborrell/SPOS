@@ -25,48 +25,43 @@ public class ResultsParser {
     @Autowired
     private SSHManager sshManager;
 
-    @Value("${localStorageFolder}") private String localStorageFolder;
-
     public void ParseResults(Session session, String results) throws Exception {
         if (!results.equals("")) {
             Result executionResults = new Result();
-            executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
-            String shortResults;
+           // executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
             switch (session.getInfo().getMethod().getMethod()) {
                 case CPLEX:
-                    shortResults = parseCplex(session, results, executionResults);
+                    parseCplex(session, results, executionResults);
                     break;
                 case Gurobi:
-                    shortResults = parseGurobi(session, results, executionResults);
+                    parseGurobi(session, results, executionResults);
                     break;
                 case Lpsolve:
-                    shortResults = parseLpsolve(session, results, executionResults);
+                    parseLpsolve(session, results, executionResults);
                     break;
                 default:
-                    shortResults = "";
                     System.out.println("UNKNOWN METHOD");
                     break;
             }
-
-            executionResults.setShortResults(shortResults.getBytes(Charset.forName("UTF-8")));
             resultRepository.save(executionResults);
             session.setResults(executionResults);
             sessionRepository.save(session);
         }
     }
 
-    private String parseCplex(Session session, String results, Result executionResults) throws Exception {
+    private void parseCplex(Session session, String results, Result executionResults) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
-            return parseOpl(session, results, executionResults);
+            parseOpl(session, results, executionResults);
         } else {
-            return parseMpsCplex(session, results, executionResults);
+            parseMpsCplex(session, results, executionResults);
         }
     }
 
-    private String parseOpl(Session session, String results, Result executionResults) {
+    private void parseOpl(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
+        String fullResults = "";
         String line = null;
         int startTime = 0;
         int finishTime = 0;
@@ -75,10 +70,12 @@ public class ResultsParser {
                 if (line.contains("StartTime: ")){
                     String time = line.substring(11);
                     startTime = Integer.parseInt(time);
+                    continue;
                 }
                 if (line.contains("FinishTime: ")){
                     String time = line.substring(12);
                     finishTime = Integer.parseInt(time);
+                    continue;
                 }
                 if (line.equals("+-+-+-+")) {
                     areResults = !areResults;
@@ -88,29 +85,43 @@ public class ResultsParser {
                 if (areResults && !line.startsWith("//")){
                     shortResults += line + "\n";
                 }
+
+                fullResults += line + "\n";
             }
             executionResults.setStartTime(startTime);
             executionResults.setFinishTime(finishTime);
+            executionResults.setFullResults(fullResults.getBytes(StandardCharsets.UTF_8));
             if (shortResults.isEmpty()){
-                return new String(executionResults.getFullResults(), StandardCharsets.UTF_8);
+                executionResults.setShortResults(fullResults.getBytes(StandardCharsets.UTF_8));
+            } else {
+                executionResults.setShortResults(shortResults.getBytes(StandardCharsets.UTF_8));
             }
-            return shortResults;
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
     }
 
-    private String parseMpsCplex(Session session, String results, Result executionResults) {
+    private void parseMpsCplex(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
+        String fullResults = "";
         String line = null;
         int startTime = 0;
         int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains("MIP - Integer optimal solution")){
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                    continue;
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                    continue;
+                }
+                if (line.contains("MIP - Integer optimal")){
                     shortResults += line.substring(line.indexOf("Objective")) + "\n";
                 }
                 if (line.contains("Solution time")) {
@@ -120,33 +131,27 @@ public class ResultsParser {
                     shortResults += "\n";
                     areResults = true;
                 }
-                if (line.contains("StartTime: ")){
-                    String time = line.substring(11);
-                    startTime = Integer.parseInt(time);
-                }
-                if (line.contains("FinishTime: ")){
-                    String time = line.substring(12);
-                    finishTime = Integer.parseInt(time);
-                }
                 if (areResults && line.contains("CPLEX>")) {
                     areResults = false;
                 }
                 if (areResults) {
                     shortResults += line + "\n";
                 }
+                fullResults += line + "\n";
             }
             executionResults.setStartTime(startTime);
             executionResults.setFinishTime(finishTime);
-            return shortResults;
+            executionResults.setFullResults(fullResults.getBytes(StandardCharsets.UTF_8));
+            executionResults.setShortResults(shortResults.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
     }
 
-    private String parseGurobi(Session session, String results, Result executionResults) {
+    private void parseGurobi(Session session, String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         String shortResults = "";
+        String fullResults = "";
         String line = null;
         boolean areResults = false;
         boolean existZeroVar = false;
@@ -164,6 +169,7 @@ public class ResultsParser {
                     finishTime = Integer.parseInt(time);
                     continue;
                 }
+                fullResults += line + "\n";
                 if (line.contains("Explored")){
                     shortResults += "Execution time: " + line.substring(line.indexOf("in") + 2) + "\n";
                     continue;
@@ -182,7 +188,7 @@ public class ResultsParser {
 
                 if (areResults){
                     String[] var = line.split(" ");
-                    if (var.length > 1 && Integer.parseInt(var[var.length - 1]) > 0) {
+                    if (var.length > 1 && Float.parseFloat(var[var.length - 1]) > 0) {
                         shortResults += line + "\n";
                     } else {
                         existZeroVar = true;
@@ -194,23 +200,35 @@ public class ResultsParser {
             }
             executionResults.setStartTime(startTime);
             executionResults.setFinishTime(finishTime);
-            return shortResults;
+            executionResults.setFullResults(fullResults.getBytes(StandardCharsets.UTF_8));
+            executionResults.setShortResults(shortResults.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
     }
 
-    private String parseLpsolve(Session session, String results, Result executionResults)  {
+    private void parseLpsolve(Session session, String results, Result executionResults)  {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         boolean existZeroVar = false;
         String shortResults = "";
+        String fullResults = "";
         String line = null;
         int startTime = 0;
         int finishTime = 0;
         try {
             while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("StartTime: ")){
+                    String time = line.substring(11);
+                    startTime = Integer.parseInt(time);
+                    continue;
+                }
+                if (line.contains("FinishTime: ")){
+                    String time = line.substring(12);
+                    finishTime = Integer.parseInt(time);
+                    continue;
+                }
+                fullResults += line + "\n";
                 if (line.contains("Value of objective function")){
                     shortResults += line + "\n";
                 }
@@ -218,14 +236,6 @@ public class ResultsParser {
                     areResults = true;
                     shortResults += "\n";
                     continue;
-                }
-                if (line.contains("StartTime: ")){
-                    String time = line.substring(11);
-                    startTime = Integer.parseInt(time);
-                }
-                if (line.contains("FinishTime: ")){
-                    String time = line.substring(12);
-                    finishTime = Integer.parseInt(time);
                 }
                 if (line.startsWith("real")) {
                     shortResults += "Execution times: \n";
@@ -237,20 +247,21 @@ public class ResultsParser {
             }
             executionResults.setStartTime(startTime);
             executionResults.setFinishTime(finishTime);
-            return shortResults;
+            executionResults.setFullResults(fullResults.getBytes(StandardCharsets.UTF_8));
+            executionResults.setShortResults(shortResults.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
     }
 
     public void ParseCharts(Session session) {
         Result results = session.getResults();
+        com.jcraft.jsch.Session sshSession = null;
         try {
-            File cpuFile = new File(localStorageFolder + "/" + String.valueOf(session.getId()) + "/cpuData.txt");
-            File memFile = new File(localStorageFolder + "/" + String.valueOf(session.getId()) + "/memData.txt");
-            String cpuData = readFile(cpuFile).trim();
-            String memData = readFile(memFile).trim();
+            sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
+            String cpuData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
+            String memData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
+            sshSession.disconnect();
             if (cpuData.length() > 0 && memData.length() > 0){
                 results.setCpuData(cpuData.getBytes(Charset.forName("UTF-8")));
                 results.setMemData(memData.getBytes(Charset.forName("UTF-8")));
@@ -259,13 +270,9 @@ public class ResultsParser {
                 sessionRepository.save(session);
             }
         } catch (Exception e) {
+            if (sshSession != null) sshSession.disconnect();
             e.printStackTrace();
         }
 
-    }
-
-    private String readFile(File f) throws IOException {
-        byte[] encoded = Files.readAllBytes(f.toPath());
-        return new String(encoded, Charset.defaultCharset());
     }
 }

@@ -101,9 +101,9 @@ public class SessionController {
         if (session.getKey().equals(key)) {
             String files = "";
             for (int i = 0; i < session.getInfo().getFiles().size(); i++) {
-                files += session.getInfo().getFiles().get(i).getName() + "@" + new String(session.getInfo().getFiles().get(i).getContent(), StandardCharsets.UTF_8);
+                files += session.getInfo().getFiles().get(i).getName() + "//++//@*@//++//" + new String(session.getInfo().getFiles().get(i).getContent(), StandardCharsets.UTF_8);
                 if (i < session.getInfo().getFiles().size() - 1){
-                    files += "^";
+                    files += "//++//@^@//++//";
                 }
             }
             return files;
@@ -124,9 +124,10 @@ public class SessionController {
                     String content = readFile(f);
                     if (!content.isEmpty()) {
                         resultsParser.ParseResults(session, readFile(f));
-                        resultsParser.ParseCharts(session);
-                        //ocaManager.deleteVM(session.getVmConfig().getApiID());
                     }
+                }
+                if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null)){
+                    resultsParser.ParseCharts(session);
                 }
 
                 if (session.getResults() == null) {

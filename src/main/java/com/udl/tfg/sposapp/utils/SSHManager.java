@@ -28,7 +28,6 @@ public class SSHManager {
     @Value("${sshStorageFolder}")   private String sshStorageFolder;
 
     private JSch jSch = null;
-    private Session session = null;
 
     public void Initialize() throws JSchException {
         if (jSch != null)
@@ -40,13 +39,15 @@ public class SSHManager {
         System.out.println("JSCH Initialized");
     }
 
-    public void OpenSession(String address, int port, String username) throws Exception {
-        OpenSession(address, port, username, null);
+    public Session OpenSession(String address, int port, String username) throws Exception {
+        return OpenSession(address, port, username, null);
     }
 
-    public void OpenSession(String address, int port, String username, Hashtable<Object, Object> properties) throws Exception {
-        if (session != null)
-            throw new IllegalStateException("A session is still active. You must close it before open another one");
+    public Session OpenSession(String address, int port, String username, Hashtable<Object, Object> properties) throws Exception {
+        //if (session != null)
+            //throw new IllegalStateException("A session is still active. You must close it before open another one");
+
+        Session session = null;
 
         if (jSch == null)
             throw new NullPointerException("SSHUtils has not been initialized.");
@@ -61,34 +62,34 @@ public class SSHManager {
             session.setConfig(config);
             session.connect();
             System.out.println("Session opened in " + address + " as " + username);
+            return session;
         } catch (Exception e){
             session = null;
             throw new Exception(e);
         }
     }
 
-    public void CleanPath(String destPath) throws Exception {
+    public void CleanPath(Session session, String destPath) throws Exception {
         try {
             System.out.println("Cleaning dest path...");
-            ExecuteCommand("rm -rf " + destPath.replace('\\', '/'));
+            ExecuteCommand(session, "rm -rf " + destPath.replace('\\', '/'));
             System.out.println("Cleaning done!");
         } catch (Exception e) {
-            CloseSession();
             throw new Exception(e);
         }
     }
 
-    public void SendFile(long id, File sourceFile) throws Exception {
+    public void SendFile(Session session, long id, File sourceFile) throws Exception {
         if (sourceFile == null)
             return;
 
         String destPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + sourceFile.getName();
-        SendFile(sourceFile.getPath(), destPath);
+        SendFile(session, sourceFile.getPath(), destPath);
     }
 
-    public void SendFile(String sourcePath, String destPath) throws Exception {
+    public void SendFile(Session session, String sourcePath, String destPath) throws Exception {
         try {
-            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            ChannelSftp channelSftp = (ChannelSftp) getChannel(session, "sftp");
             channelSftp.connect();
 
             File sourceFile = new File(sourcePath);
@@ -96,7 +97,7 @@ public class SSHManager {
             if (!sourceFile.exists())
                 throw new FileNotFoundException("Invalid source path.");
 
-            ExecuteCommand("mkdir -p " + destFile.getParent().replace('\\', '/'));
+            ExecuteCommand(session, "mkdir -p " + destFile.getParent().replace('\\', '/'));
             System.out.println("Moving to dest path...");
             channelSftp.cd(destFile.getParent().replace('\\', '/'));
             System.out.println("Sending file...");
@@ -104,14 +105,13 @@ public class SSHManager {
             channelSftp.disconnect();
             System.out.println("Done!");
         } catch (Exception e) {
-            CloseSession();
             throw new Exception(e);
         }
     }
 
-    public String ReadFile(String filePath) throws Exception {
+    public String ReadFile(Session session, String filePath) throws Exception {
         try {
-            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            ChannelSftp channelSftp = (ChannelSftp) getChannel(session, "sftp");
             channelSftp.connect();
             InputStream out = channelSftp.get(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(out));
@@ -128,9 +128,9 @@ public class SSHManager {
         }
     }
 
-    public File ReceiveFile(String filePath, String destPath) throws Exception {
+    public File ReceiveFile(Session session, String filePath, String destPath) throws Exception {
         try {
-            ChannelSftp channelSftp = (ChannelSftp) getChannel("sftp");
+            ChannelSftp channelSftp = (ChannelSftp) getChannel(session, "sftp");
             channelSftp.connect();
 
             File outputFile = new File(destPath);
@@ -145,13 +145,11 @@ public class SSHManager {
             try {
                 channelSftp.get(filePath, output);
             } catch (SftpException e){
-
             }finally {
                 output.close();
                 return outputFile;
             }
         }catch (Exception e) {
-            CloseSession();
             throw new Exception(e);
         }
     }
@@ -159,15 +157,15 @@ public class SSHManager {
     public File GetFile(long id, String ip, String fileName) throws Exception {
         //CloseSession();
         String srcPath = sshStorageFolder + "/" + String.valueOf(id) + "/" + fileName;
-        OpenSession(ip, 22, "root");
-        File f = ReceiveFile(srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
-        CloseSession();
+        Session session = OpenSession(ip, 22, "root");
+        File f = ReceiveFile(session, srcPath, localStorageFolder + "/" + String.valueOf(id) + "/" + fileName);
+        session.disconnect();
         return f;
     }
 
-    public String ExecuteCommand(String command) throws Exception {
+    public String ExecuteCommand(Session session, String command) throws Exception {
         try {
-            ChannelExec channelExec = (ChannelExec) getChannel("exec");
+            ChannelExec channelExec = (ChannelExec) getChannel(session, "exec");
             System.out.println("Running command: " + command);
             BufferedReader in = new BufferedReader(new InputStreamReader(channelExec.getInputStream()));
             channelExec.setCommand(". ~/.bashrc && " + command);
@@ -185,47 +183,17 @@ public class SSHManager {
             channelExec.disconnect();
             return output;
         } catch (Exception e){
-            CloseSession();
+            session.disconnect();
             throw new Exception(e);
         }
     }
 
-    private Channel getChannel(String channelType) throws JSchException, Exception {
+    private Channel getChannel(Session session, String channelType) throws JSchException, Exception {
         if (session == null)
             throw new NullPointerException("You must open a new session before open any channel");
         Channel channel = session.openChannel(channelType);
         if (channel == null)
             throw new Exception("Channel type does not exist");
         return channel;
-    }
-
-    public void CloseSession(){
-        if (null != session){
-            session.disconnect();
-            session = null;
-        }
-    }
-
-    public void collectChartData(int startTime, int finishTime) throws Exception {
-        System.out.println("Collecting data...");
-        ExecuteCommand("source collectData " + startTime + " " + finishTime);
-    }
-
-    public String getCPUData() throws Exception {
-        try {
-            return ReadFile("/var/lib/munin/168.101.113/cpuData.txt");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }
-    }
-
-    public String getMemData() throws Exception {
-        try {
-            return ReadFile("/var/lib/munin/168.101.113/memData.txt");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }
     }
 }

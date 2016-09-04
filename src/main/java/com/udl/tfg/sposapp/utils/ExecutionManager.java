@@ -20,43 +20,52 @@ public class ExecutionManager {
     private String lpsolveMPS = "ts lpsolve-mps %1$s %2$s %3$s %4$s %5$s";
     private String lpsolveLP = "ts lpsolve-lp %1$s %2$s %3$s %4$s %5$s";
 
+    private com.jcraft.jsch.Session sshSession;
+
     public void LaunchExecution(Session session) throws Exception {
-        sshManager.OpenSession(session.getIP(), 22, "root");
-        switch (session.getInfo().getMethod().getMethod()) {
-            case CPLEX:
-                runCplex(session);
-                break;
-            case Gurobi:
-                runGurobi(session);
-                break;
-            case Lpsolve:
-                runLpsolve(session);
-                break;
-            default:
-                System.out.println("UNKNOWN METHOD");
-                break;
+        try {
+            sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
+            switch (session.getInfo().getMethod().getMethod()) {
+                case CPLEX:
+                    runCplex(session);
+                    break;
+                case Gurobi:
+                    runGurobi(session);
+                    break;
+                case Lpsolve:
+                    runLpsolve(session);
+                    break;
+                default:
+                    System.out.println("UNKNOWN METHOD");
+                    break;
+            }
+            sshSession.disconnect();
+            sshSession = null;
+        } catch (Exception e) {
+            if (sshSession != null) sshSession.disconnect();
+            throw new Exception(e);
         }
-        sshManager.CloseSession();
+
     }
 
     private void runCplex(Session session) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
-            sshManager.ExecuteCommand(String.format(cplexDatMod, session.getId(), session.getKey(),
+            sshManager.ExecuteCommand(sshSession, String.format(cplexDatMod, session.getId(), session.getKey(),
                     session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getInfo().getFiles().get(1).getName(), session.getMaximumDuration()));
         } else {
-            sshManager.ExecuteCommand(String.format(cplexMpsLp, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
+            sshManager.ExecuteCommand(sshSession, String.format(cplexMpsLp, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
         }
     }
 
     private void runGurobi(Session session) throws Exception {
-        sshManager.ExecuteCommand(String.format(gurobi, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
+        sshManager.ExecuteCommand(sshSession, String.format(gurobi, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
     }
 
     private void runLpsolve(Session session) throws Exception {
         if (session.getInfo().getFiles().get(0).getExtension().equals("mps")){
-            sshManager.ExecuteCommand(String.format(lpsolveMPS, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
+            sshManager.ExecuteCommand(sshSession, String.format(lpsolveMPS, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
         } else {
-            sshManager.ExecuteCommand(String.format(lpsolveLP, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
+            sshManager.ExecuteCommand(sshSession, String.format(lpsolveLP, session.getId(), session.getKey(), session.getEmail(), session.getInfo().getFiles().get(0).getName(), session.getMaximumDuration()));
         }
     }
 }
