@@ -258,7 +258,7 @@ public class ResultsParser {
         Result results = session.getResults();
         com.jcraft.jsch.Session sshSession = null;
         try {
-            sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
+            sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
             String cpuData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
             String memData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
             sshSession.disconnect();

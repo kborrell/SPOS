@@ -4,6 +4,7 @@ package com.udl.tfg.sposapp.utils;
 import com.udl.tfg.sposapp.models.DataFile;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,19 +54,10 @@ public class RunExecutionThread extends Thread {
     }
 
     private void CleanSessionPath() {
-//        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
-//        try {
-//            FileUtils.cleanDirectory(storagePath.toFile());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        com.jcraft.jsch.Session sshSession = null;
+        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
         try {
-             sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
-            sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
-            sshSession.disconnect();
-        } catch (Exception e) {
-            if (sshSession!= null) sshSession.disconnect();
+            FileUtils.cleanDirectory(storagePath.toFile());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -74,14 +66,6 @@ public class RunExecutionThread extends Thread {
         com.jcraft.jsch.Session sshSession = null;
         try {
             sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
-            sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
-            for (int i=0; i < session.getInfo().getFiles().size(); i++){
-                File file = saveFile(session, session.getInfo().getFiles().get(i));
-                sshManager.SendFile(sshSession, session.getId(), file);
-            }
-            sshSession.disconnect();
-
-            sshSession = sshManager.OpenSession("192.168.101.113", 22, "root");
             sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
             for (int i=0; i < session.getInfo().getFiles().size(); i++){
                 File file = saveFile(session, session.getInfo().getFiles().get(i));
