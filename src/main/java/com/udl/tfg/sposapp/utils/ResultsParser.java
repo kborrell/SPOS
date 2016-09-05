@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 @Service
 public class ResultsParser {
@@ -256,12 +258,9 @@ public class ResultsParser {
 
     public void ParseCharts(Session session) {
         Result results = session.getResults();
-        com.jcraft.jsch.Session sshSession = null;
         try {
-            sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
-            String cpuData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
-            String memData = sshManager.ReadFile(sshSession, "/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
-            sshSession.disconnect();
+            String cpuData = readFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/cpuData.txt").trim();
+            String memData = readFile("/home/sposApp/sessions/" + String.valueOf(session.getId()) + "/memData.txt").trim();
             if (cpuData.length() > 0 && memData.length() > 0){
                 results.setCpuData(cpuData.getBytes(Charset.forName("UTF-8")));
                 results.setMemData(memData.getBytes(Charset.forName("UTF-8")));
@@ -270,9 +269,18 @@ public class ResultsParser {
                 sessionRepository.save(session);
             }
         } catch (Exception e) {
-            if (sshSession != null) sshSession.disconnect();
             e.printStackTrace();
         }
+    }
 
+    private String readFile(String filePath) throws IOException {
+        File f = new File(filePath);
+        if (f.exists())
+        {
+            byte[] encoded = Files.readAllBytes(f.toPath());
+            return new String(encoded, Charset.defaultCharset());
+        } else {
+            return "";
+        }
     }
 }

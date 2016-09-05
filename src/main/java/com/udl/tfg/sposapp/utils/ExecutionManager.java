@@ -18,8 +18,8 @@ public class ExecutionManager {
     private String cplexMpsLp = "ts cplex-exec %1$s %2$s %3$s %4$s %5$s %6$s";
     private String cplexDatMod = "ts cplex-opl %1$s %2$s %3$s %4$s %5$s %6$s %7$s";
     private String gurobi = "ts gurobi-exec %1$s %2$s %3$s %4$s %5$s %6$s";
-    private String lpsolveMPS = "ts lpsolve-mps %1$s %2$s %3$s %4$s %5$s %6$6";
-    private String lpsolveLP = "ts lpsolve-lp %1$s %2$s %3$s %4$s %5$s %6$6";
+    private String lpsolveMPS = "ts lpsolve-mps %1$s %2$s %3$s %4$s %5$s %6$s";
+    private String lpsolveLP = "ts lpsolve-lp %1$s %2$s %3$s %4$s %5$s %6$s";
 
     private com.jcraft.jsch.Session sshSession;
 

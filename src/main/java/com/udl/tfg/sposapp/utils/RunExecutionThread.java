@@ -42,21 +42,34 @@ public class RunExecutionThread extends Thread {
 
     public void run() {
         try {
+            System.out.println("Starting execution thread");
+            System.out.println("1");
             CleanSessionPath();
+            System.out.println("5");
+            System.out.println("Cleaned");
             ocaManager.WaitUntilCreated(vmIP);
+            System.out.println("Created");
             session.setIP(vmIP);
             sessionRepository.save(session);
+            System.out.println("Saved IP");
             SendFiles(session);
+            System.out.println("Sent files");
             executionManager.LaunchExecution(session);
         } catch (Exception e) {
+            System.out.println("Error launching execution: " + e.getMessage());
             sessionRepository.delete(session);
         }
     }
 
     private void CleanSessionPath() {
         Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
+        System.out.println("2");
         try {
-            FileUtils.cleanDirectory(storagePath.toFile());
+            System.out.println("3");
+            if (Files.exists(storagePath)){
+                FileUtils.cleanDirectory(storagePath.toFile());
+            }
+            System.out.println("4");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,18 +80,23 @@ public class RunExecutionThread extends Thread {
         try {
             sshSession = sshManager.OpenSession(session.getIP(), 22, "root");
             sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
+            System.out.println("Cleaned remote path");
             for (int i=0; i < session.getInfo().getFiles().size(); i++){
                 File file = saveFile(session, session.getInfo().getFiles().get(i));
+                System.out.println("File locally saved");
                 sshManager.SendFile(sshSession, session.getId(), file);
+                System.out.println("File remotely saved");
             }
             sshSession.disconnect();
         } catch (Exception e) {
+            System.out.println("ERROR SENDING FILES " + e.getMessage());
             if (sshSession != null) sshSession.disconnect();
             throw new Exception(e);
         }
     }
 
     private File saveFile(com.udl.tfg.sposapp.models.Session session, DataFile dataFile) throws IOException {
+        System.out.print("Saving file locally...");
         Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), dataFile.getName());
 
         if (!Files.exists(storagePath.getParent())) {
@@ -94,6 +112,7 @@ public class RunExecutionThread extends Thread {
         bufferedOutputStream.write(dataFile.getContent());
         bufferedOutputStream.flush();
         bufferedOutputStream.close();
+        System.out.println(" SAVED");
         return infoFile;
     }
 

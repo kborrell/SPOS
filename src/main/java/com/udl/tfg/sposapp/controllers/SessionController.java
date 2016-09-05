@@ -121,10 +121,14 @@ public class SessionController {
         if (session.getKey().equals(key)) {
                 if (session.getResults() == null && session.getIP() != null) {
                     File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
-                    String content = readFile(f);
-                    if (!content.isEmpty()) {
-                        resultsParser.ParseResults(session, readFile(f));
+                    if (f.exists())
+                    {
+                        String content = readFile(f);
+                        if (!content.isEmpty()) {
+                            resultsParser.ParseResults(session, readFile(f));
+                        }
                     }
+
                 }
                 if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null)){
                     resultsParser.ParseCharts(session);
@@ -149,8 +153,10 @@ public class SessionController {
     @RequestMapping(value = "/session", method = RequestMethod.POST)
     public @ResponseBody HttpEntity<HashMap<String, String>> returnKey(HttpServletRequest request, @Valid @RequestBody Session session) throws Exception {
         if (session != null) {
+            System.out.print("Generating session key...");
             session.generateKey();
             sessionRepository.save(session);
+            System.out.println("DONE");
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
@@ -164,6 +170,7 @@ public class SessionController {
         if (session == null)
             throw new NullPointerException();
 
+        System.out.println("Receiving files");
         if (session.getKey().equals(key)) {
 
             List<DataFile> dataFiles = ParseFiles(request, session);
@@ -173,6 +180,7 @@ public class SessionController {
             session.setInfo(params);
             sessionRepository.save(session);
 
+            System.out.println("Launching execution");
             LaunchExecution(session);
         } else {
             throw new InvalidKeyException();
@@ -185,6 +193,7 @@ public class SessionController {
         try {
             ip = GetVMIp(session);
         } catch (Exception e) {
+            System.out.println("Error getting ip: " + e.getMessage());
             sessionRepository.delete(session);
             throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
         }
@@ -275,6 +284,7 @@ public class SessionController {
         try {
             return ocaManager.createNewVM(session.getVmConfig());
         } catch (Exception e) {
+            System.out.println("Error creating VM: " + e.getMessage());
             return null;
         }
     }

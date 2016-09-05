@@ -47,7 +47,7 @@ angular.module('sposApp')
 
               GetSessionStatus();
               if ($scope.files.length == 0) {
-                $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/inputFiles?key=" + $scope.sessionKey, "")
+                $http.get('http://193.144.12.55/session/' + $scope.sessionId + "/inputFiles?key=" + $scope.sessionKey, "")
                   .success(function (rawData, status) {
                     var files = rawData.split("//++//@^@//++//");
                     for (var i = 0; i < files.length; i++) {
@@ -60,7 +60,7 @@ angular.module('sposApp')
                   });
               }
               if ($scope.shortResults == "" && $scope.fullResults == "") {
-                $http.get('http://127.0.0.1:8080/session/' + $scope.sessionId + "/results?key=" + $scope.sessionKey, "")
+                $http.get('http://193.144.12.55/session/' + $scope.sessionId + "/results?key=" + $scope.sessionKey, "")
                   .success(function (resultData, status) {
                     GetResults(resultData);
                     GetChartsData(resultData);
@@ -88,7 +88,7 @@ angular.module('sposApp')
         var rawMemData = resultData[3].match(/^.*((\r\n|\n|\r)|$)/gm);
 
         var executionDuration = parseInt(resultData[4]);
-        if (executionDuration < 60 * 5)
+        if (executionDuration < 60 * 20)
         {
           $scope.showCharts = false;
         }

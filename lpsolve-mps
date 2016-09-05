@@ -33,9 +33,9 @@ SendResults() {
         echo "Sending results..." &&
         eval "$(ssh-agent -s)" &&
         echo "SSH Agent started" &&
-        scp -i /root/.ssh/id_rsa $RESULTS_FILE root@$FRONTENDIP:$RESULTS_FILE &&
-        scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@$FRONTENDIP:$SESSION_PATH$CPU_DATA &&
-        scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@$FRONTENDIP:$SESSION_PATH$MEM_DATA &&
+        sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa $RESULTS_FILE root@$FRONTENDIP:$RESULTS_FILE &&
+        sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@$FRONTENDIP:$SESSION_PATH$CPU_DATA &&
+        sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@$FRONTENDIP:$SESSION_PATH$MEM_DATA &&
         echo "Results sent!" &&
         SUCCESS=1 &&
         SendEmail
@@ -58,6 +58,6 @@ echo "StartTime: $(date +'%s')" > $RESULTS_FILE && RunExecution && echo "FinishT
 
 if [ $SUCCESS -eq 0 ]; then
 	if [ -e $RESULTS_FILE ]; then
-		scp -i /root/.ssh/id_rsa $RESULTS_FILE root@$FRONTENDIP:$RESULTS_FILE
+		sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa $RESULTS_FILE root@$FRONTENDIP:$RESULTS_FILE
 	fi
 fi

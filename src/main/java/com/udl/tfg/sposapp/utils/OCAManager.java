@@ -25,9 +25,9 @@ public class OCAManager {
         HIGH
     }
 
-    private final String LOW_VM_IP = "192.168.101.69";
-    private final String MEDIUM_VM_IP = "192.168.101.69";
-    private final String HIGH_VM_IP = "192.168.101.69";
+    private final String LOW_VM_IP = "192.168.101.75";
+    private final String MEDIUM_VM_IP = "192.168.101.75";
+    private final String HIGH_VM_IP = "192.168.101.75";
 
     @Value("${openNebulaUser}") private String user;
     @Value("${openNebulaPass}") private String pass;
