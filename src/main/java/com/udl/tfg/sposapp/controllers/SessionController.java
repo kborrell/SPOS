@@ -8,6 +8,7 @@ import com.udl.tfg.sposapp.repositories.ParametersRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
 import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.*;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -19,12 +20,16 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,14 +142,21 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
-            String files = "";
-            for (int i = 0; i < session.getInfo().getFiles().size(); i++) {
-                files += session.getInfo().getFiles().get(i).getName() + "//++//@*@//++//" + new String(session.getInfo().getFiles().get(i).getContent(), StandardCharsets.UTF_8);
-                if (i < session.getInfo().getFiles().size() - 1){
-                    files += "//++//@^@//++//";
+            try {
+                String files = "";
+                for (int i = 0; i < session.getInfo().getFiles().size(); i++) {
+                    byte[] content = Files.readAllBytes(Paths.get(session.getInfo().getFiles().get(i).getPath()));
+                    files += session.getInfo().getFiles().get(i).getName() + "//++//@*@//++//" + new String(content, StandardCharsets.UTF_8);
+                    if (i < session.getInfo().getFiles().size() - 1){
+                        files += "//++//@^@//++//";
+                    }
                 }
+                return files;
+            } catch (OutOfMemoryError e)
+            {
+                return "Preview not available" + "//++//@*@//++//" + "Ops! Input file is too large, file preview is disabled.";
             }
-            return files;
+
         } else {
             throw new InvalidKeyException();
         }
@@ -157,18 +169,24 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
+            System.out.println("Getting results");
                 if (session.getResults() == null && session.getIP() != null) {
+                    System.out.println("Reading results");
                     File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
                     if (f.exists())
                     {
+                        System.out.println("Loading results");
                         String content = readFile(f);
                         if (!content.isEmpty()) {
+                            System.out.println("Parsing results");
                             resultsParser.ParseResults(session, readFile(f));
                         }
                     }
 
                 }
+            System.out.println("Go to charts");
                 if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null)){
+                    System.out.println("Parsing charts");
                     resultsParser.ParseCharts(session);
                 }
 
@@ -236,17 +254,25 @@ public class SessionController {
         Iterator<String> itr =  request.getFileNames();
         List<DataFile> dataFiles = new ArrayList<DataFile>();
         MultipartFile mpf = null;
+
+        CleanSessionPath(session);
+
         while(itr.hasNext()){
             mpf = request.getFile(itr.next());
+
             DataFile df = new DataFile();
-            df.setContent(mpf.getBytes());
+            String path = localStorageFolder + "/" + String.valueOf(session.getId()) + "/" + mpf.getOriginalFilename();
+            System.out.println("Path: " + path);
+            df.setPath(path);
             df.setName(mpf.getOriginalFilename());
             df.setExtension(mpf.getOriginalFilename().split("\\.")[1]);
 
+            byte[] content = mpf.getBytes();
             if (df.getExtension().toLowerCase().equals("mod"))
             {
-                PrepareModFile(df);
+                content = PrepareModFile(mpf.getBytes());
             }
+            saveFile(df.getPath(), content);
 
             dataFileRepository.save(df);
             dataFiles.add(df);
@@ -255,11 +281,45 @@ public class SessionController {
         return dataFiles;
     }
 
-    private void PrepareModFile(DataFile df) {
-        String content = new String(df.getContent(), StandardCharsets.UTF_8);
+    private void CleanSessionPath(Session session) {
+        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
+        System.out.println("2");
+        try {
+            System.out.println("3");
+            if (Files.exists(storagePath)){
+                FileUtils.cleanDirectory(storagePath.toFile());
+            }
+            System.out.println("4");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File saveFile(String path, byte[] bytes) throws IOException {
+        Path storagePath = Paths.get(path);
+
+        if (!Files.exists(storagePath.getParent())) {
+            Files.createDirectories(storagePath.getParent());
+        }
+
+        File infoFile = storagePath.toFile();
+        if (!infoFile.exists()) {
+            infoFile.createNewFile();
+        }
+
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(infoFile));
+        bufferedOutputStream.write(bytes);
+        bufferedOutputStream.flush();
+        bufferedOutputStream.close();
+        return infoFile;
+    }
+
+    private byte[] PrepareModFile(byte[] oldContent) {
+        String content = new String(oldContent, StandardCharsets.UTF_8);
         if (!content.contains("main")){
             content = content + "\n" + MOD_MAIN_METHOD;
         }
+        return content.getBytes(StandardCharsets.UTF_8);
     }
 
     private String readFile(File f) throws IOException {

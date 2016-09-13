@@ -1,8 +1,9 @@
 package com.udl.tfg.sposapp.models;
 
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -18,9 +19,8 @@ public class DataFile {
     @NotNull
     private String name;
 
-    @Lob
     @NotNull
-    private byte[] content;
+    private String path;
 
     public long getId() {
         return Id;
@@ -46,11 +46,11 @@ public class DataFile {
         this.name = name;
     }
 
-    public byte[] getContent() {
-        return content;
+    public String getPath() {
+        return path;
     }
 
-    public void setContent(byte[] content) {
-        this.content = content;
+    public void setPath(String path) {
+        this.path = path;
     }
 }

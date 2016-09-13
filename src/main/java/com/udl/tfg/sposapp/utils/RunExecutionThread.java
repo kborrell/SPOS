@@ -1,18 +1,10 @@
 package com.udl.tfg.sposapp.utils;
 
 
-import com.udl.tfg.sposapp.models.DataFile;
 import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class RunExecutionThread extends Thread {
 
@@ -44,7 +36,6 @@ public class RunExecutionThread extends Thread {
         try {
             System.out.println("Starting execution thread");
             System.out.println("1");
-            CleanSessionPath();
             System.out.println("5");
             System.out.println("Cleaned");
             ocaManager.WaitUntilCreated(vmIP);
@@ -61,20 +52,6 @@ public class RunExecutionThread extends Thread {
         }
     }
 
-    private void CleanSessionPath() {
-        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
-        System.out.println("2");
-        try {
-            System.out.println("3");
-            if (Files.exists(storagePath)){
-                FileUtils.cleanDirectory(storagePath.toFile());
-            }
-            System.out.println("4");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void SendFiles(Session session) throws Exception {
         com.jcraft.jsch.Session sshSession = null;
         try {
@@ -82,8 +59,8 @@ public class RunExecutionThread extends Thread {
             sshManager.CleanPath(sshSession, sshStorageFolder + "/" + String.valueOf(session.getId()));
             System.out.println("Cleaned remote path");
             for (int i=0; i < session.getInfo().getFiles().size(); i++){
-                File file = saveFile(session, session.getInfo().getFiles().get(i));
-                System.out.println("File locally saved");
+                System.out.println("Send file origin path: " + session.getInfo().getFiles().get(i).getPath());
+                File file = new File(session.getInfo().getFiles().get(i).getPath());
                 sshManager.SendFile(sshSession, session.getId(), file);
                 System.out.println("File remotely saved");
             }
@@ -94,26 +71,4 @@ public class RunExecutionThread extends Thread {
             throw new Exception(e);
         }
     }
-
-    private File saveFile(com.udl.tfg.sposapp.models.Session session, DataFile dataFile) throws IOException {
-        System.out.print("Saving file locally...");
-        Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()), dataFile.getName());
-
-        if (!Files.exists(storagePath.getParent())) {
-            Files.createDirectories(storagePath.getParent());
-        }
-
-        File infoFile = storagePath.toFile();
-        if (!infoFile.exists()) {
-            infoFile.createNewFile();
-        }
-
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(infoFile));
-        bufferedOutputStream.write(dataFile.getContent());
-        bufferedOutputStream.flush();
-        bufferedOutputStream.close();
-        System.out.println(" SAVED");
-        return infoFile;
-    }
-
 }
