@@ -18,7 +18,8 @@ angular
     'ngTouch',
     'ui.router',
     'hm.readmore',
-    'chart.js'
+    'chart.js',
+    'rzModule'
   ])
   .config(function ($stateProvider) {
     $stateProvider

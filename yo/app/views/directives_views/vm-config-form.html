@@ -10,50 +10,21 @@
     </div>
     <div class="col-xs-6 separator">
       <h4>Or choose your own configuration:</h4>
-      <form name="vmConfigForm" role="form" class="vmConfig form-horizontal" novalidate>
-        <div class="form-group">
-          <label class="control-label col-xs-5" for="virtualCPUs"> Virtual CPUs: </label>
-          <div class="col-xs-4">
-            <input name="virtualCPUs" id="virtualCPUs" class="form-control" type="number" ng-model="vmConfig.virtualCPUs" min="1" max="64" required ng-change="clearPredefinedVM()">
-          </div>
-          <div ng-show="vmConfigForm.virtualCPUs.$invalid && !vmConfigForm.virtualCPUs.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.virtualCPUs.$error.required">You must specify the number of emulated CPUs.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.virtualCPUs.$error.min || vmConfigForm.virtualCPUs.$error.number">You need at least 1 CPU.</p>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label col-xs-5" for="ram"> Memory: </label>
-          <div class="col-xs-7">
-            <div class="col-xs-8" style="margin: 0 0 0 -15px;">
-              <input name="ram" id="ram" class="form-control col-xs-3" type="number" ng-model="vmConfig.ram" min="64" max="32768" required ng-change="clearPredefinedVM()">
-            </div>
-            <div class="col-xs-1" style="margin: 10px 0 0 -15px;">
-              Mb
-            </div>
-          </div>
-          <div ng-show="vmConfigForm.ram.$invalid && !vmConfigForm.ram.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.ram.$error.required">You must specify the amount of memory.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.ram.$error.min || vmConfigForm.ram.$error.number">A minimum of 64mb is required.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.ram.$error.max">Maximum amount of memory is 32768 Mb.</p>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label col-xs-5" for="power"> Real CPUs: </label>
-          <div class="col-xs-7">
-            <div class="col-xs-8" style="margin: 0 0 0 -15px;">
-              <input name="power" id="power" class="form-control" type="number" ng-model="vmConfig.realCPUs" min="0.5" max="100" required ng-change="clearPredefinedVM()">
-            </div>
-            <div class="col-xs-1" style="margin: 10px 0 0 -15px;">
-              %
-            </div>
-          </div>
-          <div ng-show="vmConfigForm.power.$invalid && !vmConfigForm.power.$pristine" class="col-xs-12 text-center" style="display: block; clear:both;">
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.required">You must specify the real cpu used.</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.min || vmConfigForm.power.$error.number">The minimum used cpu is 0.5</p>
-            <p class="help-block" style="color: #ae7479;" ng-show="vmConfigForm.power.$error.max">The used cpu can't be over 100%.</p>
-          </div>
-        </div>
-      </form>
+      <br>
+      <b>Virtual CPUs:</b>
+      <div>
+        <rzslider rz-slider-model="vmConfig.virtualCPUs" rz-slider-options="vCpuSlider.options"></rzslider>
+      </div>
+      <br>
+      <b>Memory:</b>
+      <div>
+        <rzslider rz-slider-model="vmConfig.ram" rz-slider-options="memSlider.options"></rzslider>
+      </div>
+      <br>
+      <b>Real CPUs:</b>
+      <div>
+        <rzslider rz-slider-model="vmConfig.realCPUs" rz-slider-options="rCpuSlider.options"></rzslider>
+      </div>
     </div>
   </div>
 </div>

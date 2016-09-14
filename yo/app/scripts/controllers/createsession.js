@@ -10,7 +10,7 @@
 
 angular.module('sposApp')
   .controller('CreateSessionCtrl', function ($scope, $q, $state, $http, $location, VirtualMachine, Parameters, Session, fileReader, ModelInfo, MethodInfo) {
-    $scope.vmConfig = {};
+    $scope.vmConfig = {virtualCPUs:0, realCPUs:0, ram:0};
     $scope.parameters = {isClustered: false, files: []};
     $scope.session = {};
 
@@ -101,8 +101,7 @@ angular.module('sposApp')
     };
 
     $scope.clearVMConfig = function () {
-      $scope.vmConfig = {};
-      $scope.vmConfigForm.$setPristine();
+      $scope.vmConfig = {virtualCPUs:0, realCPUs:0, ram:0};
     };
 
     $scope.getCompatibleMethods = function () {
@@ -285,4 +284,50 @@ angular.module('sposApp')
         });
       }
     }
+
+    $scope.vCpuSlider = {
+      options: {
+        floor: 1,
+        ceil: 10,
+        showTicks: true,
+        onChange: function(id) {
+          $scope.clearPredefinedVM();
+        },
+        translate: function(value) {
+          return value + " vCPUs";
+        }
+      }
+    };
+
+    $scope.rCpuSlider = {
+      options: {
+        floor: 0.5,
+        ceil: 10,
+        step: 0.5,
+        precision: 1,
+        showTicks: 1,
+        onChange: function(id) {
+          $scope.clearPredefinedVM();
+        },
+        translate: function(value) {
+          return value + " CPUs";
+        }
+      }
+    };
+
+    $scope.memSlider = {
+      options: {
+        floor: 512,
+        ceil: 10240,
+        step:  256,
+        precision: 0,
+        showTicks: 1024,
+        onChange: function(id) {
+          $scope.clearPredefinedVM();
+        },
+        translate: function(value) {
+          return value + " Mb";
+        }
+      }
+    };
   });
