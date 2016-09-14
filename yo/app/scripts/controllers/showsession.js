@@ -151,8 +151,8 @@ angular.module('sposApp')
       };
 
       var ClearSession = function () {
-        $scope.sessionKey = $stateParams.key;
-        $scope.sessionId = $stateParams.id;
+        // $scope.sessionKey = $stateParams.key;
+        // $scope.sessionId = $stateParams.id;
         $scope.session = null;
         $scope.logged = false;
         $scope.loginError = "";

@@ -12,8 +12,8 @@
   <div id="first-step" ng-show="state == CreateState.FIRSTSTEP || state == CreateState.SECONDSTEP">
 
     <h3>
-      1. Choose the type of the problem<br>
-      <small>Do you have a determinist or a stochastic problem? The remaining steps of the session creation will be adapted
+      1. Choose the type of the model<br>
+      <small>Do you have a deterministic or a stochastic problem? The remaining steps of the session creation will be adapted
         to your choice here</small>
     </h3>
     <problem-form></problem-form>
@@ -35,13 +35,14 @@
 
         <h3>
           3. Upload input file<br>
-          <small>If you have chosen CPLEX method, only one type of input is necessary</small>
+          <small>Only one type of input is necessary</small>
         </h3>
         <upload-file-form-simple></upload-file-form-simple>
 
         <h3>
           4. Choose solution type<br>
-          <small>Optimal will give you best results, but Feasible let you choose the execution duration.</small>
+          <small> The optimal choice will give you the best solution whatever the duration.
+            While, the feasible choice will give you the best solution found in a specific time limit.</small>
         </h3>
         <solution-type-form></solution-type-form>
 
@@ -73,8 +74,8 @@
     <h4>Your session has been successfully created. You will be notified on your email when the execution finishes.</h4>
     <h5>You can access to execution results using this direct link:</h5>
     <h6>
-      <a href="http://{{location.host()}}:{{location.port()}}/#/session/view/{{sessionId}}?key={{sessionKey}}">
-        http://{{location.host()}}:{{location.port()}}/#/session/view/{{sessionId}}?key={{sessionKey}}
+      <a href="http://{{location.host()}}/#/session/view/{{sessionId}}?key={{sessionKey}}">
+        http://{{location.host()}}/#/session/view/{{sessionId}}?key={{sessionKey}}
       </a></b>
     </h6>
     <h5>Or by going to <a href="#/">Check results</a> section and introducing the information of you execution:</h5>

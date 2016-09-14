@@ -39,6 +39,7 @@ public class RunExecutionThread extends Thread {
             System.out.println("5");
             System.out.println("Cleaned");
             ocaManager.WaitUntilCreated(vmIP);
+            Thread.sleep(60000);
             System.out.println("Created");
             session.setIP(vmIP);
             sessionRepository.save(session);
