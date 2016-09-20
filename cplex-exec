@@ -35,8 +35,8 @@ SendResults() {
 	eval "$(ssh-agent -s)" &&
 	echo "SSH Agent started" &&
 	sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa $RESULTS_FILE root@$FRONTENDIP:$RESULTS_FILE &&
-	sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$CPU_DATA root@$FRONTENDIP:$SESSION_PATH$CPU_DATA &&
-	sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/168.101.113/$MEM_DATA root@$FRONTENDIP:$SESSION_PATH$MEM_DATA &&
+	sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/results/$CPU_DATA root@$FRONTENDIP:$SESSION_PATH$CPU_DATA &&
+	sshpass -p "S10s6oi2" scp -i /root/.ssh/id_rsa /var/lib/munin/results/$MEM_DATA root@$FRONTENDIP:$SESSION_PATH$MEM_DATA &&
 	echo "Results sent!" &&
 	SUCCESS=1 &&
     SendEmail

@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class OCAManager {
@@ -34,9 +32,6 @@ public class OCAManager {
     @Value("${openNebulaEntryPoint}") private String entryPoint;
 
     @Autowired
-    private SSHManager sshManager;
-
-    @Autowired
     private VirtualMachineRepository virtualMachineRepository;
 
     private Client client;
@@ -50,45 +45,6 @@ public class OCAManager {
         } catch (ClientConfigurationException e) {
             e.printStackTrace();
         }
-    }
-
-    public List<Integer> GetAllVmIds(){
-        if (vmPool != null){
-            List<Integer> ids = new ArrayList<>();
-            OneResponse response = vmPool.infoAll();
-            if ( response.isError() ){
-                System.out.printf("GET ALL VM ERROR: " + response.getErrorMessage());
-            } else {
-                String responseMsg = response.getMessage();
-                for (String s : findAllOccurrences("<ID>", "</ID", responseMsg)){
-                    ids.add(Integer.parseInt(s));
-                }
-            }
-            return ids;
-        } else {
-            return null;
-        }
-    }
-
-    private List<String> findAllOccurrences(String prefix, String sufix, String str) {
-        List<String> occurrences = new ArrayList<>();
-        int index = 0;
-        while (index >= 0){
-            int prefixPos = str.indexOf(prefix, index);
-
-            if (prefixPos == -1)
-                break;
-
-            int start = prefixPos + prefix.length();
-            int end = str.indexOf(sufix, start);
-            if (start >= 0 && end >= 0){
-                String content = str.substring(start, end);
-                if (!content.contains("<"))
-                    occurrences.add(content);
-            }
-            index = end + sufix.length();
-        }
-        return occurrences;
     }
 
     private String findOneOccurrence(String prefix, String sufix, String str, int initialPos){

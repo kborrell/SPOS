@@ -23,10 +23,6 @@
   font-size: 16px;
 }
 
-.active{
-  background-color: black;
-}
-
 .author-info {
   float: left;
   margin-top: 25px;
@@ -204,6 +200,10 @@ form {
 
 .methodForm label, .solverForm label {
   display: block;
+}
+
+.footer {
+  margin-bottom: 50px;
 }
 
 /* Responsive: Portrait tablets and up */

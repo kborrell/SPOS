@@ -21,7 +21,7 @@ public class VirtualMachine {
     @DecimalMin(message = "Amount of memory has to be greater than zero", value = "0")
     private int ram;
 
-    @NotNull(message = "You must enter the real percentage of real cpu's used by the VM")
+    @NotNull(message = "You must enter the number of real CPUs used")
     @DecimalMin(message = "This value must be greater than zero", value = "0")
     private float realCPUs;
 

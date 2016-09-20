@@ -48,54 +48,6 @@ angular.module('sposApp')
     $scope.sessionKey = "";
     $scope.sessionId = "";
 
-    var resultsMod =  "main {\n" +
-      "    var before = new Date();\n" +
-      "\tvar temp = before.getTime();\n" +
-      "\t\tthisOplModel.generate();\n" +
-      "    \tif (cplex.solve()) {\n" +
-      "    \t\t\twriteln(\"+-+-+-+\");\n" +
-      "    \t\t\twriteln(\"-- Objective = \", cplex.getObjValue());\n" +
-      "    \t\t\twriteln(\"-- Solution: \");\n" +
-      " \t\t\t\twriteln(thisOplModel.printSolution());\n" +
-      "                var after = new Date();\n" +
-      "\t\t\t\twriteln(\"-- Solving time ~= \",after.getTime()-temp, \"ms\");   \t\n" +
-      "        }else{\n" +
-      "        \t\twriteln(\"ERROR - No Solution for this model!\");\n" +
-      "        }\n" +
-      "    writeln(\"+-+-+-+\"); \n" +
-      "}";
-
-    function toUTF8Array(str) {
-      var utf8 = [];
-      for (var i = 0; i < str.length; i++) {
-        var charcode = str.charCodeAt(i);
-        if (charcode < 0x80) utf8.push(charcode);
-        else if (charcode < 0x800) {
-          utf8.push(0xc0 | (charcode >> 6),
-            0x80 | (charcode & 0x3f));
-        }
-        else if (charcode < 0xd800 || charcode >= 0xe000) {
-          utf8.push(0xe0 | (charcode >> 12),
-            0x80 | ((charcode >> 6) & 0x3f),
-            0x80 | (charcode & 0x3f));
-        }
-        // surrogate pair
-        else {
-          i++;
-          // UTF-16 encodes 0x10000-0x10FFFF by
-          // subtracting 0x10000 and splitting the
-          // 20 bits of 0x0-0xFFFFF into two halves
-          charcode = 0x10000 + (((charcode & 0x3ff) << 10)
-            | (str.charCodeAt(i) & 0x3ff));
-          utf8.push(0xf0 | (charcode >> 18),
-            0x80 | ((charcode >> 12) & 0x3f),
-            0x80 | ((charcode >> 6) & 0x3f),
-            0x80 | (charcode & 0x3f));
-        }
-      }
-      return utf8;
-    }
-
     $scope.clearPredefinedVM = function () {
       $scope.predefinedVM = "";
     };
@@ -135,22 +87,6 @@ angular.module('sposApp')
       $scope.state = $scope.CreateState.SECONDSTEP;
       createVMConfig();
     };
-
-    $scope.getFile = function () {
-
-      fileReader.readAsText($scope.file, $scope)
-        .then(function (result) {
-          if ($scope.file.name.split('.').pop() == "mod" && ((result.indexOf("main") == -1) || (result.indexOf("execute") == -1) )){
-            result += "\n" + resultsMod;
-          }
-          var file = {extension: $scope.file.name.split('.').pop(), name: $scope.file.name, content: toUTF8Array(result)};
-          //$scope.parameters.files.push(file);
-        });
-
-      $("#input-" + $scope.fileType).fileinput('disable');
-    };
-
-
 
     var uploadFileToUrl = function(files, uploadUrl, success, error){
       var fd = new FormData();

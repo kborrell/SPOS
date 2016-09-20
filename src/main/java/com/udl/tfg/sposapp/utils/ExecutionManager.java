@@ -1,8 +1,6 @@
 package com.udl.tfg.sposapp.utils;
 
 import com.udl.tfg.sposapp.models.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +10,6 @@ public class ExecutionManager {
     @Autowired
     private SSHManager sshManager;
 
-    private final Logger logger = LoggerFactory.getLogger(SSHManager.class);
     private final String frontendIP = "192.168.101.95";
 
     private String cplexMpsLp = "ts cplex-exec %1$s %2$s %3$s %4$s %5$s %6$s";
@@ -46,7 +43,6 @@ public class ExecutionManager {
             if (sshSession != null) sshSession.disconnect();
             throw new Exception(e);
         }
-
     }
 
     private void runCplex(Session session) throws Exception {

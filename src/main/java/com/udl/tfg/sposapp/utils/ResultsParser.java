@@ -24,22 +24,18 @@ public class ResultsParser {
     @Autowired
     ResultRepository resultRepository;
 
-    @Autowired
-    private SSHManager sshManager;
-
     public void ParseResults(Session session, String results) throws Exception {
         if (!results.equals("")) {
             Result executionResults = new Result();
-           // executionResults.setFullResults(results.getBytes(Charset.forName("UTF-8")));
             switch (session.getInfo().getMethod().getMethod()) {
                 case CPLEX:
                     parseCplex(session, results, executionResults);
                     break;
                 case Gurobi:
-                    parseGurobi(session, results, executionResults);
+                    parseGurobi(results, executionResults);
                     break;
                 case Lpsolve:
-                    parseLpsolve(session, results, executionResults);
+                    parseLpsolve(results, executionResults);
                     break;
                 default:
                     System.out.println("UNKNOWN METHOD");
@@ -53,18 +49,18 @@ public class ResultsParser {
 
     private void parseCplex(Session session, String results, Result executionResults) throws Exception {
         if (session.getInfo().getFiles().size() > 1){
-            parseOpl(session, results, executionResults);
+            parseOpl(results, executionResults);
         } else {
-            parseMpsCplex(session, results, executionResults);
+            parseMpsCplex(results, executionResults);
         }
     }
 
-    private void parseOpl(Session session, String results, Result executionResults) {
+    private void parseOpl(String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
         String fullResults = "";
-        String line = null;
+        String line;
         int startTime = 0;
         int finishTime = 0;
         try {
@@ -103,12 +99,12 @@ public class ResultsParser {
         }
     }
 
-    private void parseMpsCplex(Session session, String results, Result executionResults) {
+    private void parseMpsCplex(String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
         String shortResults = "";
         String fullResults = "";
-        String line = null;
+        String line;
         int startTime = 0;
         int finishTime = 0;
         try {
@@ -150,11 +146,11 @@ public class ResultsParser {
         }
     }
 
-    private void parseGurobi(Session session, String results, Result executionResults) {
+    private void parseGurobi(String results, Result executionResults) {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         String shortResults = "";
         String fullResults = "";
-        String line = null;
+        String line;
         boolean areResults = false;
         boolean existZeroVar = false;
         int startTime = 0;
@@ -209,13 +205,12 @@ public class ResultsParser {
         }
     }
 
-    private void parseLpsolve(Session session, String results, Result executionResults)  {
+    private void parseLpsolve(String results, Result executionResults)  {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(results));
         boolean areResults = false;
-        boolean existZeroVar = false;
         String shortResults = "";
         String fullResults = "";
-        String line = null;
+        String line;
         int startTime = 0;
         int finishTime = 0;
         try {

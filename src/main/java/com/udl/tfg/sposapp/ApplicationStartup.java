@@ -80,7 +80,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
                         }
                     }
                     try {
-                        Thread.sleep(5*60*1000);
+                        Thread.sleep(5*60*1000); //Run every 5 minutes
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -104,7 +104,6 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         CreateMethods(MethodCodes.LD, "Lagrange Decomposition", false, false, true, false, false);
         CreateMethods(MethodCodes.pLD, "Parallel Lagrange Decomposition", false, false, true, true, false);
         CreateMethods(MethodCodes.Gurobi, "Gurobi Solver", true, true, false, false, false);
-        //CreateMethods(MethodCodes.Xpress, "Xpress Solver", true, false, false, false, false);
         CreateMethods(MethodCodes.Lpsolve, "Lpsolve Solver", true, true, false, false, false);
 
         CreateModels(ModelCodes.GDS2SP, "General Discrete S2SP", new ArrayList<>(
@@ -135,7 +134,6 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
                 Arrays.asList(
                         methods.get(MethodCodes.CPLEX),
                         methods.get(MethodCodes.Gurobi),
-                        //methods.get(MethodCodes.Xpress),
                         methods.get(MethodCodes.Lpsolve)
                 )
         ));

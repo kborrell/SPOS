@@ -141,25 +141,24 @@ angular.module('sposApp')
           result = $sce.trustAsHtml("<span style=\"color: #4CAF50;\"> Finished </span>");
 
         if (($scope.fullResults != "" && ($scope.fullResults.toLowerCase().indexOf("fatal") != -1))
-              || ($scope.fullResults != "" && ($scope.shortResults == "" || $scope.shortResults == errorMsg) )) {
+              || ($scope.fullResults != "" && $scope.shortResults == errorMsg)) {
 
           result = $sce.trustAsHtml("<span style=\"color: #ff0011;\"> Error </span>");
-          $scope.shortResults = errorMsg;
+        }
+
+        if ($scope.fullResults != "" && ($scope.shortResults == "" ))
+        {
+          $scope.shortResults = $scope.fullResults;
         }
 
         $scope.sessionStatus = result;
       };
 
       var ClearSession = function () {
-        // $scope.sessionKey = $stateParams.key;
-        // $scope.sessionId = $stateParams.id;
         $scope.session = null;
         $scope.logged = false;
         $scope.loginError = "";
         $scope.sessionStatus = "---------";
-        //$scope.files = [];
-        //$scope.shortResults = "";
-        //$scope.fullResults = "";
       };
 
       $scope.refresh = function () {

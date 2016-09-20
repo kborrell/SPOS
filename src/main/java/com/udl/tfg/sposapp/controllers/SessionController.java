@@ -6,7 +6,6 @@ import com.udl.tfg.sposapp.models.Session;
 import com.udl.tfg.sposapp.repositories.DataFileRepository;
 import com.udl.tfg.sposapp.repositories.ParametersRepository;
 import com.udl.tfg.sposapp.repositories.SessionRepository;
-import com.udl.tfg.sposapp.repositories.VirtualMachineRepository;
 import com.udl.tfg.sposapp.utils.*;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +59,6 @@ public class SessionController {
     private SessionRepository sessionRepository;
 
     @Autowired
-    private VirtualMachineRepository vmRepository;
-
-    @Autowired
     private DataFileRepository dataFileRepository;
 
     @Autowired
@@ -90,7 +86,6 @@ public class SessionController {
             System.out.print("Generating session key...");
             session.generateKey();
             sessionRepository.save(session);
-            System.out.println("DONE");
             return GeneratePostResponse(request, session);
         } else {
             throw new NullPointerException();
@@ -106,14 +101,12 @@ public class SessionController {
 
         System.out.println("Receiving files");
         if (session.getKey().equals(key)) {
-
             List<DataFile> dataFiles = ParseFiles(request, session);
             Parameters params = session.getInfo();
             params.setFiles(dataFiles);
             parametersRepository.save(params);
             session.setInfo(params);
             sessionRepository.save(session);
-
             System.out.println("Launching execution");
             LaunchExecution(session);
         } else {
@@ -142,21 +135,22 @@ public class SessionController {
             throw new NullPointerException();
 
         if (session.getKey().equals(key)) {
+            String contentSeparator = "//++//@*@//++//";
+            String fileSeparator = "//++//@^@//++//";
             try {
                 String files = "";
                 for (int i = 0; i < session.getInfo().getFiles().size(); i++) {
                     byte[] content = Files.readAllBytes(Paths.get(session.getInfo().getFiles().get(i).getPath()));
-                    files += session.getInfo().getFiles().get(i).getName() + "//++//@*@//++//" + new String(content, StandardCharsets.UTF_8);
+                    files += session.getInfo().getFiles().get(i).getName() + contentSeparator + new String(content, StandardCharsets.UTF_8);
                     if (i < session.getInfo().getFiles().size() - 1){
-                        files += "//++//@^@//++//";
+                        files += fileSeparator;
                     }
                 }
                 return files;
             } catch (OutOfMemoryError e)
             {
-                return "Preview not available" + "//++//@*@//++//" + "Ops! Input file is too large, file preview is disabled.";
+                return "Preview not available" + contentSeparator + "Ops! Input file is too large, file preview is disabled.";
             }
-
         } else {
             throw new InvalidKeyException();
         }
@@ -171,11 +165,9 @@ public class SessionController {
         if (session.getKey().equals(key)) {
             System.out.println("Getting results");
                 if (session.getResults() == null && session.getIP() != null) {
-                    System.out.println("Reading results");
                     File f = new File(localStorageFolder + "/" + String.valueOf(id) + "/results.txt");
                     if (f.exists())
                     {
-                        System.out.println("Loading results");
                         String content = readFile(f);
                         if (!content.isEmpty()) {
                             System.out.println("Parsing results");
@@ -184,7 +176,6 @@ public class SessionController {
                     }
 
                 }
-            System.out.println("Go to charts");
                 if (session.getResults() != null && (session.getResults().getCpuData() == null || session.getResults().getMemData() == null)){
                     System.out.println("Parsing charts");
                     resultsParser.ParseCharts(session);
@@ -193,11 +184,15 @@ public class SessionController {
                 if (session.getResults() == null) {
                     return new String[]{"","","","","-1"};
                 } else {
+                    String shortResults = session.getResults().getShortResults() == null ? "" : new String(session.getResults().getShortResults(), Charset.forName("UTF-8"));
+                    String fullResults = session.getResults().getFullResults() == null ? "" : new String(session.getResults().getFullResults(), Charset.forName("UTF-8"));
+                    String cpuResults = session.getResults().getCpuData() == null ? "" : new String(session.getResults().getCpuData(), Charset.forName("UTF-8"));
+                    String memResults = session.getResults().getMemData() == null ? "" : new String(session.getResults().getMemData(), Charset.forName("UTF-8"));
                     return new String[]{
-                            new String(session.getResults().getShortResults(), Charset.forName("UTF-8")),
-                            new String(session.getResults().getFullResults(), Charset.forName("UTF-8")),
-                            new String(session.getResults().getCpuData(), Charset.forName("UTF-8")),
-                            new String(session.getResults().getMemData(), Charset.forName("UTF-8")),
+                            shortResults,
+                            fullResults,
+                            cpuResults,
+                            memResults,
                             String.valueOf(session.getResults().getFinishTime() - session.getResults().getStartTime())
                     };
                 }
@@ -239,7 +234,7 @@ public class SessionController {
     }
 
     private void LaunchExecution(Session session) {
-        String ip = "";
+        String ip;
         try {
             ip = GetVMIp(session);
         } catch (Exception e) {
@@ -247,13 +242,13 @@ public class SessionController {
             sessionRepository.delete(session);
             throw new RuntimeException("VMERROR - There was an error creating the virtual machine. Please try again later. ERR: " + e.getMessage());
         }
-        new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, localStorageFolder, sshStorageFolder, ip).start();
+        new RunExecutionThread(session, sessionRepository, executionManager, ocaManager, sshManager, sshStorageFolder, ip).start();
     }
 
     private List<DataFile> ParseFiles(MultipartHttpServletRequest request, Session session) throws IOException {
         Iterator<String> itr =  request.getFileNames();
-        List<DataFile> dataFiles = new ArrayList<DataFile>();
-        MultipartFile mpf = null;
+        List<DataFile> dataFiles = new ArrayList<>();
+        MultipartFile mpf;
 
         CleanSessionPath(session);
 
@@ -262,7 +257,6 @@ public class SessionController {
 
             DataFile df = new DataFile();
             String path = localStorageFolder + "/" + String.valueOf(session.getId()) + "/" + mpf.getOriginalFilename();
-            System.out.println("Path: " + path);
             df.setPath(path);
             df.setName(mpf.getOriginalFilename());
             df.setExtension(mpf.getOriginalFilename().split("\\.")[1]);
@@ -283,13 +277,10 @@ public class SessionController {
 
     private void CleanSessionPath(Session session) {
         Path storagePath = Paths.get(localStorageFolder, String.valueOf(session.getId()));
-        System.out.println("2");
         try {
-            System.out.println("3");
             if (Files.exists(storagePath)){
                 FileUtils.cleanDirectory(storagePath.toFile());
             }
-            System.out.println("4");
         } catch (IOException e) {
             e.printStackTrace();
         }
